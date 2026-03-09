@@ -1,0 +1,22 @@
+build/yuv_rgb_sse.lo: \
+ /home/leon/Downloads/SDL2-2.32.10/src/video/yuv2rgb/yuv_rgb_sse.c \
+ /home/leon/Downloads/SDL2-2.32.10/src/video/yuv2rgb/../../SDL_internal.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/video/yuv2rgb/../../dynapi/SDL_dynapi.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/video/yuv2rgb/../../dynapi/SDL_dynapi_overrides.h \
+ include/SDL_config.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_platform.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/begin_code.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/close_code.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_assert.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_stdinc.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_config.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_log.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/video/yuv2rgb/yuv_rgb.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/video/yuv2rgb/yuv_rgb_std.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/video/yuv2rgb/yuv_rgb_common.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_stdinc.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/video/yuv2rgb/yuv_rgb_sse.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/video/yuv2rgb/yuv_rgb_lsx.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/video/yuv2rgb/yuv_rgb_internal.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_cpuinfo.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/video/yuv2rgb/yuv_rgb_sse_func.h

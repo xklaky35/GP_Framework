@@ -1,0 +1,19 @@
+build/SDL_scancode_tables.lo: \
+ /home/leon/Downloads/SDL2-2.32.10/src/events/SDL_scancode_tables.c \
+ /home/leon/Downloads/SDL2-2.32.10/src/events/../SDL_internal.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/events/../dynapi/SDL_dynapi.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/events/../dynapi/SDL_dynapi_overrides.h \
+ include/SDL_config.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_platform.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/begin_code.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/close_code.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_assert.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_stdinc.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_config.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_log.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/events/SDL_scancode_tables_c.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/events/../../include/SDL_scancode.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/events/../../include/SDL_stdinc.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/events/scancodes_darwin.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/events/scancodes_linux.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/events/scancodes_xfree86.h

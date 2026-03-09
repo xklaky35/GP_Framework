@@ -1,0 +1,27 @@
+build/SDL_drawline.lo: \
+ /home/leon/Downloads/SDL2-2.32.10/src/render/software/SDL_drawline.c \
+ /home/leon/Downloads/SDL2-2.32.10/src/render/software/../../SDL_internal.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/render/software/../../dynapi/SDL_dynapi.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/render/software/../../dynapi/SDL_dynapi_overrides.h \
+ include/SDL_config.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_platform.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/begin_code.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/close_code.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_assert.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_stdinc.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_config.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_log.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/render/software/SDL_draw.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/render/software/../../video/SDL_blit.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/render/software/../../video/../SDL_internal.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_cpuinfo.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_endian.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_surface.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_pixels.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_endian.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_rect.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_error.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_rwops.h \
+ /home/leon/Downloads/SDL2-2.32.10/include/SDL_blendmode.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/render/software/SDL_drawline.h \
+ /home/leon/Downloads/SDL2-2.32.10/src/render/software/SDL_drawpoint.h
