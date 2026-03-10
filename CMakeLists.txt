@@ -3,7 +3,25 @@ project(GP_Framework)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(GP_Framework WIN32 main.cpp)
+add_executable(GP_Framework WIN32 game/main.cpp
+        game/logmanager/logmanager.cpp
+        game/logmanager/logmanager.h
+        game/game/game.cpp
+        game/game/game.h
+        game/renderer/renderer.cpp
+        game/renderer/renderer.h
+        game/texture/texture.cpp
+        game/texture/texture.h
+        game/texture/texturemanager.cpp
+        game/texture/texturemanager.h
+        game/shader/shader.cpp
+        game/shader/shader.h
+        game/matrix4/matrix4.cpp
+        game/matrix4/matrix4.h
+        game/vertexarray/vertexarray.cpp
+        game/vertexarray/vertexarray.h
+        game/sprite/sprite.cpp
+        game/sprite/sprite.h)
 
 # this assumes the SDL source is available in lib/SDL2
 add_subdirectory(lib/SDL2 EXCLUDE_FROM_ALL)
