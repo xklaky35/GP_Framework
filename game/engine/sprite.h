@@ -16,8 +16,10 @@ namespace Engine {
         bool Initialise(Texture &texture);
         void Process(float deltaTime);
         void Draw(Renderer &renderer);
-        int GetWidth() const;
-        int GetHeight() const;
+        float GetWidth() const;
+        void SetWidth(float x);
+        float GetHeight() const;
+        void SetHeight(float x);
         void SetX(int x);
         int GetX() const;
         void SetY(int y);
@@ -46,8 +48,8 @@ namespace Engine {
         float m_angle;
         int m_centerX;
         int m_centerY;
-        int m_width;
-        int m_height;
+        float m_width;
+        float m_height;
         float m_scale;
         float m_alpha;
         float m_tintRed;

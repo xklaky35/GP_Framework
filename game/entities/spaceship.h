@@ -14,7 +14,7 @@ public:
 
     void Init() override;
 
-    void OnCollision(Node *node);
+    void OnCollision(const Node *node);
 
     void Process(float deltaTime) override;
     void Draw(Renderer &) override;

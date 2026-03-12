@@ -6,12 +6,12 @@
 namespace Engine {
     class Circle : public Form {
     public:
-        Circle(Vector2d* pos, float radius);
+        Circle(Vector2d pos, float radius);
         ~Circle() override;
 
         float GetArea() override;
-        bool Overlap(Form &) override;
-        Vector2d GetFurthestPointTowards(const Vector2d*) const override;
+        bool Overlap(const Form &) const override;
+        Vector2d GetFurthestPointTowards(Vector2d) const override;
 
     public:
         float m_radius;

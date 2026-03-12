@@ -11,14 +11,11 @@
 namespace Engine {
     class Rectangle : public Form {
     public:
-        Rectangle(Vector2d* pos, Vector2d size);
+        Rectangle(Vector2d pos, float size);
         ~Rectangle() override;
         float GetArea() override;
-        bool Overlap(Form &) override;
-        Vector2d GetFurthestPointTowards(const Vector2d*) const override;
-
-    public:
-        Vector2d m_size;
+        bool Overlap(const Form &) const override;
+        Vector2d GetFurthestPointTowards(Vector2d) const override;
     };
 
 }

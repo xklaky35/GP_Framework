@@ -92,13 +92,19 @@ namespace Engine {
         return m_alpha;
     }
 
-    int
-    Sprite::GetWidth() const {
+    float Sprite::GetWidth() const {
         return static_cast<int>(ceilf(m_width * m_scale));
     }
 
-    int
-    Sprite::GetHeight() const {
+    void Sprite::SetWidth(const float w) {
+        m_width = w;
+    }
+
+    void Sprite::SetHeight(const float h) {
+        m_height = h;
+    }
+
+    float Sprite::GetHeight() const {
         return static_cast<int>(ceilf(m_height * m_scale));
     }
 

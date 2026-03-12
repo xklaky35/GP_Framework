@@ -2,6 +2,8 @@
 #define GP_FRAMEWORK_METEORS_H
 
 #include "../engine/nodetree/node.h"
+#include "../engine/nodetree/collidernode.h"
+#include "../engine/nodetree/spritenode.h"
 
 using namespace Engine;
 
@@ -13,7 +15,7 @@ public:
     void Process(float deltaTime) override;
 
     void Draw(Renderer &) override;
-    void OnImpact() const;
+    void OnImpact(const Node*);
     void Spin(float deltaTime) const;
     void SetVelocity(float);
     void SetSpinDirection(signed char);
@@ -23,11 +25,13 @@ public:
 
 
 private:
-    float velocity;
-    float spinSpeed;
-    signed char spinDirection;
-    int damage;
+    float m_velocity;
+    float m_spinSpeed;
+    signed char m_spinDirection;
+    int m_damage;
 
+    Spritenode* m_spritenode;
+    ColliderNode* m_collider;
 };
 
 

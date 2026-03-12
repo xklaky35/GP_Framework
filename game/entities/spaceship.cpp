@@ -19,21 +19,23 @@ void Spaceship::Init() {
 
     // setup sprite
     m_spriteNode = new Spritenode();
-    m_spriteNode->SetSprite("../assets/Sprites/ball.png");
-    m_spriteNode->m_transform->scale = 0.3;
+    m_spriteNode->SetSpritePath("../assets/Sprites/spaceship.png");
     m_spriteNode->m_transform->rotation = 180;
+    m_spriteNode->m_transform->width = 100;
+    m_spriteNode->m_transform->height = 100;
     AddChild(*m_spriteNode);
 
 
     // setup collider
-    Form* circle = new Circle(m_position, 200);
-    m_colliderNode = new ColliderNode(circle);
+    m_colliderNode = new ColliderNode(ft_CIRCLE, "SpaceshipCollider");
     m_colliderNode->RegisterOnEnter<Spaceship>(&Spaceship::OnCollision, *this);
+    m_colliderNode->m_transform->height = 100;
+    m_colliderNode->m_transform->width = 100;
     AddChild(*m_colliderNode);
 }
 
-void Spaceship::OnCollision(Node* node) {
-    LogManager::GetInstance().Log(INFO, "BUZZ!!");
+void Spaceship::OnCollision(const Node* node) {
+    LogManager::GetInstance().Log(INFO, "EINGESCHLAGEN! in %s", node->name.c_str());
 }
 
 void Spaceship::Process(float deltaTime) {

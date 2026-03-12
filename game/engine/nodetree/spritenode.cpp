@@ -1,7 +1,46 @@
 #include "spritenode.h"
 
 namespace Engine {
-    Spritenode::Spritenode(const char *nodeName) : Node(nodeName), mp_renderer(nullptr), mp_sprite(nullptr) {}
+    /**
+     * This node uses the sprites dimensions by default. If you specify a custom height and width, please disable m_bUseSpriteSize.
+     * @param nodeName name of the node (this is set by default)
+     */
+    Spritenode::Spritenode(const char *nodeName) : Node(nodeName), m_bUseSpriteSize(true), m_pRenderer(nullptr),
+                                                   m_pSprite(nullptr), m_redTint(1), m_greenTint(1), m_blueTint(1), m_alpha(1) {
+    }
+
+    /**
+     * This node uses the sprites dimensions by default. If you specify a custom height and width, please disable m_bUseSpriteSize.
+     * @param spritePath path to the sprite image
+     * @param nodeName name of the node (this is set by default)
+     */
+    Spritenode::Spritenode(const char *spritePath, const char *nodeName) : Node(nodeName), m_bUseSpriteSize(true),
+                                                                           m_pRenderer(nullptr),
+                                                                           m_pSprite(nullptr),
+                                                                           m_pSpritePath(spritePath), m_redTint(1), m_greenTint(1),
+                                                                           m_blueTint(1), m_alpha(1) {
+    }
+
+    /**
+     * This node uses the sprites dimensions by default. If you specify a custom height and width, please disable m_bUseSpriteSize.
+     * @param height hight the sprite should be rendered with
+     * @param width width the sprite should be rendered with
+     * @param spritePath path to the sprite image
+     * @param nodeName name of the node (this is set by default)
+     */
+    Spritenode::Spritenode(float height, float width, const char *spritePath, const char *nodeName) : Node(nodeName),
+        m_bUseSpriteSize(true),
+        m_pRenderer(nullptr),
+        m_pSprite(nullptr),
+        m_pSpritePath(spritePath),
+        m_redTint(1),
+        m_greenTint(1),
+        m_blueTint(1),
+        m_alpha(1) {
+        m_transform->height = height;
+        m_transform->width = width;
+    }
+
     Spritenode::~Spritenode() = default;
 
     void Spritenode::Init() {
@@ -10,35 +49,59 @@ namespace Engine {
 
     void Spritenode::Process(float deltaTime) {
         Node::Process(deltaTime);
-        if (mp_sprite != nullptr) {
-            mp_sprite->SetX(m_position->x);
-            mp_sprite->SetY(m_position->y);
+        if (m_pSprite != nullptr) {
+            m_pSprite->SetX(m_position->x);
+            m_pSprite->SetY(m_position->y);
 
-            mp_sprite->SetScale(m_transform->scale);
-            mp_sprite->SetAngle(m_transform->rotation);
+            if (m_bUseSpriteSize == false) {
+                m_pSprite->SetWidth(m_transform->width);
+                m_pSprite->SetHeight(m_transform->height);
+            }
+            m_pSprite->SetScale(m_transform->scale);
+            m_pSprite->SetAngle(m_transform->rotation);
         }
     }
 
     void Spritenode::Draw(Renderer &renderer) {
         Node::Draw(renderer);
 
-        SetRenderer(renderer);
+        SetupSpriteRendering(renderer);
 
-        if (mp_sprite != nullptr) {
-            renderer.DrawSprite(*mp_sprite);
+        if (m_pSprite != nullptr) {
+            m_pSprite->SetAlpha(m_alpha);
+            m_pSprite->SetRedTint(m_redTint);
+            m_pSprite->SetGreenTint(m_greenTint);
+            m_pSprite->SetBlueTint(m_blueTint);
+            m_pSprite->Draw(renderer);
         }
     }
 
-    void Spritenode::SetRenderer(Renderer &renderer) {
-        if (mp_renderer == nullptr) {
-            mp_renderer = &renderer;
+    void Spritenode::SetupSpriteRendering(Renderer &renderer) {
+        if (m_pRenderer == nullptr) {
+            m_pRenderer = &renderer;
         }
-        if (mp_sprite == nullptr) {
-            mp_sprite = mp_renderer->CreateSprite(mp_spritePath.c_str());
+
+        if (m_pSprite == nullptr && m_pRenderer != nullptr) {
+            m_pSprite = m_pRenderer->CreateSprite(m_pSpritePath.c_str());
         }
     }
 
-    void Spritenode::SetSprite(const std::string &path) {
-        mp_spritePath = path;
+
+    /**
+     * All parameters take values between 0 and 1. Highter/lower values will be set to max 1 and min 0.
+     * @param r red tint
+     * @param g green tint
+     * @param b blue tint
+     * @param a alpha value
+     */
+    void Spritenode::SetRGBA(const float r, const float g, const float b, const float a) {
+        m_redTint = r;
+        m_greenTint = g;
+        m_blueTint = b;
+        m_alpha = a;
+    }
+
+    void Spritenode::SetSpritePath(const std::string &path) {
+        m_pSpritePath = path;
     }
 }

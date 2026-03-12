@@ -176,6 +176,7 @@ namespace Engine {
     void Renderer::DrawSprite(Sprite &sprite) {
         m_pSpriteShader->SetActive();
         m_pSpriteVertexData->SetActive();
+
         float angleInDegrees = sprite.GetAngle();
         float sizeX = static_cast<float>(sprite.GetWidth());
         float sizeY = static_cast<float>(sprite.GetHeight());

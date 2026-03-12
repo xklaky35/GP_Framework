@@ -7,8 +7,10 @@ namespace Engine {
         Vector2d* position;
         float scale;
         float rotation;
+        float height;
+        float width;
 
-        Transform() : scale(1), rotation(0) {
+        Transform() : scale(1), rotation(0), height(50), width(50) {
             position = new Vector2d();
         }
         ~Transform() {

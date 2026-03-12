@@ -28,7 +28,7 @@ namespace Engine {
     ColliderNode *CollisionManager::CheckForCollision(const ColliderNode &col) const {
         for (ColliderNode *c: colliders) {
             if (&col == c) continue;
-            if (col.m_pForm->Overlap(*(c->m_pForm))) {
+            if (col.GetForm()->Overlap(*(c->GetForm()))) {
                 return c;
             }
         }

@@ -1,24 +1,60 @@
 #include "collisionmanager.h"
-
 #include "collidernode.h"
 
+#include "forms/circle.h"
+#include "forms/rectangle.h"
+
 namespace Engine {
-    ColliderNode::ColliderNode(Form *form, const char *nodeName) : Node(nodeName), m_pOnEnter(nullptr), m_pOnExit(nullptr), m_pForm(form) {}
+    ColliderNode::ColliderNode(Formtype type, const char *nodeName) : Node(nodeName), m_pOnEnter(nullptr), m_pOnExit(nullptr), m_pForm(nullptr), m_type(type), m_pSpritenode(nullptr) {}
     ColliderNode::~ColliderNode() = default;
 
     void ColliderNode::Init() {
         Node::Init();
+
         CollisionManager::GetInstance().RegisterCollider(*this);
+
+        m_pSpritenode = new Spritenode();
+        m_pSpritenode->SetSpritePath("../assets/Sprites/ball.png");
+        m_pSpritenode->SetRGBA(1,0,0,0.3);
+        AddChild(*m_pSpritenode);
+
+        switch (m_type) {
+            case ft_CIRCLE: {
+                m_pForm = new Circle(*m_position, m_transform->width/2);
+                break;
+            }
+            case ft_RECTANGLE: {
+                m_pForm = new Rectangle(*m_position, m_transform->width);
+                break;
+            }
+        }
+    }
+
+    void ColliderNode::SyncFormAndSprite() {
+
+        m_pForm->m_position.x = m_position->x + m_transform->position->x;
+        m_pForm->m_position.y = m_position->y + m_transform->position->y;
+        m_pForm->m_width = m_transform->width * m_transform->scale;
+        m_pForm->m_height = m_transform->height * m_transform->scale;
+
+        m_pSpritenode->m_transform->height = m_transform->width * m_transform->scale;
+        m_pSpritenode->m_transform->width = m_transform->height * m_transform->scale;
     }
 
     void ColliderNode::Process(float deltaTime) {
         Node::Process(deltaTime);
-        m_pForm->m_position = m_position;
+
+        // keep form and sprite synced
+        SyncFormAndSprite();
         DetectCollition();
     }
 
     void ColliderNode::Draw(Renderer &renderer) {
         Node::Draw(renderer);
+    }
+
+    const Form* ColliderNode::GetForm() const {
+        return m_pForm;
     }
 
     void ColliderNode::DetectCollition() const {

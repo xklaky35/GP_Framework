@@ -23,7 +23,7 @@ namespace Engine {
     }
 
     Texture *TextureManager::GetTexture(const char *pcFilename) {
-        Texture *pTexture = 0;
+        Texture *pTexture = nullptr;
         if (m_pLoadedTextures.find(pcFilename) == m_pLoadedTextures.end()) {
             // Not already loaded... so load...
             pTexture = new Texture();
