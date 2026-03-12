@@ -10,7 +10,7 @@ namespace Engine {
         virtual ~Form() = default;
 
         virtual float GetArea() = 0;
-        virtual bool Overlap(const Form &) const = 0;
+        virtual bool Overlap(const Form &) const;
         virtual Vector2d GetFurthestPointTowards(Vector2d) const = 0;
 
     public:
@@ -18,5 +18,8 @@ namespace Engine {
         float m_height;
         float m_width;
     };
+
+
+
 }
 #endif //GP_FRAMEWORK_FORMNODE_H

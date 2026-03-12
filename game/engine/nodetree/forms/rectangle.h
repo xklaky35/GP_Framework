@@ -11,10 +11,9 @@
 namespace Engine {
     class Rectangle : public Form {
     public:
-        Rectangle(Vector2d pos, float size);
+        Rectangle(Vector2d pos, float height, float width);
         ~Rectangle() override;
         float GetArea() override;
-        bool Overlap(const Form &) const override;
         Vector2d GetFurthestPointTowards(Vector2d) const override;
     };
 

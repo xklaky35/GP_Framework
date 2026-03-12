@@ -6,6 +6,8 @@
 
 #include <SDL_timer.h>
 
+#include "nodetree/collisionmanager.h"
+
 
 namespace Engine {
     // Static Members:

@@ -14,7 +14,7 @@ void Meteors::Init() {
     AddChild(*m_spritenode);
 
     // setup collider
-    m_collider = new ColliderNode(ft_CIRCLE);
+    m_collider = new ColliderNode(ft_RECTANGLE);
     m_collider->RegisterOnEnter<Meteors>(&Meteors::OnImpact, *this);
     AddChild(*m_collider);
 }
@@ -45,7 +45,7 @@ void Meteors::Draw(Renderer &renderer) {
 }
 
 void Meteors::OnImpact(const Node* e) {
-    //LogManager::GetInstance().Log(INFO, "EINGESCHLAGEN! in %s", e->name.c_str());
+    LogManager::GetInstance().Log(INFO, "EINGESCHLAGEN! in %s", e->name.c_str());
 }
 
 void Meteors::SetVelocity(const float v) {

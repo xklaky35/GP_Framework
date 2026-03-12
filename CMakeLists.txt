@@ -49,8 +49,9 @@ add_executable(GP_Framework WIN32 game/main.cpp
         game/engine/nodetree/forms/circle.h
         game/engine/nodetree/forms/rectangle.cpp
         game/engine/nodetree/forms/rectangle.h
-        game/entities/SpinningRect.cpp
-        game/entities/SpinningRect.h
+        game/entities/bouncingball.cpp
+        game/entities/bouncingball.h
+        game/engine/nodetree/forms/form.cpp
 )
 
 # this assumes the SDL source is available in lib/SDL2

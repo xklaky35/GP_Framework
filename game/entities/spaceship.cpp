@@ -20,6 +20,7 @@ void Spaceship::Init() {
     // setup sprite
     m_spriteNode = new Spritenode();
     m_spriteNode->SetSpritePath("../assets/Sprites/spaceship.png");
+    m_spriteNode->m_bUseSpriteSize = false;
     m_spriteNode->m_transform->rotation = 180;
     m_spriteNode->m_transform->width = 100;
     m_spriteNode->m_transform->height = 100;
@@ -27,10 +28,10 @@ void Spaceship::Init() {
 
 
     // setup collider
-    m_colliderNode = new ColliderNode(ft_CIRCLE, "SpaceshipCollider");
+    m_colliderNode = new ColliderNode(ft_RECTANGLE, "SpaceshipCollider");
     m_colliderNode->RegisterOnEnter<Spaceship>(&Spaceship::OnCollision, *this);
-    m_colliderNode->m_transform->height = 100;
-    m_colliderNode->m_transform->width = 100;
+    m_colliderNode->m_transform->height = 200;
+    m_colliderNode->m_transform->width = 50;
     AddChild(*m_colliderNode);
 }
 

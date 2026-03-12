@@ -173,6 +173,7 @@ namespace Engine {
         return loaded;
     }
 
+
     void Renderer::DrawSprite(Sprite &sprite) {
         m_pSpriteShader->SetActive();
         m_pSpriteVertexData->SetActive();

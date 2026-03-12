@@ -8,9 +8,7 @@ namespace Engine {
     public:
         Circle(Vector2d pos, float radius);
         ~Circle() override;
-
         float GetArea() override;
-        bool Overlap(const Form &) const override;
         Vector2d GetFurthestPointTowards(Vector2d) const override;
 
     public:

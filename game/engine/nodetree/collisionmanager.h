@@ -26,7 +26,6 @@ namespace Engine {
 
     private:
         std::vector<ColliderNode *> colliders;
-        Renderer* renderer;
     };
 }
 #endif //GP_FRAMEWORK_COLLISIONMANAGER_H

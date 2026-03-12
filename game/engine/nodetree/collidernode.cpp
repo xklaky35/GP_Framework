@@ -14,20 +14,22 @@ namespace Engine {
         CollisionManager::GetInstance().RegisterCollider(*this);
 
         m_pSpritenode = new Spritenode();
-        m_pSpritenode->SetSpritePath("../assets/Sprites/ball.png");
         m_pSpritenode->SetRGBA(1,0,0,0.3);
-        AddChild(*m_pSpritenode);
+        m_pSpritenode->m_bUseSpriteSize = false;
 
         switch (m_type) {
             case ft_CIRCLE: {
                 m_pForm = new Circle(*m_position, m_transform->width/2);
+                m_pSpritenode->SetSpritePath("../assets/Sprites/ball.png");
                 break;
             }
             case ft_RECTANGLE: {
-                m_pForm = new Rectangle(*m_position, m_transform->width);
+                m_pForm = new Rectangle(*m_position, m_transform->height, m_transform->width);
+                m_pSpritenode->SetSpritePath("../assets/Sprites/rect.png");
                 break;
             }
         }
+        AddChild(*m_pSpritenode);
     }
 
     void ColliderNode::SyncFormAndSprite() {
@@ -37,8 +39,8 @@ namespace Engine {
         m_pForm->m_width = m_transform->width * m_transform->scale;
         m_pForm->m_height = m_transform->height * m_transform->scale;
 
-        m_pSpritenode->m_transform->height = m_transform->width * m_transform->scale;
-        m_pSpritenode->m_transform->width = m_transform->height * m_transform->scale;
+        m_pSpritenode->m_transform->height = m_transform->height * m_transform->scale;
+        m_pSpritenode->m_transform->width = m_transform->width * m_transform->scale;
     }
 
     void ColliderNode::Process(float deltaTime) {
