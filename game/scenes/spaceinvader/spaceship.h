@@ -1,9 +1,9 @@
 #ifndef GP_FRAMEWORK_RECTANGLE_H
 #define GP_FRAMEWORK_RECTANGLE_H
 
-#include "../engine/nodetree/node.h"
-#include "../engine/nodetree/spritenode.h"
-#include "../engine/nodetree/collidernode.h"
+#include "../../engine/nodes/node.h"
+#include "../../engine/nodes/spritenode.h"
+#include "../../engine/nodes/collidernode.h"
 
 using namespace Engine;
 
@@ -15,17 +15,17 @@ public:
     void Init() override;
 
     void OnCollision(const Node *node);
-
+    void HandleMovement(float);
     void Process(float deltaTime) override;
     void Draw(Renderer &) override;
 
 
 public:
-    float velocity;
-    int speedFactor;
+    Vector2d velocity;
+    float speed;
 
     // child setup
-    Spritenode* m_spriteNode;
+    SpriteNode* m_spriteNode;
     ColliderNode* m_colliderNode;
 
 

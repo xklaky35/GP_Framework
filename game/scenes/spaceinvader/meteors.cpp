@@ -1,6 +1,6 @@
-#include "../engine/logmanager/logmanager.h"
-#include "../engine/nodetree/forms/circle.h"
-#include "../engine/nodetree/forms/form.h"
+#include "../../engine/logmanager/logmanager.h"
+#include "../../engine/nodes/forms/circle.h"
+#include "../../engine/nodes/forms/form.h"
 
 #include "meteors.h"
 
@@ -10,11 +10,12 @@ void Meteors::Init() {
     Node::Init();
 
     // setup sprite
-    m_spritenode = new Spritenode("../assets/Sprites/ball.png","MeteorSprite");
+    m_spritenode = new SpriteNode("../assets/Sprites/ball.png","MeteorSprite");
+    m_spritenode->m_bUseSpriteSize = false;
     AddChild(*m_spritenode);
 
     // setup collider
-    m_collider = new ColliderNode(ft_RECTANGLE);
+    m_collider = new ColliderNode(ft_CIRCLE);
     m_collider->RegisterOnEnter<Meteors>(&Meteors::OnImpact, *this);
     AddChild(*m_collider);
 }
@@ -44,8 +45,10 @@ void Meteors::Draw(Renderer &renderer) {
     Node::Draw(renderer);
 }
 
+void Meteors::DrawDebug() {}
+
 void Meteors::OnImpact(const Node* e) {
-    LogManager::GetInstance().Log(INFO, "EINGESCHLAGEN! in %s", e->name.c_str());
+    //LogManager::GetInstance().Log(INFO, "EINGESCHLAGEN! in %s", e->name.c_str());
 }
 
 void Meteors::SetVelocity(const float v) {

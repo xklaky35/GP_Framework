@@ -3,68 +3,111 @@ project(GP_Framework)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(GP_Framework WIN32 game/main.cpp
-        game/engine/logmanager/logmanager.cpp
-        game/engine/logmanager/logmanager.h
-        game/engine/game.cpp
-        game/engine/game.h
-        game/engine/renderer.cpp
-        game/engine/renderer.h
-        game/engine/texture.cpp
-        game/engine/texture.h
-        game/engine/texturemanager.cpp
-        game/engine/texturemanager.h
-        game/engine/shader.cpp
-        game/engine/shader.h
-        game/engine/structs/matrix4.cpp
-        game/engine/structs/matrix4.h
-        game/engine/structs/vertexarray.cpp
-        game/engine/structs/vertexarray.h
-        game/engine/sprite.cpp
-        game/engine/sprite.h
-        game/engine/nodetree/node.cpp
-        game/engine/nodetree/node.h
-        game/engine/nodetree/nodetree.cpp
-        game/engine/nodetree/nodetree.h
-        game/engine/structs/vector2d.cpp
-        game/engine/structs/vector2d.h
-        game/engine/nodetree/spritenode.cpp
-        game/engine/nodetree/spritenode.h
-        game/entities/spaceship.cpp
-        game/entities/spaceship.h
-        game/engine/structs/transform.cpp
-        game/engine/structs/transform.h
-        game/config/config.cpp
-        game/config/config.h
-        game/entities/meteors.cpp
-        game/entities/meteors.h
-        game/entities/metheorgenerator.cpp
-        game/entities/metheorgenerator.h
-        game/engine/nodetree/collidernode.cpp
-        game/engine/nodetree/collidernode.h
-        game/engine/nodetree/forms/form.h
-        game/engine/nodetree/collisionmanager.cpp
-        game/engine/nodetree/collisionmanager.h
-        game/engine/nodetree/forms/circle.cpp
-        game/engine/nodetree/forms/circle.h
-        game/engine/nodetree/forms/rectangle.cpp
-        game/engine/nodetree/forms/rectangle.h
-        game/entities/bouncingball.cpp
-        game/entities/bouncingball.h
-        game/engine/nodetree/forms/form.cpp
+############### ENGINE ###################
+
+set(ENGINE_DIR game/engine)
+set(ENGINE_NODES ${ENGINE_DIR}/nodes)
+set(ENGINE_SOURCES
+        ${ENGINE_DIR}/game.cpp
+        ${ENGINE_DIR}/game.h
+        ${ENGINE_DIR}/logmanager/logmanager.cpp
+        ${ENGINE_DIR}/logmanager/logmanager.h
+        ${ENGINE_DIR}/renderer.cpp
+        ${ENGINE_DIR}/renderer.h
+        ${ENGINE_DIR}/texture.cpp
+        ${ENGINE_DIR}/texture.h
+        ${ENGINE_DIR}/texturemanager.cpp
+        ${ENGINE_DIR}/texturemanager.h
+        ${ENGINE_DIR}/shader.cpp
+        ${ENGINE_DIR}/shader.h
+        ${ENGINE_DIR}/structs/matrix4.cpp
+        ${ENGINE_DIR}/structs/matrix4.h
+        ${ENGINE_DIR}/structs/vertexarray.cpp
+        ${ENGINE_DIR}/structs/vertexarray.h
+        ${ENGINE_DIR}/sprite.cpp
+        ${ENGINE_DIR}/sprite.h
+        ${ENGINE_DIR}/structs/vector2d.cpp
+        ${ENGINE_DIR}/structs/vector2d.h
+        ${ENGINE_DIR}/structs/transform.cpp
+        ${ENGINE_DIR}/structs/transform.h
+        ${ENGINE_NODES}/node.cpp
+        ${ENGINE_NODES}/node.h
+        ${ENGINE_NODES}/spritenode.cpp
+        ${ENGINE_NODES}/spritenode.h
+        ${ENGINE_NODES}/collidernode.cpp
+        ${ENGINE_NODES}/collidernode.h
+        ${ENGINE_NODES}/forms/form.h
+        ${ENGINE_NODES}/collisionmanager.cpp
+        ${ENGINE_NODES}/collisionmanager.h
+        ${ENGINE_NODES}/forms/circle.cpp
+        ${ENGINE_NODES}/forms/circle.h
+        ${ENGINE_NODES}/forms/rectangle.cpp
+        ${ENGINE_NODES}/forms/rectangle.h
+        ${ENGINE_NODES}/forms/form.cpp
+        ${ENGINE_NODES}/ridgitbody.cpp
+        ${ENGINE_NODES}/ridgitbody.h
+        ${ENGINE_DIR}/input/input.cpp
+        ${ENGINE_DIR}/input/input.h
+        ${ENGINE_DIR}/imgui/imguimanager.cpp
+        ${ENGINE_DIR}/imgui/imguimanager.h
+
 )
 
+################## IMGUI ####################
+
+# Define paths to ImGui sources and backends
+set(IMGUI_DIR lib/imgui)
+set(IMGUI_BACKENDS_DIR ${IMGUI_DIR}/backends)
+set(IMGUI_SOURCES
+        ${IMGUI_DIR}/imgui.cpp
+        ${IMGUI_DIR}/imgui_demo.cpp
+        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/imgui_tables.cpp
+        ${IMGUI_DIR}/imgui_widgets.cpp
+        ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp
+        ${IMGUI_BACKENDS_DIR}/imgui_impl_sdl2.cpp
+        game/scenes/slashscreen/splashscreen.cpp
+        game/scenes/slashscreen/splashscreen.h
+        game/engine/scenemanager/scenemanager.cpp
+        game/engine/scenemanager/scenemanager.h
+)
+
+
+
+
+add_executable(GP_Framework
+        game/main.cpp
+        game/config/config.cpp
+        game/config/config.h
+        game/scenes/bouncingball/bouncingball.cpp
+        game/scenes/bouncingball/bouncingball.h
+        game/scenes/spaceinvader/spaceship.cpp
+        game/scenes/spaceinvader/spaceship.h
+        game/scenes/spaceinvader/meteors.cpp
+        game/scenes/spaceinvader/meteors.h
+        game/scenes/spaceinvader/metheorgenerator.cpp
+        game/scenes/spaceinvader/metheorgenerator.h
+        ${IMGUI_SOURCES}
+        ${ENGINE_SOURCES}
+)
+
+
+########## SDL 2 ##############
 # this assumes the SDL source is available in lib/SDL2
 add_subdirectory(lib/SDL2 EXCLUDE_FROM_ALL)
 # this assumes the SDL source is available in lib/SDL2_image
 add_subdirectory(lib/SDL2_image EXCLUDE_FROM_ALL)
 
+
+
+############ GLEW ###############
 # glew include setup
 find_library(GLEWLIB GLEW lib/GLEW/lib)
-include_directories(lib/GLEW/include)
+target_include_directories(GP_Framework PRIVATE lib/GLEW/include ${IMGUI_DIR} ${IMGUI_BACKENDS_DIR})
 
 # dependency for glew
 find_package(OpenGL REQUIRED)
+
 
 target_link_libraries(
         GP_Framework

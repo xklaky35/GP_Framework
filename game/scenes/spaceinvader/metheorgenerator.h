@@ -1,7 +1,7 @@
 #ifndef GP_FRAMEWORK_METHEORGENERATOR_H
 #define GP_FRAMEWORK_METHEORGENERATOR_H
 
-#include "../engine/nodetree/node.h"
+#include "../../engine/nodes/node.h"
 
 using namespace Engine;
 
@@ -12,6 +12,7 @@ public:
     void Init() override;
     void Process(float deltaTime) override;
     void Draw(Renderer &) override;
+    void DrawDebug() override;
     void GenerateMetheor();
     int GetRandomNumber(int min, int max) const;
 

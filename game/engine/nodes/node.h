@@ -17,6 +17,7 @@ namespace Engine {
         virtual void Init();
         virtual void Process(float deltaTime);
         virtual void Draw(Renderer &);
+        virtual void DrawDebug();
         Node *GetChild(const char *) const;
         std::vector<Node *> GetChildren() const;
         void AddChild(Node &);

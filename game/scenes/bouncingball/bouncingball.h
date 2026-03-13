@@ -4,9 +4,9 @@
 
 #ifndef GP_FRAMEWORK_BOUNCINGBALL_H
 #define GP_FRAMEWORK_BOUNCINGBALL_H
-#include "../engine/nodetree/collidernode.h"
-#include "../engine/nodetree/node.h"
-#include "../engine/nodetree/spritenode.h"
+#include "../../engine/nodes/collidernode.h"
+#include "../../engine/nodes/node.h"
+#include "../../engine/nodes/spritenode.h"
 
 using namespace Engine;
 
@@ -21,7 +21,7 @@ public:
 
 
 private:
-    Spritenode* m_ballSprite;
+    SpriteNode* m_ballSprite;
     ColliderNode* m_ballCollider;
 
 };

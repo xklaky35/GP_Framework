@@ -19,8 +19,8 @@ void Config::DestroyInstance() {
 }
 
 void Config::SetDefaultConfig() {
-    windowsHeight = 540;
-    windowsWidth = 1080;
+    windowsHeight = 780;
+    windowsWidth = 1480;
 }
 
 Config::Config() : windowsWidth(0), windowsHeight(0) {}

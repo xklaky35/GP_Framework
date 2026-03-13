@@ -3,6 +3,9 @@
 #define GAME_H
 
 #include <SDL_stdinc.h>
+#include <vector>
+
+#include "nodes/node.h"
 
 namespace Engine {
     // Forward declarations:
@@ -17,10 +20,12 @@ namespace Engine {
         bool Initialise();
         bool DoGameLoop();
         void Quit();
+        void ToggleViewDebug();
 
     protected:
         void Process(float deltaTime);
         void Draw(Renderer &renderer);
+        void DrawDebug();
         void ProcessFrameCounting(float deltaTime);
 
     private:
@@ -40,8 +45,9 @@ namespace Engine {
         int m_iUpdateCount;
 #endif // USE_LAG
         bool m_bLooping;
+        bool m_bIsPaused;
+        bool m_bIsDebugView;
 
-    private:
     };
 }
 #endif // GAME_H

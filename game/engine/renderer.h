@@ -28,6 +28,8 @@ namespace Engine {
         int GetHeight() const;
         Sprite *CreateSprite(const char *pcFilename);
         void DrawSprite(Sprite &sprite);
+        SDL_Window* GetSDLWindow();
+        const SDL_GLContext GetSDLGLContext();
 
     protected:
         bool InitialiseOpenGL(int screenWidth, int screenHeight);

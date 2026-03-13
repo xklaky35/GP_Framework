@@ -163,10 +163,10 @@ namespace Engine {
         m_pSpriteShader->SetActive();
         float vertices[] =
         {
-            -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, // Top left
-            0.5f, 0.5f, 0.0f, 1.0f, 0.0f, // Top right
-            0.5f, -0.5f, 0.0f, 1.0f, 1.0f, // Bottom right
-            -0.5f, -0.5f, 0.0f, 0.0f, 1.0f // Bottom left
+            -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, // Top left
+            0.5f, 0.5f, 0.0f, 1.0f, 1.0f, // Top right
+            0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // Bottom right
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f // Bottom left
         };
         unsigned int indices[] = {0, 1, 2, 2, 3, 0};
         m_pSpriteVertexData = new VertexArray(vertices, 4, indices, 6);
@@ -202,5 +202,13 @@ namespace Engine {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    }
+
+    SDL_Window* Renderer::GetSDLWindow() {
+        return m_pWindow;
+    }
+
+    const SDL_GLContext Renderer::GetSDLGLContext() {
+       return m_glContext;
     }
 }

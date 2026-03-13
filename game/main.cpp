@@ -1,4 +1,3 @@
-#include "config/config.h"
 #include "engine/game.h"
 #include "engine/logmanager/logmanager.h"
 
@@ -16,6 +15,6 @@ int main(int argc, char* argv[]) {
     while (gameInstance.DoGameLoop()) {}
 
     Game::DestroyInstance();
-    LogManager::DestroyInstance();
+
     return 0;
 }

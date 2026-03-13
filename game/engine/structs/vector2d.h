@@ -10,12 +10,15 @@ namespace Engine {
         Vector2d(float x, float y);
 
         float Distance(const Vector2d&) const;
-        Vector2d operator-(const Vector2d &vector) const;
-        Vector2d operator+(const Vector2d &vector) const;
+        Vector2d Zero();
+        Vector2d operator-(const Vector2d&) const;
+        Vector2d operator+(const Vector2d&) const;
         Vector2d operator+(float vector) const;
+        Vector2d& operator+=(float);
+        Vector2d& operator+=(const Vector2d&);
         Vector2d operator*(float vector) const;
-        bool operator==(const Vector2d &vector) const;
-        bool operator!=(const Vector2d &vector) const;
+        bool operator==(const Vector2d&) const;
+        bool operator!=(const Vector2d&) const;
     };
 }
 

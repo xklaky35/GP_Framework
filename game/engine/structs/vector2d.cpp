@@ -12,6 +12,10 @@ namespace Engine {
         return static_cast<float>(sqrt(pow(vec.x - x, 2) + pow(vec.y - y, 2)));
     }
 
+    Vector2d Vector2d::Zero() {
+        return Vector2d(0,0);
+    }
+
     Vector2d Vector2d::operator-(const Vector2d &vector) const {
         return Vector2d{vector.x - x, vector.y - y};
     }
@@ -22,6 +26,18 @@ namespace Engine {
 
     Vector2d Vector2d::operator+(const float vector) const {
         return Vector2d{x + vector, y + vector};
+    }
+
+    Vector2d & Vector2d::operator+=(float f) {
+        x += f;
+        y += f;
+        return *this;
+    }
+
+    Vector2d& Vector2d::operator+=(const Vector2d& vector) {
+        x += vector.x;
+        y += vector.y;
+        return *this;
     }
 
     Vector2d Vector2d::operator*(float vector) const {

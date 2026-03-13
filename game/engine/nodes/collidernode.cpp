@@ -13,7 +13,7 @@ namespace Engine {
 
         CollisionManager::GetInstance().RegisterCollider(*this);
 
-        m_pSpritenode = new Spritenode();
+        m_pSpritenode = new SpriteNode();
         m_pSpritenode->SetRGBA(1,0,0,0.3);
         m_pSpritenode->m_bUseSpriteSize = false;
 
@@ -32,6 +32,8 @@ namespace Engine {
         AddChild(*m_pSpritenode);
     }
 
+
+    //TODO: remove and switch to imgui debug
     void ColliderNode::SyncFormAndSprite() {
 
         m_pForm->m_position.x = m_position->x + m_transform->position->x;
@@ -54,6 +56,8 @@ namespace Engine {
     void ColliderNode::Draw(Renderer &renderer) {
         Node::Draw(renderer);
     }
+
+    void ColliderNode::DrawDebug() {}
 
     const Form* ColliderNode::GetForm() const {
         return m_pForm;

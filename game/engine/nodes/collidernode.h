@@ -19,11 +19,10 @@ namespace Engine {
         ~ColliderNode() override;
 
         void Init() override;
-
-        void SyncFormAndSprite();
-
         void Process(float deltaTime) override;
         void Draw(Renderer &) override;
+        void DrawDebug() override;
+        void SyncFormAndSprite();
         const Form* GetForm() const;
 
         template<typename T>
@@ -47,7 +46,7 @@ namespace Engine {
         Form *m_pForm;
         Formtype m_type;
         std::vector<ColliderNode *> m_collidingColliders;
-        Spritenode* m_pSpritenode;
+        SpriteNode* m_pSpritenode;
     };
 }
 #endif //GP_FRAMEWORK_COLLIDERNODE_H

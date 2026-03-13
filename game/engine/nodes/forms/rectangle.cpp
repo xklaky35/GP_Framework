@@ -76,7 +76,7 @@ namespace Engine {
         }
 
 
-        LogManager::GetInstance().Log(INFO, "dist: %f | adj: (%f, %f) | pos: (%f, %f)", distToTarget, tmpPos.x, tmpPos.y, m_position.x, m_position.y);
+        //LogManager::GetInstance().Log(INFO, "dist: %f | adj: (%f, %f) | pos: (%f, %f)", distToTarget, tmpPos.x, tmpPos.y, m_position.x, m_position.y);
         const Vector2d vectorTof = Vector2d(pos.x - tmpPos.x, pos.y - tmpPos.y);
 
         return ((vectorTof * factor) + tmpPos);

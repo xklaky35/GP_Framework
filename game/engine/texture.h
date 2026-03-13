@@ -1,5 +1,6 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
+#include <vector>
 
 namespace Engine {
     class Texture {

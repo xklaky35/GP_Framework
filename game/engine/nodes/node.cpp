@@ -38,6 +38,13 @@ namespace  Engine {
         }
     }
 
+
+    void Node::DrawDebug() {
+        for (Node* c : children) {
+            c->DrawDebug();
+        }
+    }
+
     Node* Node::GetChild(const char * nodeName) const {
         for (Node* n : children) {
             if (n->name == nodeName) {

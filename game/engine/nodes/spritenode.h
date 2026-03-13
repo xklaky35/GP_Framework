@@ -5,16 +5,17 @@
 #include "../renderer.h"
 
 namespace Engine {
-    class Spritenode : public Node {
+    class SpriteNode : public Node {
     public:
-        Spritenode(const char* = "Sprite");
-        Spritenode(const char* spritePath, const char* = "Sprite");
-        Spritenode(float height, float weight, const char* spritePath, const char* = "Sprite");
-        ~Spritenode() override;
+        SpriteNode(const char* = "Sprite");
+        SpriteNode(const char* spritePath, const char* = "Sprite");
+        SpriteNode(float height, float weight, const char* spritePath, const char* = "Sprite");
+        ~SpriteNode() override;
 
         void Init() override;
         void Process(float deltaTime) override;
         void Draw(Renderer &) override;
+        void DrawDebug() override;
         void SetRGBA(float,float,float,float);
         void SetSpritePath(const std::string &);
 
