@@ -4,8 +4,17 @@
 #include <SDL_video.h>
 #include <SDL.h>
 
+#include "../game.h"
+#include "../scenemanager/scenemanager.h"
+
 
 namespace Engine {
+
+    struct UiData {
+        bool ShowMainMenuBar = true;
+        bool ShowSceneManager = true;
+    };
+
     class ImguiManager {
     public:
 
@@ -17,9 +26,11 @@ namespace Engine {
         void ProcessEvent(SDL_Event);
         void Process();
         void Draw();
+        void DrawDebugSceneManager(SceneManager*);
 
     public:
         bool m_bShowDemoWindow;
+        UiData m_UiData;
     private:
         static ImguiManager* m_pInstance;
         ImguiManager();

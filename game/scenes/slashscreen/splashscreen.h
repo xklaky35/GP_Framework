@@ -9,7 +9,7 @@ using namespace Engine;
 class Splashscreen : public Node {
 public:
     Splashscreen();
-    ~Splashscreen();
+    ~Splashscreen() override;
     void Init() override;
     void Process(float deltaTime) override;
 

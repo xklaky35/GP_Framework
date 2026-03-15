@@ -36,8 +36,9 @@ namespace Engine {
         // global element position
         Vector2d *m_position;
 
-    private:
+    protected:
         Node *parent;
+    private:
         std::vector<Node *> children;
     };
 }

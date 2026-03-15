@@ -8,6 +8,7 @@
 #include "nodes/collisionmanager.h"
 
 #include "imgui.h"
+#include "../scenes/bouncingball/scenebouncingball.h"
 #include "../scenes/slashscreen/splashscreen.h"
 #include "../scenes/spaceinvader/metheorgenerator.h"
 #include "imgui/imguimanager.h"
@@ -72,7 +73,7 @@ namespace Engine {
         ImguiManager::GetInstance().Initialize(m_pRenderer->GetSDLWindow(), m_pRenderer->GetSDLGLContext());
 
         SceneManager::GetInstance().RegisterScene("Splash", new Splashscreen());
-        SceneManager::GetInstance().RegisterScene("Game", new MetheorGenerator());
+        SceneManager::GetInstance().RegisterScene("Game", new SceneBouncingBall());
         SceneManager::GetInstance().LoadScene("Splash");
 
         //################ INIT STUFF HERE ####################
@@ -152,30 +153,25 @@ namespace Engine {
 
         // #######################################
 
-        DrawDebug();
+        DrawDebug(&m_bIsDebugView);
+        SceneManager::GetInstance().DrawDebug(&m_bIsDebugView);
+
         ImguiManager::GetInstance().Draw();
         renderer.Present();
     }
 
-    void Game::DrawDebug()
-    {
-        if (m_bIsDebugView) {
-            ImGui::BeginMainMenuBar();
+    void Game::DrawDebug(bool* p_open) {
+        ImGui::BeginMainMenuBar();
 
-            if (ImGui::ArrowButton(m_bIsPaused?"Start":"Stop", ImGuiDir_Right))
-            {
-                m_bIsPaused = !m_bIsPaused;
-            }
-
-            if (ImGui::Button("Quit"))
-            {
-                Quit();
-            }
-
-            ImGui::EndMainMenuBar();
-            SceneManager::GetInstance().DrawDebug();
+        if (ImGui::ArrowButton(m_bIsPaused ? "Start" : "Stop", ImGuiDir_Right)) {
+            TogglePause();
         }
 
+        if (ImGui::Button("Quit")) {
+            Quit();
+        }
+
+        ImGui::EndMainMenuBar();
     }
 
     void
@@ -192,5 +188,16 @@ namespace Engine {
 
     void Game::ToggleViewDebug() {
         m_bIsDebugView = !m_bIsDebugView;
+    }
+
+    bool Game::IsDebug() const {
+        return m_bIsDebugView;
+    }
+    bool Game::IsPaused() const {
+        return m_bIsPaused;
+    }
+
+    void Game::TogglePause() {
+        m_bIsPaused = !m_bIsPaused;
     }
 }

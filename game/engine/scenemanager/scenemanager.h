@@ -6,7 +6,6 @@
 
 #include "../nodes/node.h"
 
-
 namespace Engine {
     class SceneManager {
     public:
@@ -16,8 +15,8 @@ namespace Engine {
         void RegisterScene(const std::string&, Node*);
         void LoadScene(const std::string&);
         Node* GetCurrentScene();
-        const std::pmr::map<std::string, Node*> GetScenes();
-        void DrawDebug();
+        const std::pmr::map<std::string, Node*>& GetScenes();
+        void DrawDebug(bool* p_open);
 
 
     private:

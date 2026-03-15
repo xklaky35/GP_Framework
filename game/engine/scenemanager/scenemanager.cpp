@@ -1,10 +1,6 @@
-//
-// Created by leon on 13.03.26.
-//
-
 #include "scenemanager.h"
-
 #include "imgui.h"
+#include "../imgui/imguimanager.h"
 
 namespace Engine {
     SceneManager::SceneManager() = default;
@@ -40,14 +36,14 @@ namespace Engine {
         m_loadedScenes[m_currentScene]->Init();
     }
 
-    Node * SceneManager::GetCurrentScene() {
+    Node* SceneManager::GetCurrentScene() {
         return m_loadedScenes[m_currentScene];
     }
 
-    void SceneManager::DrawDebug() {
-        bool open = true;
 
-        ImGui::Begin("Scene Manager", &open, ImGuiWindowFlags_MenuBar);
+
+    void SceneManager::DrawDebug(bool* p_open) {
+        ImGui::Begin("Scene Manager", p_open, ImGuiWindowFlags_MenuBar);
         ImGui::BeginMultiSelect(ImGuiMultiSelectFlags_NoSelectAll, m_loadedScenes.size()-1, m_loadedScenes.size()-1);
 
         for (const auto&[sceneName, scene] : m_loadedScenes) {
@@ -58,10 +54,9 @@ namespace Engine {
 
         ImGui::EndMultiSelect();
         ImGui::End();
-
     }
 
-    const std::pmr::map<std::string, Node *> SceneManager::GetScenes() {
+    const std::pmr::map<std::string, Node *> & SceneManager::GetScenes() {
         return m_loadedScenes;
     }
 }

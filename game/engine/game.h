@@ -22,10 +22,15 @@ namespace Engine {
         void Quit();
         void ToggleViewDebug();
 
+        bool IsDebug() const;
+        bool IsPaused() const;
+
+        void TogglePause();
+
     protected:
         void Process(float deltaTime);
         void Draw(Renderer &renderer);
-        void DrawDebug();
+        void DrawDebug(bool*);
         void ProcessFrameCounting(float deltaTime);
 
     private:

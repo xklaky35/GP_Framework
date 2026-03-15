@@ -10,20 +10,25 @@
 
 using namespace Engine;
 
-class bouncingball : public Node {
+class BouncingBall : public Node {
 
 public:
 
+    BouncingBall();
+    ~BouncingBall() override;
     void Init() override;
     void Process(float deltaTime) override;
-    void Draw(Renderer &) override;
 
+    void RandomizeSize();
+    void ComputeBoundary(int, int);
 
+    void RandomizeColor();
 
 private:
     SpriteNode* m_ballSprite;
-    ColliderNode* m_ballCollider;
-
+    Vector2d m_velocity;
+    Vector2d m_boundaryHeight;
+    Vector2d m_boundaryWidth;
 };
 
 

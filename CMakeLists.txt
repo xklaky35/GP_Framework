@@ -50,6 +50,7 @@ set(ENGINE_SOURCES
         ${ENGINE_DIR}/input/input.h
         ${ENGINE_DIR}/imgui/imguimanager.cpp
         ${ENGINE_DIR}/imgui/imguimanager.h
+        game/helper/inlinehelper.h
 
 )
 
@@ -70,6 +71,8 @@ set(IMGUI_SOURCES
         game/scenes/slashscreen/splashscreen.h
         game/engine/scenemanager/scenemanager.cpp
         game/engine/scenemanager/scenemanager.h
+        game/scenes/bouncingball/scenebouncingball.cpp
+        game/scenes/bouncingball/scenebouncingball.h
 )
 
 

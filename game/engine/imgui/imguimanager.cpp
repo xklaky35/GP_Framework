@@ -4,10 +4,11 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
 
+
+
 namespace Engine {
 
     ImguiManager *ImguiManager::m_pInstance = nullptr;
-
     ImguiManager::ImguiManager(): m_bShowDemoWindow(false) {}
     ImguiManager::~ImguiManager() = default;
 
