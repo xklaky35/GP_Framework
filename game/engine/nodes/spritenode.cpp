@@ -5,8 +5,10 @@ namespace Engine {
      * This node uses the sprites dimensions by default. If you specify a custom height and width, please disable m_bUseSpriteSize.
      * @param nodeName name of the node (this is set by default)
      */
-    SpriteNode::SpriteNode(const char *nodeName) : Node(nodeName), m_bUseSpriteSize(true), m_pRenderer(nullptr),
-                                                   m_pSprite(nullptr), m_redTint(1), m_greenTint(1), m_blueTint(1), m_alpha(1) {
+    SpriteNode::SpriteNode(const char *nodeName) : Node(nodeName), m_bUseSpriteSize(true), m_bCanDeform(true),
+                                                   m_pRenderer(nullptr),
+                                                   m_pSprite(nullptr), m_redTint(1), m_greenTint(1), m_blueTint(1),
+                                                   m_alpha(1) {
     }
 
     /**
@@ -15,9 +17,11 @@ namespace Engine {
      * @param nodeName name of the node (this is set by default)
      */
     SpriteNode::SpriteNode(const char *spritePath, const char *nodeName) : Node(nodeName), m_bUseSpriteSize(true),
+                                                                           m_bCanDeform(true),
                                                                            m_pRenderer(nullptr),
                                                                            m_pSprite(nullptr),
-                                                                           m_pSpritePath(spritePath), m_redTint(1), m_greenTint(1),
+                                                                           m_pSpritePath(spritePath), m_redTint(1),
+                                                                           m_greenTint(1),
                                                                            m_blueTint(1), m_alpha(1) {
     }
 
@@ -29,7 +33,7 @@ namespace Engine {
      * @param nodeName name of the node (this is set by default)
      */
     SpriteNode::SpriteNode(float height, float width, const char *spritePath, const char *nodeName) : Node(nodeName),
-        m_bUseSpriteSize(true),
+        m_bUseSpriteSize(true), m_bCanDeform(true),
         m_pRenderer(nullptr),
         m_pSprite(nullptr),
         m_pSpritePath(spritePath),
@@ -54,8 +58,14 @@ namespace Engine {
             m_pSprite->SetY(m_position->y);
 
             if (m_bUseSpriteSize == false) {
-                m_pSprite->SetWidth(m_transform->width);
-                m_pSprite->SetHeight(m_transform->height);
+                if (m_bCanDeform == true) {
+                    m_pSprite->SetWidth(m_transform->width);
+                    m_pSprite->SetHeight(m_transform->height);
+                } else {
+                    float scaleFactor = 1 / (m_pSprite->GetWidth() / m_transform->width);
+                    m_pSprite->SetWidth(m_pSprite->GetWidth() * scaleFactor);
+                    m_pSprite->SetHeight(m_pSprite->GetHeight() * scaleFactor);
+                }
             }
             m_pSprite->SetScale(m_transform->scale);
             m_pSprite->SetAngle(m_transform->rotation);

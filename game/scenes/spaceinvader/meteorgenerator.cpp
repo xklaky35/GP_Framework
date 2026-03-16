@@ -1,32 +1,32 @@
 #include "../../config/config.h"
-#include "metheorgenerator.h"
+#include "meteorgenerator.h"
 #include "meteors.h"
 
 #include <random>
 
-MetheorGenerator::MetheorGenerator() : m_meteorCount(0), m_maxMeteorCount(10) {}
-MetheorGenerator::~MetheorGenerator() = default;
+MeteorGenerator::MeteorGenerator(int mMaxCount) : m_meteorCount(0), m_maxMeteorCount(mMaxCount) {}
+MeteorGenerator::~MeteorGenerator() = default;
 
-void MetheorGenerator::Init() {
+void MeteorGenerator::Init() {
     Node::Init();
     m_bIsRoot = true;
 }
 
-void MetheorGenerator::Process(float deltaTime) {
+void MeteorGenerator::Process(float deltaTime) {
     Node::Process(deltaTime);
     if (m_meteorCount < m_maxMeteorCount) {
         GenerateMetheor();
     }
 }
 
-void MetheorGenerator::Draw(Renderer &renderer) {
+void MeteorGenerator::Draw(Renderer &renderer) {
     Node::Draw(renderer);
 }
 
-void MetheorGenerator::DrawDebug() {}
+void MeteorGenerator::DrawDebug() {}
 
 
-void MetheorGenerator::GenerateMetheor() {
+void MeteorGenerator::GenerateMetheor() {
     Meteors *m = new Meteors();
     m->SetVelocity(static_cast<float>(GetRandomNumber(5,100)));
     m->SetSpinSpeed(static_cast<float>(GetRandomNumber(1, 20)));
@@ -42,7 +42,7 @@ void MetheorGenerator::GenerateMetheor() {
 }
 
 
-int MetheorGenerator::GetRandomNumber(int min, int max) const {
+int MeteorGenerator::GetRandomNumber(int min, int max) const {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution dis(min, max);

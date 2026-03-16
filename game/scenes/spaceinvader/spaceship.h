@@ -9,7 +9,7 @@ using namespace Engine;
 
 class Spaceship : public Node {
 public:
-    Spaceship(const char* = "Spaceship");
+    Spaceship(float, const char* = "Spaceship");
     ~Spaceship() override;
 
     void Init() override;

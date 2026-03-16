@@ -10,7 +10,8 @@
 #include "imgui.h"
 #include "../scenes/bouncingball/scenebouncingball.h"
 #include "../scenes/slashscreen/splashscreen.h"
-#include "../scenes/spaceinvader/metheorgenerator.h"
+#include "../scenes/spaceinvader/meteorgenerator.h"
+#include "../scenes/spaceinvader/scenespaceinvader.h"
 #include "imgui/imguimanager.h"
 #include "input/input.h"
 #include "scenemanager/scenemanager.h"
@@ -74,6 +75,7 @@ namespace Engine {
 
         SceneManager::GetInstance().RegisterScene("Splash", new Splashscreen());
         SceneManager::GetInstance().RegisterScene("Game", new SceneBouncingBall());
+        SceneManager::GetInstance().RegisterScene("Spaceinvader", new SceneSpaceinvader());
         SceneManager::GetInstance().LoadScene("Splash");
 
         //################ INIT STUFF HERE ####################

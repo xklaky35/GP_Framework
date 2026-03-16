@@ -36,6 +36,7 @@ namespace Engine {
         float GetGreenTint() const;
         void SetBlueTint(float value);
         float GetBlueTint() const;
+        void SetActive();
 
     protected:
         float Clamp(float minimum, float value, float maximum);

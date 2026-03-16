@@ -5,10 +5,10 @@
 
 using namespace Engine;
 
-class MetheorGenerator : public Node {
+class MeteorGenerator : public Node {
 public:
-    MetheorGenerator();
-    ~MetheorGenerator() override;
+    MeteorGenerator(int);
+    ~MeteorGenerator() override;
     void Init() override;
     void Process(float deltaTime) override;
     void Draw(Renderer &) override;

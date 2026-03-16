@@ -1,6 +1,7 @@
 #ifndef GP_FRAMEWORK_METEORS_H
 #define GP_FRAMEWORK_METEORS_H
 
+#include "../../engine/nodes/animatedspritenode.h"
 #include "../../engine/nodes/node.h"
 #include "../../engine/nodes/collidernode.h"
 #include "../../engine/nodes/spritenode.h"
@@ -31,8 +32,8 @@ private:
     signed char m_spinDirection;
     int m_damage;
 
-    SpriteNode* m_spritenode;
     ColliderNode* m_collider;
+    AnimatedSprite* m_animation;
 };
 
 

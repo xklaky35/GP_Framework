@@ -73,6 +73,9 @@ set(IMGUI_SOURCES
         game/engine/scenemanager/scenemanager.h
         game/scenes/bouncingball/scenebouncingball.cpp
         game/scenes/bouncingball/scenebouncingball.h
+        game/engine/nodes/animatedspritenode.cpp
+        game/engine/nodes/animatedspritenode.h
+        game/engine/event.h
 )
 
 
@@ -88,10 +91,12 @@ add_executable(GP_Framework
         game/scenes/spaceinvader/spaceship.h
         game/scenes/spaceinvader/meteors.cpp
         game/scenes/spaceinvader/meteors.h
-        game/scenes/spaceinvader/metheorgenerator.cpp
-        game/scenes/spaceinvader/metheorgenerator.h
+        game/scenes/spaceinvader/meteorgenerator.cpp
+        game/scenes/spaceinvader/meteorgenerator.h
         ${IMGUI_SOURCES}
         ${ENGINE_SOURCES}
+        game/scenes/spaceinvader/scenespaceinvader.cpp
+        game/scenes/spaceinvader/scenespaceinvader.h
 )
 
 

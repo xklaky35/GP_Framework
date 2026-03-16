@@ -28,6 +28,7 @@ namespace Engine {
         int GetHeight() const;
         Sprite *CreateSprite(const char *pcFilename);
         void DrawSprite(Sprite &sprite);
+        void DrawAnimatedSprite(const Sprite &sprite, int frame, int width, int height);
         SDL_Window* GetSDLWindow();
         const SDL_GLContext GetSDLGLContext();
 

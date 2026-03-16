@@ -5,6 +5,7 @@
 #include "forms/form.h"
 #include "node.h"
 #include "spritenode.h"
+#include "../event.h"
 
 
 enum Formtype {
@@ -25,23 +26,13 @@ namespace Engine {
         void SyncFormAndSprite();
         const Form* GetForm() const;
 
-        template<typename T>
-        void RegisterOnEnter(void (T::*callback)(const Node *), T&element) {
-            m_pOnEnter = std::bind(callback, &element, std::placeholders::_1);
-        }
-
-        template<typename T>
-        void RegisterOnExit(void (T::*callback)(Node *), T &element) {
-            m_pOnExit = std::bind(callback, element, std::placeholders::_1);
-        }
-
     private:
         void DetectCollition() const;
 
 
     public:
-        std::function<void(Node *)> m_pOnEnter;
-        std::function<void(Node *)> m_pOnExit;
+        Event<Node> OnCollision;
+
     private:
         Form *m_pForm;
         Formtype m_type;

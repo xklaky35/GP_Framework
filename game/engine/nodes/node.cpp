@@ -2,7 +2,7 @@
 #include "../logmanager/logmanager.h"
 
 namespace  Engine {
-    Node::Node(const char* nodeName) : name(nodeName), m_bIsRoot(false), parent(nullptr) {
+    Node::Node(const char* nodeName) : groupTag(nodeName), m_bIsRoot(false), parent(nullptr) {
         m_position = new Vector2d();
         m_transform = new Transform();
     }
@@ -47,11 +47,11 @@ namespace  Engine {
 
     Node* Node::GetChild(const char * nodeName) const {
         for (Node* n : children) {
-            if (n->name == nodeName) {
+            if (n->groupTag == nodeName) {
                 return n;
             }
         }
-        LogManager::GetInstance().Log(WARNING,"No child on \"%s\" with name \"%s\" found", &name, nodeName);
+        LogManager::GetInstance().Log(WARNING,"No child on \"%s\" with name \"%s\" found", &groupTag, nodeName);
         return nullptr;
     }
 

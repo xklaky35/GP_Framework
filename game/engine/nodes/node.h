@@ -28,7 +28,7 @@ namespace Engine {
 
 
     public:
-        std::string name;
+        std::string groupTag;
         bool m_bIsRoot;
 
         // local node transform

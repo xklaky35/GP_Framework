@@ -147,4 +147,8 @@ namespace Engine {
     Sprite::GetBlueTint() const {
         return m_tintBlue;
     }
+
+    void Sprite::SetActive() {
+        m_pTexture->SetActive();
+    }
 }

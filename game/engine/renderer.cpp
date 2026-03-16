@@ -204,6 +204,40 @@ namespace Engine {
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
+    void Renderer::DrawAnimatedSprite(const Sprite &sprite, const int frame, const int frameHeight, const int frameWidth) {
+        m_pSpriteShader->SetActive();
+
+        float angleInDegrees = sprite.GetAngle();
+        float sizeX = static_cast<float>(frameWidth) * sprite.GetScale();
+        float sizeY = static_cast<float>(frameHeight) * sprite.GetScale();
+
+        const float PI = 3.14159f;
+        float angleInRadians = (angleInDegrees * PI) / 180.0f;
+
+        Matrix4 world;
+        SetIdentity(world);
+        world.m[0][0] = cosf(angleInRadians) * (sizeX);
+        world.m[0][1] = -sinf(angleInRadians) * (sizeX);
+        world.m[1][0] = sinf(angleInRadians) * (sizeY);
+        world.m[1][1] = cosf(angleInRadians) * (sizeY);
+        world.m[3][0] = static_cast<float>(sprite.GetX());
+        world.m[3][1] = static_cast<float>(sprite.GetY());
+
+        m_pSpriteShader->SetMatrixUniform("uWorldTransform", world);
+
+        Matrix4 orthoViewProj;
+        CreateOrthoProjection(orthoViewProj, static_cast<float>(m_iWidth), static_cast<float>(m_iHeight));
+        m_pSpriteShader->SetVector4Uniform("colour", sprite.GetRedTint(),
+                                           sprite.GetGreenTint(),
+                                           sprite.GetBlueTint(),
+                                           sprite.GetAlpha());
+        m_pSpriteShader->SetMatrixUniform("uViewProj", orthoViewProj);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)((frame * 6) * sizeof(GLuint)));
+    }
+
     SDL_Window* Renderer::GetSDLWindow() {
         return m_pWindow;
     }

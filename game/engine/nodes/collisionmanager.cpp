@@ -22,12 +22,11 @@ namespace Engine {
 
     void CollisionManager::RegisterCollider(ColliderNode&col) {
         colliders.push_back(&col);
-        LogManager::GetInstance().Log(INFO, "Collider registered: %s", col.name.c_str());
+        LogManager::GetInstance().Log(INFO, "Collider registered: %s", col.groupTag.c_str());
     }
 
     ColliderNode *CollisionManager::CheckForCollision(const ColliderNode &col) const {
         for (ColliderNode *c: colliders) {
-
             if (&col == c) continue;
             if (col.GetForm()->Overlap(*(c->GetForm()))) {
                 return c;

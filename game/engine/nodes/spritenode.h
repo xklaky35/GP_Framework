@@ -19,15 +19,17 @@ namespace Engine {
         void SetRGBA(float,float,float,float);
         void SetSpritePath(const std::string &);
 
-    private:
+    protected:
         void SetupSpriteRendering(Renderer&);
 
     public:
         bool m_bUseSpriteSize;
+        bool m_bCanDeform;
 
+    protected:
+        Sprite *m_pSprite;
     private:
         Renderer *m_pRenderer;
-        Sprite *m_pSprite;
         std::string m_pSpritePath;
         float m_redTint;
         float m_greenTint;

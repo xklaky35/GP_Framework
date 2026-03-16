@@ -6,7 +6,7 @@
 namespace Engine {
     class Form {
     public:
-        Form(Vector2d position, float h, float w) : m_position(position), m_height(h), m_width(w) {}
+        Form(Vector2d position, float h, float w) : m_position(position), m_height(h), m_width(w), m_scale(1.0f) {}
         virtual ~Form() = default;
 
         virtual float GetArea() = 0;
@@ -17,6 +17,7 @@ namespace Engine {
         Vector2d m_position;
         float m_height;
         float m_width;
+        float m_scale;
     };
 
 
