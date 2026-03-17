@@ -42,13 +42,11 @@ namespace Engine {
         Renderer *m_pRenderer;
         Uint64 m_iLastTime;
         float m_fExecutionTime;
+        float m_iFPS;
         float m_fElapsedSeconds;
         int m_iFrameCount;
-        int m_iFPS;
-#ifdef USE_LAG
-        float m_fLag;
-        int m_iUpdateCount;
-#endif // USE_LAG
+        int m_iCurrentFps;
+
         bool m_bLooping;
         bool m_bIsPaused;
         bool m_bIsDebugView;

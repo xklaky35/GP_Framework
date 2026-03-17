@@ -21,8 +21,6 @@ namespace Engine {
     bool Texture::Initialise(const char *pcFilename) {
         SDL_Surface *pSurface = IMG_Load(pcFilename);
 
-        LogManager::GetInstance().Log(INFO, "%d", pSurface->format->BytesPerPixel);
-
         if (pSurface) {
             m_iWidth = pSurface->w;
             m_iHeight = pSurface->h;

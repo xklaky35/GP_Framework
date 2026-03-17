@@ -76,6 +76,13 @@ set(IMGUI_SOURCES
         game/engine/nodes/animatedspritenode.cpp
         game/engine/nodes/animatedspritenode.h
         game/engine/event.h
+        game/engine/nodes/ui/control.cpp
+        game/engine/nodes/ui/control.h
+        game/scenes/mainmenu/mainmenu.cpp
+        game/scenes/mainmenu/mainmenu.h
+        game/engine/nodes/ui/container.h
+        game/engine/nodes/ui/vcontainer.cpp
+        game/engine/nodes/ui/vcontainer.h
 )
 
 

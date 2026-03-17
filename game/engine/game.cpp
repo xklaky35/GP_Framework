@@ -10,8 +10,8 @@
 #include "imgui.h"
 #include "../scenes/bouncingball/scenebouncingball.h"
 #include "../scenes/slashscreen/splashscreen.h"
-#include "../scenes/spaceinvader/meteorgenerator.h"
 #include "../scenes/spaceinvader/scenespaceinvader.h"
+#include "../scenes/mainmenu/mainmenu.h"
 #include "imgui/imguimanager.h"
 #include "input/input.h"
 #include "scenemanager/scenemanager.h"
@@ -31,6 +31,7 @@ namespace Engine {
 
         LogManager::DestroyInstance();
         ImguiManager::DestroyInstance();
+        SceneManager::DestroyInstance();
 
         delete sm_pInstance;
         sm_pInstance = nullptr;
@@ -43,7 +44,8 @@ namespace Engine {
                    m_iFrameCount(0),
                    m_iFPS(0),
                    m_bLooping(true),
-                   m_bIsPaused(false) {
+                   m_bIsPaused(false),
+                   m_bIsDebugView(false) {
     }
 
     Game::~Game() {
@@ -76,7 +78,8 @@ namespace Engine {
         SceneManager::GetInstance().RegisterScene("Splash", new Splashscreen());
         SceneManager::GetInstance().RegisterScene("Game", new SceneBouncingBall());
         SceneManager::GetInstance().RegisterScene("Spaceinvader", new SceneSpaceinvader());
-        SceneManager::GetInstance().LoadScene("Splash");
+        SceneManager::GetInstance().RegisterScene("MainMenu", new MainMenu());
+        SceneManager::GetInstance().LoadScene("MainMenu");
 
         //################ INIT STUFF HERE ####################
 
@@ -92,37 +95,23 @@ namespace Engine {
     }
 
     bool Game::DoGameLoop() {
-        const float stepSize = 1.0f / 60.0f;
-
         SDL_Event event;
 
         while (SDL_PollEvent(&event) != 0) {
 
             ImguiManager::GetInstance().ProcessEvent(event);
-
-
             Input::GetCurrentEvents().RegisterEvent(event);
         }
 
         if (m_bLooping) {
+
             const Uint64 current = SDL_GetPerformanceCounter();
             float deltaTime = static_cast<float>(current - m_iLastTime) / static_cast<float>(SDL_GetPerformanceFrequency());
             m_iLastTime = current;
             m_fExecutionTime += deltaTime;
 
             Process(deltaTime);
-#ifdef USE_LAG
-            m_fLag += deltaTime;
-            int innerLag = 0;
-            while (m_fLag >= stepSize) {
-                Process(stepSize);
-                m_fLag -= stepSize;
-                ++m_iUpdateCount;
-                ++innerLag;
-            }
-#endif //USE_LAG
             Draw(*m_pRenderer);
-
         }
         return m_bLooping;
     }
@@ -141,6 +130,7 @@ namespace Engine {
 
             // ###########################################
         }
+        SceneManager::GetInstance().GetCurrentScene()->SystemProcess();
 
     }
 
@@ -155,8 +145,12 @@ namespace Engine {
 
         // #######################################
 
-        DrawDebug(&m_bIsDebugView);
-        SceneManager::GetInstance().DrawDebug(&m_bIsDebugView);
+
+        if (m_bIsDebugView) {
+            DrawDebug(&m_bIsDebugView);
+            SceneManager::GetInstance().DrawDebug(&m_bIsDebugView);
+        }
+
 
         ImguiManager::GetInstance().Draw();
         renderer.Present();
@@ -169,11 +163,35 @@ namespace Engine {
             TogglePause();
         }
 
-        if (ImGui::Button("Quit")) {
+        if (ImGui::ColorButton("X", ImVec4(255,0,0,1))) {
             Quit();
         }
 
+        if (ImGui::ColorButton("Reset", ImVec4(0,255,255,1))) {
+            SceneManager::GetInstance().ResetCurrentScene();
+        }
+
         ImGui::EndMainMenuBar();
+
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+        const float PAD = 30.0f;
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImVec2 work_pos = viewport->WorkPos; // Use work area to avoid menu-bar/task-bar, if any!
+        ImVec2 work_size = viewport->WorkSize;
+        ImVec2 window_pos, window_pos_pivot;
+        window_pos.x =  (work_pos.x + work_size.x - PAD);
+        window_pos.y =  (work_pos.y + PAD);
+        window_pos_pivot.x = 1.0f;
+        window_pos_pivot.y = 1.0f;
+        ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+        window_flags |= ImGuiWindowFlags_NoMove;
+
+        ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+        if (ImGui::Begin("Stats", 0, window_flags))
+        {
+            ImGui::Text("FPS: (%.1f)", static_cast<double>(m_iFPS));
+        }
+        ImGui::End();
     }
 
     void

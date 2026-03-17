@@ -21,6 +21,7 @@ namespace Engine {
 
         void Init() override;
         void Process(float deltaTime) override;
+        void SystemProcess() override;
         void Draw(Renderer &) override;
         void DrawDebug() override;
         void UpdateForm();

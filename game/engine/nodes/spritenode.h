@@ -20,11 +20,11 @@ namespace Engine {
         ~SpriteNode() override;
 
         void Init() override;
-        void Process(float deltaTime) override;
+        void SystemProcess() override;
         void Draw(Renderer &) override;
         void DrawDebug() override;
         void SetRGBA(float,float,float,float);
-        void SetSpritePath(const std::string &);
+        void SetSpritePath(const char*);
 
 
         SpriteDisplayFlag m_spriteDisplayMode;
@@ -34,11 +34,12 @@ namespace Engine {
         void SetupSpriteRendering(Renderer&);
 
 
+    public:
+        const char* m_pSpritePath;
     protected:
         Sprite *m_pSprite;
     private:
         Renderer *m_pRenderer;
-        std::string m_pSpritePath;
         Vector2d m_aspectRatio;
         float m_redTint;
         float m_greenTint;

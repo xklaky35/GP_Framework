@@ -1,8 +1,6 @@
 #include "animatedspritenode.h"
 
 #include "imgui.h"
-
-
 namespace Engine {
 
     AnimatedSprite::AnimatedSprite(const char *path, int frameHight, int frameWidth) : SpriteNode(path), m_pVertexData(nullptr),
@@ -82,7 +80,6 @@ namespace Engine {
 
     void AnimatedSprite::Process(float deltaTime)
     {
-        SpriteNode::Process(deltaTime);
         totalTime += deltaTime;
         if (m_bAnimating)
         {
@@ -108,6 +105,7 @@ namespace Engine {
     }
 
     void AnimatedSprite::Draw(Renderer& renderer) {
+        SpriteNode::Draw(renderer);
         SetupSpriteRendering(renderer);
         if (m_pSprite != nullptr) {
             SetupFrames();

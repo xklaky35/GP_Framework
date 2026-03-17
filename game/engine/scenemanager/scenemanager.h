@@ -17,8 +17,11 @@ namespace Engine {
         Node* GetCurrentScene();
         const std::pmr::map<std::string, Node*>& GetScenes();
         void DrawDebug(bool* p_open);
+        void ResetCurrentScene();
 
 
+    public:
+        Node* m_visibleNodeDebug;
     private:
         SceneManager();
         ~SceneManager();

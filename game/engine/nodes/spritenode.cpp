@@ -6,21 +6,27 @@ namespace Engine {
     /**
      * This node uses the sprites dimensions by default.
      */
-    SpriteNode::SpriteNode() : m_spriteDisplayMode(Original),
+    SpriteNode::SpriteNode() : Node("Sprite"),
+                               m_spriteDisplayMode(Original), m_pSpritePath(nullptr),
                                m_pSprite(nullptr),
-                               m_pRenderer(nullptr), m_redTint(1), m_greenTint(1), m_blueTint(1),
-                               m_alpha(1) {
+                               m_pRenderer(nullptr),
+                               m_scaleFactor(0),
+                               m_redTint(1), m_greenTint(1), m_blueTint(1), m_alpha(1) {
+        m_nodeInfo.push_back({
+                "SpritePath", [](Node &n) {
+                    if (SpriteNode* s = dynamic_cast<SpriteNode*>(&n))
+                        ImGui::InputText("##Editor",  const_cast<char*>(s->m_pSpritePath), 28);
+                }
+            }
+        );
     }
 
     /**
      * This node uses the sprites dimensions by default. If you specify a custom height and width, please disable m_bUseSpriteSize.
      * @param spritePath path to the sprite image
      */
-    SpriteNode::SpriteNode(const char *spritePath) : m_spriteDisplayMode(Original), m_pSprite(nullptr),
-                                                     m_pRenderer(nullptr),
-                                                     m_pSpritePath(spritePath), m_redTint(1),
-                                                     m_greenTint(1),
-                                                     m_blueTint(1), m_alpha(1) {
+    SpriteNode::SpriteNode(const char *spritePath) : SpriteNode() {
+        m_pSpritePath = spritePath;
     }
 
     /**
@@ -29,15 +35,7 @@ namespace Engine {
      * @param width width the sprite should be rendered with
      * @param spritePath path to the sprite image
      */
-    SpriteNode::SpriteNode(float height, float width, const char *spritePath) : m_spriteDisplayMode(Fit),
-        m_pRenderer(nullptr),
-        m_pSprite(nullptr),
-        m_pSpritePath(spritePath),
-        m_redTint(1),
-        m_greenTint(1),
-        m_blueTint(1),
-        m_alpha(1),
-        m_scaleFactor(0) {
+    SpriteNode::SpriteNode(float height, float width, const char *spritePath) : SpriteNode(spritePath){
         m_globalTransform.SetHeight(height);
         m_globalTransform.SetWidth(width);
     }
@@ -48,12 +46,9 @@ namespace Engine {
         Node::Init();
     }
 
-    void SpriteNode::Process(float deltaTime) {
-        Node::Process(deltaTime);
+    void SpriteNode::SystemProcess() {
+        Node::SystemProcess();
         if (m_pSprite != nullptr) {
-            m_pSprite->SetX(m_globalTransform.position.x);
-            m_pSprite->SetY(m_globalTransform.position.y);
-
             switch (m_spriteDisplayMode) {
                 case Original:
                     break;
@@ -70,8 +65,11 @@ namespace Engine {
                     m_pSprite->SetWidth(m_globalTransform.GetWidth());
                     m_pSprite->SetHeight(m_globalTransform.GetHeight());
                     break;
+
+
             }
-            //m_pSprite->SetScale(m_globalTransform.GetScale());
+            m_pSprite->SetX(m_globalTransform.position.x + m_pSprite->GetWidth() / 2);
+            m_pSprite->SetY(m_globalTransform.position.y + m_pSprite->GetHeight() / 2);
             m_pSprite->SetAngle(m_globalTransform.GetRotation());
         }
     }
@@ -90,7 +88,9 @@ namespace Engine {
         }
     }
 
-    void SpriteNode::DrawDebug() {}
+    void SpriteNode::DrawDebug() {
+        Node::DrawDebug();
+    }
 
     void SpriteNode::SetupSpriteRendering(Renderer &renderer) {
         if (m_pRenderer == nullptr) {
@@ -98,7 +98,7 @@ namespace Engine {
         }
 
         if (m_pSprite == nullptr && m_pRenderer != nullptr) {
-            m_pSprite = m_pRenderer->CreateSprite(m_pSpritePath.c_str());
+            m_pSprite = m_pRenderer->CreateSprite(m_pSpritePath);
         }
     }
 
@@ -117,7 +117,7 @@ namespace Engine {
         m_alpha = a;
     }
 
-    void SpriteNode::SetSpritePath(const std::string &path) {
+    void SpriteNode::SetSpritePath(const char* path) {
         m_pSpritePath = path;
     }
 }

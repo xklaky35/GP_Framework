@@ -1,7 +1,3 @@
-//
-// Created by leon on 12.03.26.
-//
-
 #ifndef GP_FRAMEWORK_BOUNCINGBALL_H
 #define GP_FRAMEWORK_BOUNCINGBALL_H
 #include "../../engine/nodes/collidernode.h"

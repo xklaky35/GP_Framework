@@ -4,7 +4,7 @@
 
 #include <random>
 
-MeteorGenerator::MeteorGenerator(int mMaxCount) : m_meteorCount(0), m_maxMeteorCount(mMaxCount) {}
+MeteorGenerator::MeteorGenerator(int mMaxCount) : Node("Meteorgenerator"), m_meteorCount(0), m_maxMeteorCount(mMaxCount) {}
 MeteorGenerator::~MeteorGenerator() = default;
 
 
@@ -14,9 +14,6 @@ void MeteorGenerator::Process(float deltaTime) {
         GenerateMetheor();
     }
 }
-
-
-void MeteorGenerator::DrawDebug() {}
 
 
 void MeteorGenerator::GenerateMetheor() {

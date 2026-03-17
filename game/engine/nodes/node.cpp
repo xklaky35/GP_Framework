@@ -1,10 +1,44 @@
 #include "node.h"
+
+#include "imgui.h"
+#include "../scenemanager/scenemanager.h"
 #include "../logmanager/logmanager.h"
 
 namespace  Engine {
-    Node::Node(const char* nodeName) : m_name(nodeName),
+
+
+    Node::Node(const char *nodeName) : m_name(nodeName),
                                        m_globalTransformationFlag(Inherit),
-                                       parent(nullptr) {
+                                       parent(nullptr),
+                                       m_Id(0),
+                                       m_bIsVisible(true){
+        m_nodeInfo = {
+            {
+                "Name", [](Node &n) {
+                    ImGui::InputText("##Editor", const_cast<char *>(n.m_name), 28);
+                }
+            },
+            {
+                "PosX", [](Node &n) {
+                    int v_min = -10000, v_max = 10000;
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.position.x, 1, 0.5f, &v_min, &v_max);
+                }
+            },
+            {
+                "PosY", [](Node &n) {
+                    int v_min = -10000, v_max = 10000;
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.position.y, 1, 0.5f, &v_min, &v_max);
+                }
+            },
+            {
+                "IsVisible", [](Node &n) {
+                    ImGui::Checkbox("##Editor", &n.m_bIsVisible);
+                }
+            },
+        };
+
         m_globalTransform = Transform();
         m_transform = Transform();
     }
@@ -13,34 +47,63 @@ namespace  Engine {
         RemoveChildren();
     }
 
-    void Node::Init() {}
+    void Node::Init() {
+    }
 
     void Node::Process(const float deltaTime) {
+        for (Node *c: children) {
+            c->Process(deltaTime);
+        }
+    }
+
+    void Node::SystemProcess() {
+        for (Node *c: children) {
+            c->SystemProcess();
+        }
+    }
+
+    void Node::Draw(Renderer &renderer) {
         // bubbles up the node tree so that the root of the element dictates the global m_position
         if (parent != nullptr && m_globalTransformationFlag == Inherit) {
             m_globalTransform = parent->m_globalTransform;
         }
         ApplyLocalTransform();
 
-        for (Node* c : children) {
-            c->Process(deltaTime);
-        }
-    }
-
-    void Node::Draw(Renderer& renderer) {
-        for (Node* c : children) {
+        for (Node *c: children) {
             c->Draw(renderer);
         }
     }
 
 
     void Node::DrawDebug() {
-        for (Node* c : children) {
-            c->DrawDebug();
+        if (ImGui::BeginTable("##bg", 1, ImGuiTableFlags_RowBg)) {
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::PushID(m_Id);
+            ImGuiTreeNodeFlags tree_flags = ImGuiTreeNodeFlags_None;
+            tree_flags |= ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+            // Standard opening mode as we are likely to want to add selection afterwards
+            tree_flags |= ImGuiTreeNodeFlags_NavLeftJumpsToParent; // Left arrow support
+            tree_flags |= ImGuiTreeNodeFlags_SpanFullWidth; // Span full width for easier mouse reach
+            tree_flags |= ImGuiTreeNodeFlags_DrawLinesToNodes; // Always draw hierarchy outlines
+            bool node_open = ImGui::TreeNodeEx("", tree_flags, "%s", m_name);
+            if (ImGui::IsItemFocused())
+                SceneManager::GetInstance().m_visibleNodeDebug = this;
+            if (node_open) {
+                for (Node *c: children) {
+                    c->DrawDebug();
+                }
+                ImGui::TreePop();
+            }
+            ImGui::PopID();
+            ImGui::EndTable();
+
+
         }
     }
 
     void Node::AddChild(Node& node) {
+        node.m_Id = ++m_Id;
         node.SetParent(this);
         children.push_back(&node);
         node.Init();

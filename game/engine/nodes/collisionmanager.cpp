@@ -22,7 +22,7 @@ namespace Engine {
 
     void CollisionManager::RegisterCollider(ColliderNode&col) {
         colliders.push_back(&col);
-        LogManager::GetInstance().Log(INFO, "Collider registered: %s", col.m_name.c_str());
+        LogManager::GetInstance().Log(INFO, "Collider registered: %s", col.m_name);
     }
 
     ColliderNode *CollisionManager::CheckForCollision(const ColliderNode &col) const {

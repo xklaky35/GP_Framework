@@ -39,7 +39,9 @@ void Meteors::Draw(Renderer &renderer) {
     Node::Draw(renderer);
 }
 
-void Meteors::DrawDebug() {}
+void Meteors::DrawDebug() {
+    Node::DrawDebug();
+}
 
 void Meteors::OnImpact(const Node* e) {
     if (e->m_name == "Spaceship") {

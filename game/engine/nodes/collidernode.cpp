@@ -5,14 +5,13 @@
 #include "forms/rectangle.h"
 
 namespace Engine {
-    ColliderNode::ColliderNode(Formtype type) : m_pForm(nullptr), m_type(type), m_pSpritenode(nullptr) {
+    ColliderNode::ColliderNode(Formtype type) : Node("Collider"), m_pForm(nullptr), m_type(type), m_pSpritenode(nullptr) {
         OnCollision = Event<Node>();
     }
     ColliderNode::~ColliderNode() = default;
 
     void ColliderNode::Init() {
         Node::Init();
-        m_name = parent->m_name;
 
         CollisionManager::GetInstance().RegisterCollider(*this);
 
@@ -42,11 +41,15 @@ namespace Engine {
         m_pForm->m_transform = m_globalTransform;
     }
 
+
+    void ColliderNode::SystemProcess() {
+        UpdateForm();
+    }
+
     void ColliderNode::Process(float deltaTime) {
         Node::Process(deltaTime);
 
         // keep form and sprite synced
-        UpdateForm();
         DetectCollition();
     }
 
@@ -54,7 +57,9 @@ namespace Engine {
         Node::Draw(renderer);
     }
 
-    void ColliderNode::DrawDebug() {}
+    void ColliderNode::DrawDebug() {
+        Node::DrawDebug();
+    }
 
     const Form* ColliderNode::GetForm() const {
         return m_pForm;
