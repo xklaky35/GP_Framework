@@ -2,30 +2,25 @@
 #include "../logmanager/logmanager.h"
 
 namespace  Engine {
-    Node::Node(const char* nodeName) : groupTag(nodeName), m_bIsRoot(false), parent(nullptr) {
-        m_position = new Vector2d();
-        m_transform = new Transform();
+    Node::Node(const char* nodeName) : m_name(nodeName),
+                                       m_globalTransformationFlag(Inherit),
+                                       parent(nullptr) {
+        m_globalTransform = Transform();
+        m_transform = Transform();
     }
 
     Node::~Node() {
         RemoveChildren();
-        delete m_position;
-        delete m_transform;
-        m_transform = nullptr;
-        m_position = nullptr;
     }
 
     void Node::Init() {}
 
     void Node::Process(const float deltaTime) {
         // bubbles up the node tree so that the root of the element dictates the global m_position
-        if (parent != nullptr && parent->m_bIsRoot == false) {
-            m_position->x = parent->m_position->x;
-            m_position->y = parent->m_position->y;
+        if (parent != nullptr && m_globalTransformationFlag == Inherit) {
+            m_globalTransform = parent->m_globalTransform;
         }
-
-        m_position->x += m_transform->position->x;
-        m_position->y += m_transform->position->y;
+        ApplyLocalTransform();
 
         for (Node* c : children) {
             c->Process(deltaTime);
@@ -43,16 +38,6 @@ namespace  Engine {
         for (Node* c : children) {
             c->DrawDebug();
         }
-    }
-
-    Node* Node::GetChild(const char * nodeName) const {
-        for (Node* n : children) {
-            if (n->groupTag == nodeName) {
-                return n;
-            }
-        }
-        LogManager::GetInstance().Log(WARNING,"No child on \"%s\" with name \"%s\" found", &groupTag, nodeName);
-        return nullptr;
     }
 
     void Node::AddChild(Node& node) {
@@ -83,8 +68,25 @@ namespace  Engine {
         parent = node;
     }
 
-    std::vector<Node*> Node::GetChildren() const {
+    const std::vector<Node*>& Node::GetChildren() const {
         return children;
+    }
+
+    void Node::ApplyLocalTransform() {
+        // position
+        m_globalTransform.position += m_transform.position;
+
+        // angle
+        const Vector2d vecX(cos(m_globalTransform.GetRotation()), sin(m_globalTransform.GetRotation()));
+        const Vector2d vecY(-sin(m_globalTransform.GetRotation()), cos(m_globalTransform.GetRotation()));
+        m_globalTransform.position = (vecX * m_globalTransform.position.x) + (vecY * m_globalTransform.position.y);
+
+        // scale
+        m_globalTransform.SetScale(m_globalTransform.GetScale() * m_transform.GetScale());
+
+        // size
+        m_globalTransform.SetHeight(m_globalTransform.GetHeight() + m_transform.GetHeight());
+        m_globalTransform.SetWidth(m_globalTransform.GetWidth() + m_transform.GetWidth());
     }
 }
 

@@ -19,6 +19,7 @@ namespace Engine {
         Vector2d operator*(float vector) const;
         bool operator==(const Vector2d&) const;
         bool operator!=(const Vector2d&) const;
+        Vector2d& operator/=(float);
     };
 }
 

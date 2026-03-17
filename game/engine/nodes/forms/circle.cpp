@@ -1,26 +1,28 @@
 #include "circle.h"
 
-#include <cmath>
 #include <numbers>
 
 #include "../../logmanager/logmanager.h"
 
+
 namespace Engine {
-    Circle::Circle(Vector2d pos, const float radius): Form(pos, radius*2,radius*2),m_radius(radius) {}
+    Circle::Circle(const Transform& t): Form(t) {}
     Circle::~Circle() = default;
 
     float Circle::GetArea() {
-        return static_cast<float>(std::numbers::pi * std::pow(m_radius * m_scale, 2));
+        return static_cast<float>(m_transform.GetHeight() * m_transform.GetWidth() * std::numbers::pi);
     }
 
     Vector2d Circle::GetFurthestPointTowards(Vector2d pos) const {
         // distance between 2D Vectors
-        const float dist = m_position.Distance(pos);
+        const float dist = m_transform.position.Distance(pos);
 
-        //LogManager::GetInstance().Log(INFO, "Distance: %f", dist);
-
-        const float factor = 1 / (dist / (m_radius * m_scale));
-        const Vector2d vectorTof = Vector2d(pos.x - m_position.x, pos.y - m_position.y);
-        return ((vectorTof * factor) + m_position);
+        if (m_transform.GetHeight() == m_transform.GetWidth()) {
+            const float factor = 1 / (dist / (m_transform.GetHeight() / 2));
+            const Vector2d vectorTof = Vector2d(pos.x - m_transform.position.x, pos.y - m_transform.position.y);
+            return ((vectorTof * factor) + m_transform.position);
+        }
+        LogManager::GetInstance().Log(WARNING, "Circle isn't round lol");
+        return Vector2d{0,0};
     }
 }

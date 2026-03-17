@@ -6,13 +6,10 @@
 namespace Engine {
     class Circle : public Form {
     public:
-        Circle(Vector2d pos, float radius);
+        Circle(const Transform &t);
         ~Circle() override;
         float GetArea() override;
         Vector2d GetFurthestPointTowards(Vector2d) const override;
-
-    public:
-        float m_radius;
     };
 }
 #endif //GP_FRAMEWORK_CIRCLE_H

@@ -20,10 +20,10 @@ namespace Engine {
         void SetWidth(float x);
         float GetHeight() const;
         void SetHeight(float x);
-        void SetX(int x);
-        int GetX() const;
-        void SetY(int y);
-        int GetY() const;
+        void SetX(float x);
+        float GetX() const;
+        void SetY(float y);
+        float GetY() const;
         void SetAngle(float angle);
         float GetAngle() const;
         void SetScale(float scale);
@@ -44,11 +44,11 @@ namespace Engine {
 
     protected:
         Texture *m_pTexture;
-        int m_x;
-        int m_y;
+        float m_x;
+        float m_y;
         float m_angle;
-        int m_centerX;
-        int m_centerY;
+        float m_centerX;
+        float m_centerY;
         float m_width;
         float m_height;
         float m_scale;

@@ -5,7 +5,7 @@
 
 namespace Engine {
 
-    AnimatedSprite::AnimatedSprite(const char *path, int frameHight, int frameWidth) : SpriteNode(path, "AnimationSprite"), m_pVertexData(nullptr),
+    AnimatedSprite::AnimatedSprite(const char *path, int frameHight, int frameWidth) : SpriteNode(path), m_pVertexData(nullptr),
                                                  m_iFrameWidth(frameWidth),
                                                  m_iFrameHeight(frameHight),
                                                  m_iCurrentFrame(0),

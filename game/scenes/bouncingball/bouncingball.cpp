@@ -1,6 +1,7 @@
 #include "bouncingball.h"
 
 #include "../../config/config.h"
+#include "../../engine/logmanager/logmanager.h"
 #include "../../helper/inlinehelper.h"
 
 
@@ -9,26 +10,33 @@ BouncingBall::~BouncingBall() = default;
 
 void BouncingBall::Init() {
     Node::Init();
+    // ignore parent transform;
+    m_globalTransformationFlag = Disable;
 
     const float MAX_SPEED = 250.f;
     const int SCREEN_WIDTH =  Config::GetInstance().windowsWidth;
     const int SCREEN_HEIGHT =  Config::GetInstance().windowsHeight;
 
 
+    m_globalTransform.SetSize(100,100);
     RandomizeSize();
 
-    m_transform->height = 100 * m_transform->scale;
-    m_transform->width = 100 * m_transform->scale;
-    m_position->x = static_cast<float>(GetRandomInt(m_transform->width / 2, SCREEN_WIDTH - m_transform->width / 2));
-    m_position->y = static_cast<float>(GetRandomInt(m_transform->height / 2, SCREEN_HEIGHT - m_transform->height / 2));
+    // avg size
+
+    if (m_globalTransform.GetScale() == 0) {
+        LogManager::GetInstance().Log(INFO, "");
+    }
+
+    m_globalTransform.position.x = static_cast<float>(GetRandomInt(m_globalTransform.GetWidth() / 2, SCREEN_WIDTH - m_globalTransform.GetWidth() / 2));
+    m_globalTransform.position.y = static_cast<float>(GetRandomInt(m_globalTransform.GetHeight() / 2, SCREEN_HEIGHT - m_globalTransform.GetHeight() / 2));
     m_velocity.x = GetRandomPercentage() * static_cast<float>(GetRandomPosOrNeg()) * MAX_SPEED;
     m_velocity.y = GetRandomPercentage() * static_cast<float>(GetRandomPosOrNeg()) * MAX_SPEED;
 
     ComputeBoundary(SCREEN_HEIGHT, SCREEN_WIDTH);
 
-    m_ballSprite = new SpriteNode("../assets/Sprites/ball.png", "Ball");
-    m_ballSprite->m_bUseSpriteSize = false;
-    *m_ballSprite->m_transform = *m_transform;
+    m_ballSprite = new SpriteNode("../assets/Sprites/ball.png");
+    m_ballSprite->m_spriteDisplayMode = Fit;
+    LogManager::GetInstance().Log(INFO, "Height: %f, Width: %f",m_globalTransform.GetHeight(), m_globalTransform.GetWidth());
     AddChild(*m_ballSprite);
 
     RandomizeColor();
@@ -37,36 +45,36 @@ void BouncingBall::Init() {
 void BouncingBall::Process(float deltaTime) {
     Node::Process(deltaTime);
 
-    if (m_position->x >= m_boundaryWidth.y) {
+    if (m_globalTransform.position.x >= m_boundaryWidth.y) {
         m_velocity.x *= -1;
-        m_position->x = m_boundaryWidth.y;
+        m_globalTransform.position.x = m_boundaryWidth.y;
         RandomizeColor();
     }
-    else if (m_position->x <= m_boundaryWidth.x) {
+    else if (m_globalTransform.position.x <= m_boundaryWidth.x) {
         m_velocity.x *= -1;
-        m_position->x = m_boundaryWidth.x;
+        m_globalTransform.position.x = m_boundaryWidth.x;
         RandomizeColor();
     }
-    else if (m_position->y >= m_boundaryHeight.y) {
+    else if (m_globalTransform.position.y >= m_boundaryHeight.y) {
         m_velocity.y *= -1;
-        m_position->y = m_boundaryHeight.y;
+        m_globalTransform.position.y = m_boundaryHeight.y;
         RandomizeColor();
     }
-    else if (m_position->y <= m_boundaryHeight.x) {
+    else if (m_globalTransform.position.y <= m_boundaryHeight.x) {
         m_velocity.y *= -1;
-        m_position->y = m_boundaryHeight.x;
+        m_globalTransform.position.y = m_boundaryHeight.x;
         RandomizeColor();
     }
 
-    *m_position += m_velocity * deltaTime;
+    m_globalTransform.position += m_velocity * deltaTime;
 }
 
 
 void BouncingBall::ComputeBoundary(const int s_height, const int s_width) {
-    m_boundaryHeight.x = m_transform->height / 2;
-    m_boundaryHeight.y = static_cast<float>(s_height) - m_transform->height / 2;
-    m_boundaryWidth.x = m_transform->width / 2;
-    m_boundaryWidth.y = static_cast<float>(s_width) - m_transform->width / 2;
+    m_boundaryHeight.x = m_globalTransform.GetHeight() / 2;
+    m_boundaryHeight.y = static_cast<float>(s_height) - m_globalTransform.GetHeight() / 2;
+    m_boundaryWidth.x = m_globalTransform.GetWidth() / 2;
+    m_boundaryWidth.y = static_cast<float>(s_width) - m_globalTransform.GetWidth() / 2;
 }
 
 void BouncingBall::RandomizeColor() {
@@ -74,7 +82,10 @@ void BouncingBall::RandomizeColor() {
 }
 
 
-
 void BouncingBall::RandomizeSize() {
-    m_transform->scale = GetRandomPercentage();
+    float p = 0;
+    do {
+        p = GetRandomPercentage();
+    } while (p == 0);
+    m_globalTransform.SetScale(p);
 }

@@ -28,67 +28,54 @@ namespace Engine {
         return true;
     }
 
-    void
-    Sprite::Process(float deltaTime) {
-    }
+    void Sprite::Process(float deltaTime) {}
 
-    void
-    Sprite::Draw(Renderer &renderer) {
+    void Sprite::Draw(Renderer &renderer) {
         m_pTexture->SetActive();
         renderer.DrawSprite(*this);
     }
 
-    void
-    Sprite::SetX(int x) {
+    void Sprite::SetX(float x) {
         m_x = x;
     }
 
-    void
-    Sprite::SetY(int y) {
+    void Sprite::SetY(float y) {
         m_y = y;
     }
 
-    int
-    Sprite::GetX() const {
+    float Sprite::GetX() const {
         return m_x;
     }
 
-    int
-    Sprite::GetY() const {
+    float Sprite::GetY() const {
         return m_y;
     }
 
-    void
-    Sprite::SetAngle(float angle) {
+    void Sprite::SetAngle(float angle) {
         while (angle > 360) {
             angle -= 360;
         }
         m_angle = angle;
     }
 
-    float
-    Sprite::GetAngle() const {
+    float Sprite::GetAngle() const {
         return m_angle;
     }
 
     //
-    void
-    Sprite::SetScale(float scale) {
+    void Sprite::SetScale(float scale) {
         m_scale = scale;
     }
 
-    float
-    Sprite::GetScale() const {
+    float Sprite::GetScale() const {
         return m_scale;
     }
 
-    void
-    Sprite::SetAlpha(float alpha) {
+    void Sprite::SetAlpha(float alpha) {
         m_alpha = Clamp(0.0f, alpha, 1.0f);
     }
 
-    float
-    Sprite::GetAlpha() const {
+    float Sprite::GetAlpha() const {
         return m_alpha;
     }
 
@@ -108,8 +95,7 @@ namespace Engine {
         return static_cast<int>(ceilf(m_height * m_scale));
     }
 
-    float
-    Sprite::Clamp(float minimum, float value, float maximum) {
+    float Sprite::Clamp(float minimum, float value, float maximum) {
         if (value > maximum) {
             value = maximum;
         } else if (value < minimum) {
@@ -118,33 +104,27 @@ namespace Engine {
         return value;
     }
 
-    void
-    Sprite::SetRedTint(float value) {
+    void Sprite::SetRedTint(float value) {
         m_tintRed = Clamp(0.0f, value, 1.0f);
     }
 
-    float
-    Sprite::GetRedTint() const {
+    float Sprite::GetRedTint() const {
         return m_tintRed;
     }
 
-    void
-    Sprite::SetGreenTint(float value) {
+    void Sprite::SetGreenTint(float value) {
         m_tintGreen = Clamp(0.0f, value, 1.0f);
     }
 
-    float
-    Sprite::GetGreenTint() const {
+    float Sprite::GetGreenTint() const {
         return m_tintGreen;
     }
 
-    void
-    Sprite::SetBlueTint(float value) {
+    void Sprite::SetBlueTint(float value) {
         m_tintBlue = Clamp(0.0f, value, 1.0f);
     }
 
-    float
-    Sprite::GetBlueTint() const {
+    float Sprite::GetBlueTint() const {
         return m_tintBlue;
     }
 

@@ -16,14 +16,14 @@ enum Formtype {
 namespace Engine {
     class ColliderNode : public Node {
     public:
-        ColliderNode(Formtype, const char* = "Collider");
+        ColliderNode(Formtype);
         ~ColliderNode() override;
 
         void Init() override;
         void Process(float deltaTime) override;
         void Draw(Renderer &) override;
         void DrawDebug() override;
-        void SyncFormAndSprite();
+        void UpdateForm();
         const Form* GetForm() const;
 
     private:

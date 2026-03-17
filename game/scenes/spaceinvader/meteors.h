@@ -18,7 +18,7 @@ public:
     void Draw(Renderer &) override;
     void DrawDebug() override;
     void OnImpact(const Node*);
-    void Spin(float deltaTime) const;
+    void Spin(float deltaTime);
     void SetVelocity(float);
     void SetSpinDirection(signed char);
     void SetDamage(int);

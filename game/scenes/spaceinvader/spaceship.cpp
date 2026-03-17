@@ -17,17 +17,16 @@ Spaceship::~Spaceship() {
 
 void Spaceship::Init() {
     Node::Init();
+    m_globalTransformationFlag = Disable;
 
+    m_globalTransform.SetSize(200,200);
     // setup sprite
-    m_spriteNode = new SpriteNode("../assets/Sprites/spaceship.png", "SpaceshipSprite");
-    m_spriteNode->m_bUseSpriteSize = false;
-    m_spriteNode->m_bCanDeform = false;
-    m_spriteNode->m_transform->width = 100;
+    m_spriteNode = new SpriteNode("../assets/Sprites/spaceship.png");
+    m_spriteNode->m_spriteDisplayMode = Scale;
     AddChild(*m_spriteNode);
 
-
     // setup collider
-    m_colliderNode = new ColliderNode(ft_CIRCLE, "Spaceship");
+    m_colliderNode = new ColliderNode(ft_CIRCLE);
     m_colliderNode->OnCollision.Register<Spaceship>(&Spaceship::OnCollision, *this);
     AddChild(*m_colliderNode);
 }
@@ -56,7 +55,7 @@ void Spaceship::HandleMovement(float deltaTime) {
         velocity.x = 1;
     }
 
-    *m_position += velocity * speed * deltaTime;
+    m_globalTransform.position += velocity * speed * deltaTime;
 }
 
 void Spaceship::Draw(Renderer &renderer) {

@@ -9,8 +9,6 @@ SceneBouncingBall::~SceneBouncingBall() = default;
 
 void SceneBouncingBall::Init() {
     Node::Init();
-
-    m_bIsRoot = true;
     CreateBalls();
 }
 

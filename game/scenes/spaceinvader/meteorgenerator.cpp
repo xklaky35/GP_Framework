@@ -7,10 +7,6 @@
 MeteorGenerator::MeteorGenerator(int mMaxCount) : m_meteorCount(0), m_maxMeteorCount(mMaxCount) {}
 MeteorGenerator::~MeteorGenerator() = default;
 
-void MeteorGenerator::Init() {
-    Node::Init();
-    m_bIsRoot = true;
-}
 
 void MeteorGenerator::Process(float deltaTime) {
     Node::Process(deltaTime);
@@ -19,9 +15,6 @@ void MeteorGenerator::Process(float deltaTime) {
     }
 }
 
-void MeteorGenerator::Draw(Renderer &renderer) {
-    Node::Draw(renderer);
-}
 
 void MeteorGenerator::DrawDebug() {}
 
@@ -31,11 +24,8 @@ void MeteorGenerator::GenerateMetheor() {
     m->SetVelocity(static_cast<float>(GetRandomNumber(5,100)));
     m->SetSpinSpeed(static_cast<float>(GetRandomNumber(1, 20)));
     m->SetSpinDirection(GetRandomNumber(0, 1) == 0 ? 1 : -1);
-    m->m_position->x = static_cast<float>(GetRandomNumber(0, Config::GetInstance().windowsWidth));
-    m->m_transform->scale = static_cast<float>(GetRandomNumber(1, 3)) / 10;
-    m->m_transform->height = 300;
-    m->m_transform->width = 300;
-
+    m->m_globalTransform.position.x = static_cast<float>(GetRandomNumber(0, Config::GetInstance().windowsWidth));
+    m->m_globalTransform.SetScale(static_cast<float>(GetRandomNumber(1, 3)) / 10);
     AddChild(*m);
 
     m_meteorCount++;

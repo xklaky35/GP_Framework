@@ -1,28 +1,26 @@
 #include "spritenode.h"
 
+#include <numeric>
+
 namespace Engine {
     /**
-     * This node uses the sprites dimensions by default. If you specify a custom height and width, please disable m_bUseSpriteSize.
-     * @param nodeName name of the node (this is set by default)
+     * This node uses the sprites dimensions by default.
      */
-    SpriteNode::SpriteNode(const char *nodeName) : Node(nodeName), m_bUseSpriteSize(true), m_bCanDeform(true),
-                                                   m_pRenderer(nullptr),
-                                                   m_pSprite(nullptr), m_redTint(1), m_greenTint(1), m_blueTint(1),
-                                                   m_alpha(1) {
+    SpriteNode::SpriteNode() : m_spriteDisplayMode(Original),
+                               m_pSprite(nullptr),
+                               m_pRenderer(nullptr), m_redTint(1), m_greenTint(1), m_blueTint(1),
+                               m_alpha(1) {
     }
 
     /**
      * This node uses the sprites dimensions by default. If you specify a custom height and width, please disable m_bUseSpriteSize.
      * @param spritePath path to the sprite image
-     * @param nodeName name of the node (this is set by default)
      */
-    SpriteNode::SpriteNode(const char *spritePath, const char *nodeName) : Node(nodeName), m_bUseSpriteSize(true),
-                                                                           m_bCanDeform(true),
-                                                                           m_pRenderer(nullptr),
-                                                                           m_pSprite(nullptr),
-                                                                           m_pSpritePath(spritePath), m_redTint(1),
-                                                                           m_greenTint(1),
-                                                                           m_blueTint(1), m_alpha(1) {
+    SpriteNode::SpriteNode(const char *spritePath) : m_spriteDisplayMode(Original), m_pSprite(nullptr),
+                                                     m_pRenderer(nullptr),
+                                                     m_pSpritePath(spritePath), m_redTint(1),
+                                                     m_greenTint(1),
+                                                     m_blueTint(1), m_alpha(1) {
     }
 
     /**
@@ -30,19 +28,18 @@ namespace Engine {
      * @param height hight the sprite should be rendered with
      * @param width width the sprite should be rendered with
      * @param spritePath path to the sprite image
-     * @param nodeName name of the node (this is set by default)
      */
-    SpriteNode::SpriteNode(float height, float width, const char *spritePath, const char *nodeName) : Node(nodeName),
-        m_bUseSpriteSize(true), m_bCanDeform(true),
+    SpriteNode::SpriteNode(float height, float width, const char *spritePath) : m_spriteDisplayMode(Fit),
         m_pRenderer(nullptr),
         m_pSprite(nullptr),
         m_pSpritePath(spritePath),
         m_redTint(1),
         m_greenTint(1),
         m_blueTint(1),
-        m_alpha(1) {
-        m_transform->height = height;
-        m_transform->width = width;
+        m_alpha(1),
+        m_scaleFactor(0) {
+        m_globalTransform.SetHeight(height);
+        m_globalTransform.SetWidth(width);
     }
 
     SpriteNode::~SpriteNode() = default;
@@ -54,21 +51,28 @@ namespace Engine {
     void SpriteNode::Process(float deltaTime) {
         Node::Process(deltaTime);
         if (m_pSprite != nullptr) {
-            m_pSprite->SetX(m_position->x);
-            m_pSprite->SetY(m_position->y);
+            m_pSprite->SetX(m_globalTransform.position.x);
+            m_pSprite->SetY(m_globalTransform.position.y);
 
-            if (m_bUseSpriteSize == false) {
-                if (m_bCanDeform == true) {
-                    m_pSprite->SetWidth(m_transform->width);
-                    m_pSprite->SetHeight(m_transform->height);
-                } else {
-                    float scaleFactor = 1 / (m_pSprite->GetWidth() / m_transform->width);
-                    m_pSprite->SetWidth(m_pSprite->GetWidth() * scaleFactor);
-                    m_pSprite->SetHeight(m_pSprite->GetHeight() * scaleFactor);
-                }
+            switch (m_spriteDisplayMode) {
+                case Original:
+                    break;
+                case Fit:
+                    m_pSprite->SetWidth(m_globalTransform.GetWidth());
+                    m_pSprite->SetHeight(m_globalTransform.GetHeight());
+                    break;
+                case Scale:
+                    // only the hight can be configured to scale the sprite
+                    m_aspectRatio.x = std::round(m_pSprite->GetWidth() / m_pSprite->GetHeight() * 100) / 100;
+                    m_aspectRatio.y = 1;
+                    m_globalTransform.SetWidth(m_globalTransform.GetHeight() * m_aspectRatio.x);
+
+                    m_pSprite->SetWidth(m_globalTransform.GetWidth());
+                    m_pSprite->SetHeight(m_globalTransform.GetHeight());
+                    break;
             }
-            m_pSprite->SetScale(m_transform->scale);
-            m_pSprite->SetAngle(m_transform->rotation);
+            //m_pSprite->SetScale(m_globalTransform.GetScale());
+            m_pSprite->SetAngle(m_globalTransform.GetRotation());
         }
     }
 

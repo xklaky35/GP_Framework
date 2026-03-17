@@ -9,9 +9,7 @@ class MeteorGenerator : public Node {
 public:
     MeteorGenerator(int);
     ~MeteorGenerator() override;
-    void Init() override;
     void Process(float deltaTime) override;
-    void Draw(Renderer &) override;
     void DrawDebug() override;
     void GenerateMetheor();
     int GetRandomNumber(int min, int max) const;

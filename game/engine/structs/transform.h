@@ -4,19 +4,30 @@
 
 namespace Engine {
     struct Transform {
-        Vector2d* position;
+
+        Transform() : scale(1), rotation(0) {}
+        ~Transform() = default;
+
+        void SetScale(float scale);
+        void SetWidth(float w);
+        void SetHeight(float h);
+        void SetSize(float w, float h);
+        void SetRotation(float degrees);
+
+        float GetScale() const;
+        float GetRotation() const;
+        float GetWidth() const;
+        float GetHeight() const;
+
+        Transform& operator=(const Transform&);
+
+        Vector2d position;
+    private:
+        Vector2d scaledSize;
+        Vector2d baseSize;
         float scale;
         float rotation;
-        float height;
-        float width;
 
-        Transform() : scale(1), rotation(0), height(50), width(50) {
-            position = new Vector2d();
-        }
-        ~Transform() {
-            delete position;
-            position = nullptr;
-        }
     };
 }
 

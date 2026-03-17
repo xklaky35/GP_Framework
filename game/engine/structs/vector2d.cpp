@@ -53,4 +53,10 @@ namespace Engine {
         if (*this == vector) return true;
         return false;
     }
+
+    Vector2d& Vector2d::operator/=(const float f) {
+        x /= f;
+        y /= f;
+        return *this;
+    }
 }

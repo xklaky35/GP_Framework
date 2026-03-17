@@ -5,29 +5,30 @@
 #include "forms/rectangle.h"
 
 namespace Engine {
-    ColliderNode::ColliderNode(Formtype type, const char *nodeName) : Node(nodeName), m_pForm(nullptr), m_type(type), m_pSpritenode(nullptr) {
+    ColliderNode::ColliderNode(Formtype type) : m_pForm(nullptr), m_type(type), m_pSpritenode(nullptr) {
         OnCollision = Event<Node>();
     }
     ColliderNode::~ColliderNode() = default;
 
     void ColliderNode::Init() {
         Node::Init();
+        m_name = parent->m_name;
 
         CollisionManager::GetInstance().RegisterCollider(*this);
 
+        // temporary debug indicator for collision area
         m_pSpritenode = new SpriteNode();
         m_pSpritenode->SetRGBA(1,0,0,0.3);
-        m_pSpritenode->m_bUseSpriteSize = false;
-        m_pSpritenode->m_bCanDeform = false;
+        m_pSpritenode->m_spriteDisplayMode = Fit;
 
         switch (m_type) {
             case ft_CIRCLE: {
-                m_pForm = new Circle(*m_position, m_transform->width/2);
+                m_pForm = new Circle(m_globalTransform);
                 m_pSpritenode->SetSpritePath("../assets/Sprites/ball.png");
                 break;
             }
             case ft_RECTANGLE: {
-                m_pForm = new Rectangle(*m_position, m_transform->height, m_transform->width);
+                m_pForm = new Rectangle(m_globalTransform);
                 m_pSpritenode->SetSpritePath("../assets/Sprites/rect.png");
                 break;
             }
@@ -37,25 +38,15 @@ namespace Engine {
 
 
     //TODO: remove and switch to imgui debug
-    void ColliderNode::SyncFormAndSprite() {
-
-
-        m_pForm->m_position.x = m_position->x + m_transform->position->x;
-        m_pForm->m_position.y = m_position->y + m_transform->position->y;
-        m_pForm->m_width = m_transform->width * m_transform->scale;
-        m_pForm->m_height = m_transform->height * m_transform->scale;
-        m_pForm->m_scale = m_transform->scale;
-
-
-        m_pSpritenode->m_transform->height = m_transform->height * m_transform->scale;
-        m_pSpritenode->m_transform->width = m_transform->width * m_transform->scale;
+    void ColliderNode::UpdateForm() {
+        m_pForm->m_transform = m_globalTransform;
     }
 
     void ColliderNode::Process(float deltaTime) {
         Node::Process(deltaTime);
 
         // keep form and sprite synced
-        SyncFormAndSprite();
+        UpdateForm();
         DetectCollition();
     }
 
