@@ -12,6 +12,7 @@ namespace Engine {
         void Init() override;
         void PositionChildren() override;
         void CalculateChildSpace() const override;
+        void CalculateInitialSize() override;
     };
 }
 

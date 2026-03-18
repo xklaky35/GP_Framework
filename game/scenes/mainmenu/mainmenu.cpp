@@ -14,6 +14,7 @@ MainMenu::MainMenu() {
     vcontainer1 = VContainer();
     hcontainer2 = HContainer();
     mcontainer1 = MarginContainer();
+    panelcontainer1 = PanelContainer();
 }
 
 MainMenu::~MainMenu() {
@@ -35,11 +36,9 @@ void MainMenu::Init() {
     hcontainer2.AddChild(testBox2);
     hcontainer2.AddChild(testBox5);
 
-    mcontainer1.AddChild(vcontainer1);
 
-    AddChild(mcontainer1);
+    AddChild(vcontainer1);
     AddChild(hcontainer2);
-    AddChild(testBox3);
 
 }
 

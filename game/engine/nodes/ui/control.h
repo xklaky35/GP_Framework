@@ -59,7 +59,6 @@ namespace Engine {
         Vector2d m_controlSpace;
         bool m_bUseDebugRect;
 
-
        SpriteNode* m_debugRect;
 
     };

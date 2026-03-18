@@ -22,20 +22,20 @@ namespace Engine {
                     childSections.push_back(childControl);
                 }
                 else {
-                    childControl->m_controlSpace.x = m_initialSize.x;
+                    childControl->m_controlSpace.x = childControl->m_initialSize.x;
                     usedSpace += childControl->m_controlSpace.x;
                 }
                 if (childControl->m_containerSizing.m_bExpandVertical) {
-                    childControl->m_controlSpace.y = m_globalTransform.GetHeight();
+                    childControl->m_controlSpace.y = m_controlSpace.y;
                 }
                 else {
-                    childControl->m_controlSpace.y = m_initialSize.y;
+                    childControl->m_controlSpace.y = childControl->m_initialSize.y;
                 }
             }
         }
 
         if (childSections.size() > 0) {
-            float  sectionSize = (m_globalTransform.GetWidth() - usedSpace) / childSections.size();
+            float  sectionSize = (m_controlSpace.x - usedSpace) / childSections.size();
             for (Control* c : childSections) {
                 c->m_controlSpace.x = sectionSize;
             }
@@ -47,9 +47,22 @@ namespace Engine {
         float offset = 0;
         for (int i = 0; i < m_children.size(); i++) {
             if (auto* childControl = dynamic_cast<Control*>(m_children[i])) {
-                childControl->m_transform.position.x = offset;
+                childControl->m_transform.position.x += offset;
                 offset += childControl->m_controlSpace.x;
             }
         }
+    }
+
+    void HContainer::CalculateInitialSize() {
+        float maxChildHeight = 0;
+        float width = 0;
+        for (int i = 0; i < m_children.size(); i++) {
+            if (auto *childControl = dynamic_cast<Control *>(m_children[i])) {
+                width += childControl->m_initialSize.x;
+                if (childControl->m_initialSize.y > maxChildHeight) maxChildHeight = childControl->m_initialSize.y;
+            }
+        }
+        m_initialSize.y = maxChildHeight;
+        m_initialSize.x = width;
     }
 }

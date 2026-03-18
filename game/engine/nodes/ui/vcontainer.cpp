@@ -9,12 +9,11 @@ namespace Engine {
         m_name = "VContainer";
     }
 
-
     void VContainer::PositionChildren() {
         float offset = 0;
         for (int i = 0; i < m_children.size(); i++) {
             if (auto* childControl = dynamic_cast<Control*>(m_children[i])) {
-                childControl->m_transform.position.y = offset;
+                childControl->m_transform.position.y += offset;
                 offset += childControl->m_controlSpace.y;
             }
         }
@@ -30,24 +29,37 @@ namespace Engine {
                     childSections.push_back(childControl);
                 }
                 else {
-                    childControl->m_controlSpace.y = m_initialSize.y;
+                    childControl->m_controlSpace.y = childControl->m_initialSize.y;
                     usedSpace += childControl->m_controlSpace.y;
                 }
                 if (childControl->m_containerSizing.m_bExpandHorizontal) {
-                    childControl->m_controlSpace.x = m_globalTransform.GetWidth();
+                    childControl->m_controlSpace.x = m_controlSpace.x;
                 }
                 else {
-                    childControl->m_controlSpace.x = m_initialSize.x;
+                    childControl->m_controlSpace.x = childControl->m_initialSize.x;
                 }
             }
         }
 
         if (childSections.size() > 0) {
-            float  sectionSize = (m_globalTransform.GetHeight() - usedSpace) / childSections.size();
+            float  sectionSize = (m_controlSpace.y - usedSpace) / childSections.size();
             for (Control* c : childSections) {
                 c->m_controlSpace.y = sectionSize;
             }
         }
 
+    }
+
+    void VContainer::CalculateInitialSize() {
+        float maxChildWidth = 0;
+        float height = 0;
+        for (int i = 0; i < m_children.size(); i++) {
+            if (auto *childControl = dynamic_cast<Control *>(m_children[i])) {
+                height += childControl->m_initialSize.y;
+                if (childControl->m_initialSize.x > maxChildWidth) maxChildWidth = childControl->m_initialSize.x;
+            }
+        }
+        m_initialSize.x = maxChildWidth;
+        m_initialSize.y = height;
     }
 }

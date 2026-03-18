@@ -5,6 +5,7 @@
 #include "../../engine/nodes/ui/hcontainer.h"
 #include "../../engine/nodes/ui/control.h"
 #include "../../engine/nodes/ui/margincontainer.h"
+#include "../../engine/nodes/ui/panelcontainer.h"
 
 using namespace Engine;
 
@@ -25,6 +26,7 @@ public:
     VContainer vcontainer1;
     HContainer hcontainer2;
     MarginContainer mcontainer1;
+    PanelContainer panelcontainer1;
 
 };
 

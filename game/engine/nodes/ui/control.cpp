@@ -123,6 +123,8 @@ namespace Engine {
         if (m_parent != nullptr) {
             m_globalTransform.position = m_parent->m_globalTransform.position + m_transform.position;
         }
+
+
     }
 
     void Control::Draw(Renderer &renderer) {
@@ -137,6 +139,7 @@ namespace Engine {
                 switch (childControl->m_containerSizing.m_horizontalBehavior) {
                     case h_Fill:
                         childControl->m_globalTransform.SetWidth(childControl->m_controlSpace.x);
+                        childControl->m_transform.position.x = 0;
                         break;
                     case h_Left:
                         childControl->m_globalTransform.SetWidth(childControl->m_initialSize.x);
@@ -154,6 +157,7 @@ namespace Engine {
                 switch (childControl->m_containerSizing.m_verticalBehavior) {
                     case v_Fill:
                         childControl->m_globalTransform.SetHeight(childControl->m_controlSpace.y);
+                        childControl->m_transform.position.y = 0;
                         break;
                     case v_Top:
                         childControl->m_globalTransform.SetHeight(childControl->m_initialSize.y);
@@ -161,7 +165,7 @@ namespace Engine {
                         break;
                     case v_Center:
                         childControl->m_globalTransform.SetHeight(childControl->m_initialSize.y);
-                        childControl->m_transform.position.y = (childControl->m_transform.position.y + childControl->m_controlSpace.y / 2) - childControl->m_globalTransform.GetHeight() / 2;
+                        childControl->m_transform.position.y = (childControl->m_controlSpace.y / 2) - childControl->m_globalTransform.GetHeight() / 2;
                         break;
                     case v_Bottom:
                         childControl->m_globalTransform.SetHeight(childControl->m_initialSize.y);
