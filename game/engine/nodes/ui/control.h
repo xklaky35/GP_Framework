@@ -47,6 +47,7 @@ namespace Engine {
         void Process(float) override;
         void SystemProcess() override;
         void Draw(Renderer&) override;
+        void CalculateChildBounds() const;
 
 
         ContainerSizing m_containerSizing;
@@ -62,6 +63,7 @@ namespace Engine {
        SpriteNode* m_debugRect;
 
     };
+
 
 
 }

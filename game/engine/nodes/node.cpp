@@ -9,7 +9,7 @@ namespace  Engine {
 
     Node::Node(const char *nodeName) : m_name(nodeName),
                                        m_globalTransformationFlag(Inherit),
-                                       parent(nullptr),
+                                       m_parent(nullptr),
                                        m_Id(0),
                                        m_bIsVisible(true){
         m_nodeInfo = {
@@ -19,17 +19,49 @@ namespace  Engine {
                 }
             },
             {
-                "PosX", [](Node &n) {
+                "GlobalPosX", [](Node &n) {
                     int v_min = -10000, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.position.x, 1, 0.5f, &v_min, &v_max);
                 }
             },
             {
-                "PosY", [](Node &n) {
+                "GlobalPosY", [](Node &n) {
                     int v_min = -10000, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.position.y, 1, 0.5f, &v_min, &v_max);
+                }
+            },
+            {
+                "LocalPosX", [](Node &n) {
+                    int v_min = -10000, v_max = 10000;
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_transform.position.x, 1, 0.5f,
+                                       &v_min, &v_max);
+                }
+            },
+            {
+                "LocalPosY", [](Node &n) {
+                    int v_min = -10000, v_max = 10000;
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_transform.position.y, 1, 0.5f,
+                                       &v_min, &v_max);
+                }
+            },
+            {
+                "SizeX", [](Node &n) {
+                    int v_min = -10000, v_max = 10000;
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.scaledSize.x, 1, 0.5f,
+                                       &v_min, &v_max);
+                }
+            },
+            {
+                "SizeY", [](Node &n) {
+                    int v_min = -10000, v_max = 10000;
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.scaledSize.y, 1, 0.5f,
+                                       &v_min, &v_max);
                 }
             },
             {
@@ -51,25 +83,26 @@ namespace  Engine {
     }
 
     void Node::Process(const float deltaTime) {
-        for (Node *c: children) {
+        for (Node *c: m_children) {
             c->Process(deltaTime);
         }
     }
 
     void Node::SystemProcess() {
-        for (Node *c: children) {
+        // bubbles up the node tree so that the root of the element dictates the global m_position
+        if (m_parent != nullptr && m_globalTransformationFlag == Inherit) {
+            m_globalTransform = m_parent->m_globalTransform;
+            ApplyLocalTransform();
+        }
+
+        for (Node *c: m_children) {
             c->SystemProcess();
         }
     }
 
     void Node::Draw(Renderer &renderer) {
-        // bubbles up the node tree so that the root of the element dictates the global m_position
-        if (parent != nullptr && m_globalTransformationFlag == Inherit) {
-            m_globalTransform = parent->m_globalTransform;
-        }
-        ApplyLocalTransform();
 
-        for (Node *c: children) {
+        for (Node *c: m_children) {
             c->Draw(renderer);
         }
     }
@@ -90,22 +123,20 @@ namespace  Engine {
             if (ImGui::IsItemFocused())
                 SceneManager::GetInstance().m_visibleNodeDebug = this;
             if (node_open) {
-                for (Node *c: children) {
+                for (Node *c: m_children) {
                     c->DrawDebug();
                 }
                 ImGui::TreePop();
             }
             ImGui::PopID();
             ImGui::EndTable();
-
-
         }
     }
 
     void Node::AddChild(Node& node) {
         node.m_Id = ++m_Id;
         node.SetParent(this);
-        children.push_back(&node);
+        m_children.push_back(&node);
         node.Init();
     }
 
@@ -116,28 +147,28 @@ namespace  Engine {
     }
 
     void Node::RemoveChild(Node* node) {
-        std::erase<Node*>(children, node);
+        std::erase<Node*>(m_children, node);
         delete node;
     }
 
     void Node::RemoveChildren() {
-        for (const Node* c : children) {
+        for (const Node* c : m_children) {
             delete c;
         }
-        children.clear();
+        m_children.clear();
     }
 
     void Node::SetParent(Node* node) {
-        parent = node;
+        m_parent = node;
     }
 
     const std::vector<Node*>& Node::GetChildren() const {
-        return children;
+        return m_children;
     }
 
     void Node::ApplyLocalTransform() {
         // position
-        m_globalTransform.position += m_transform.position;
+        m_globalTransform.position = m_parent->m_globalTransform.position + m_transform.position;
 
         // angle
         const Vector2d vecX(cos(m_globalTransform.GetRotation()), sin(m_globalTransform.GetRotation()));
@@ -145,11 +176,11 @@ namespace  Engine {
         m_globalTransform.position = (vecX * m_globalTransform.position.x) + (vecY * m_globalTransform.position.y);
 
         // scale
-        m_globalTransform.SetScale(m_globalTransform.GetScale() * m_transform.GetScale());
+        m_globalTransform.SetScale(m_parent->m_globalTransform.GetScale() * m_transform.GetScale());
 
         // size
-        m_globalTransform.SetHeight(m_globalTransform.GetHeight() + m_transform.GetHeight());
-        m_globalTransform.SetWidth(m_globalTransform.GetWidth() + m_transform.GetWidth());
+        m_globalTransform.SetHeight(m_parent->m_globalTransform.GetHeight() + m_transform.GetHeight());
+        m_globalTransform.SetWidth(m_parent->m_globalTransform.GetWidth() + m_transform.GetWidth());
     }
 }
 

@@ -12,7 +12,6 @@ namespace Engine {
     };
     class SpriteNode : public Node {
 
-
     public:
         SpriteNode();
         SpriteNode(const char* spritePath);
@@ -36,6 +35,7 @@ namespace Engine {
 
     public:
         const char* m_pSpritePath;
+
     protected:
         Sprite *m_pSprite;
     private:
@@ -45,6 +45,7 @@ namespace Engine {
         float m_greenTint;
         float m_blueTint;
         float m_alpha;
+
         float m_scaleFactor;
     };
 }

@@ -22,9 +22,9 @@ namespace Engine {
         Transform& operator=(const Transform&);
 
         Vector2d position;
-    private:
         Vector2d scaledSize;
         Vector2d baseSize;
+    private:
         float scale;
         float rotation;
 

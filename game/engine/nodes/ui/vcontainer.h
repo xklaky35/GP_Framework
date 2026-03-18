@@ -9,13 +9,8 @@ namespace Engine {
         VContainer();
         ~VContainer() override;
 
-        void Init() override;
-        void Process(float) override;
-        void SystemProcess() override;
-        void Draw(Renderer&) override;
-
         void PositionChildren() override;
-        void CalculateChildBounds() override;
+        void CalculateChildSpace() const override;
     };
 }
 

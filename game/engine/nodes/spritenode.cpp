@@ -19,6 +19,46 @@ namespace Engine {
                 }
             }
         );
+        m_nodeInfo.push_back({
+                "RedTint", [](Node &n) {
+                    if (SpriteNode *s = dynamic_cast<SpriteNode *>(&n)) {
+                        int v_min = 0, v_max = 1;
+                        ImGui::SetNextItemWidth(-FLT_MIN);
+                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_redTint, 1, 0.5f, &v_min, &v_max);
+                    }
+                }
+            }
+        );
+        m_nodeInfo.push_back({
+                "GreenTint", [](Node &n) {
+                    if (SpriteNode *s = dynamic_cast<SpriteNode *>(&n)) {
+                        int v_min = 0, v_max = 1;
+                        ImGui::SetNextItemWidth(-FLT_MIN);
+                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_greenTint, 1, 0.5f, &v_min, &v_max);
+                    }
+                }
+            }
+        );
+        m_nodeInfo.push_back({
+                "BlueTint", [](Node &n) {
+                    if (SpriteNode *s = dynamic_cast<SpriteNode *>(&n)) {
+                        int v_min = 0, v_max = 1;
+                        ImGui::SetNextItemWidth(-FLT_MIN);
+                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_blueTint, 1, 0.5f, &v_min, &v_max);
+                    }
+                }
+            }
+        );
+        m_nodeInfo.push_back({
+                "Alpha", [](Node &n) {
+                    if (SpriteNode *s = dynamic_cast<SpriteNode *>(&n)) {
+                        int v_min = 0, v_max = 1;
+                        ImGui::SetNextItemWidth(-FLT_MIN);
+                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_alpha, 1, 0.5f, &v_min, &v_max);
+                    }
+                }
+            }
+        );
     }
 
     /**

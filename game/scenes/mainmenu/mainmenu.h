@@ -2,6 +2,7 @@
 #define GP_FRAMEWORK_MAINMEU_H
 
 #include "../../engine/nodes/ui/vcontainer.h"
+#include "../../engine/nodes/ui/hcontainer.h"
 #include "../../engine/nodes/ui/control.h"
 
 using namespace Engine;
@@ -18,6 +19,10 @@ public:
     Control testBox1;
     Control testBox2;
     Control testBox3;
+    Control testBox4;
+    Control testBox5;
+    VContainer vcontainer1;
+    HContainer hcontainer2;
 
 };
 

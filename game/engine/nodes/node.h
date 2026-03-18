@@ -53,8 +53,8 @@ namespace Engine {
         Transform m_globalTransform;
 
     protected:
-        Node* parent;
-        std::vector<Node*> children;
+        Node* m_parent;
+        std::vector<Node*> m_children;
     };
 
     struct NodeInfo

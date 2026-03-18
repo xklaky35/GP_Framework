@@ -83,6 +83,10 @@ set(IMGUI_SOURCES
         game/engine/nodes/ui/container.h
         game/engine/nodes/ui/vcontainer.cpp
         game/engine/nodes/ui/vcontainer.h
+        game/engine/nodes/ui/hcontainer.cpp
+        game/engine/nodes/ui/hcontainer.h
+        game/engine/nodes/ui/margincontainer.cpp
+        game/engine/nodes/ui/margincontainer.h
 )
 
 
