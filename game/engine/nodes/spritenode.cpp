@@ -12,6 +12,14 @@ namespace Engine {
                                m_pRenderer(nullptr),
                                m_scaleFactor(0),
                                m_redTint(1), m_greenTint(1), m_blueTint(1), m_alpha(1) {
+
+        m_nodeInfo.push_back(
+            {
+                "", [](Node &n) {
+                    ImGui::Separator();
+                    ImGui::Text("Sprite Settings");
+                }
+            });
         m_nodeInfo.push_back({
                 "SpritePath", [](Node &n) {
                     if (SpriteNode* s = dynamic_cast<SpriteNode*>(&n))

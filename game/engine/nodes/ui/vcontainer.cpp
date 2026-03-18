@@ -4,6 +4,11 @@ namespace Engine {
     VContainer::VContainer() = default;
     VContainer::~VContainer() = default;
 
+    void VContainer::Init() {
+        Container::Init();
+        m_name = "VContainer";
+    }
+
 
     void VContainer::PositionChildren() {
         float offset = 0;

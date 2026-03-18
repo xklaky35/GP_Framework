@@ -9,6 +9,7 @@ namespace Engine {
         VContainer();
         ~VContainer() override;
 
+        void Init() override;
         void PositionChildren() override;
         void CalculateChildSpace() const override;
     };

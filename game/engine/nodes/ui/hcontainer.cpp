@@ -6,6 +6,11 @@ namespace Engine {
     HContainer::HContainer() = default;
     HContainer::~HContainer() = default;
 
+    void HContainer::Init() {
+        Container::Init();
+        m_name = "HContainer";
+    }
+
 
     void HContainer::CalculateChildSpace() const {
         std::vector<Control*> childSections;

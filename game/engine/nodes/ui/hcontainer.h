@@ -8,6 +8,7 @@ namespace Engine {
         HContainer();
         ~HContainer() override;
 
+        void Init() override;
         void PositionChildren() override;
         void CalculateChildSpace() const override;
 

@@ -4,6 +4,7 @@
 #include "../../engine/nodes/ui/vcontainer.h"
 #include "../../engine/nodes/ui/hcontainer.h"
 #include "../../engine/nodes/ui/control.h"
+#include "../../engine/nodes/ui/margincontainer.h"
 
 using namespace Engine;
 
@@ -23,6 +24,7 @@ public:
     Control testBox5;
     VContainer vcontainer1;
     HContainer hcontainer2;
+    MarginContainer mcontainer1;
 
 };
 

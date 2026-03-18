@@ -12,7 +12,18 @@ namespace  Engine {
                                        m_parent(nullptr),
                                        m_Id(0),
                                        m_bIsVisible(true){
+
+
+
+
+
         m_nodeInfo = {
+            {
+                "", [](Node &n) {
+                    ImGui::Separator();
+                    ImGui::Text("Node Settings");
+                }
+            },
             {
                 "Name", [](Node &n) {
                     ImGui::InputText("##Editor", const_cast<char *>(n.m_name), 28);

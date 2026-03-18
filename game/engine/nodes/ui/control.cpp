@@ -9,6 +9,13 @@ namespace Engine {
 
         m_nodeInfo.push_back(
             {
+                "", [](Node &n) {
+                    ImGui::Separator();
+                    ImGui::Text("Control Settings");
+                }
+            });
+        m_nodeInfo.push_back(
+            {
                 "Horizontal Behavior", [](Node &n) {
                     if (Control* c = dynamic_cast<Control*>(&n)) {
                         if (ImGui::BeginCombo("Horizontal:", "Select container behavior")) {
@@ -92,6 +99,7 @@ namespace Engine {
 
     void Control::Init() {
         Node::Init();
+        m_name = "Control";
         m_globalTransformationFlag = Disable;
 
         if (m_bUseDebugRect) {

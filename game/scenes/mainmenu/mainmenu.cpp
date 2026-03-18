@@ -13,6 +13,7 @@ MainMenu::MainMenu() {
     testBox5 = Control(true);
     vcontainer1 = VContainer();
     hcontainer2 = HContainer();
+    mcontainer1 = MarginContainer();
 }
 
 MainMenu::~MainMenu() {
@@ -33,7 +34,10 @@ void MainMenu::Init() {
     vcontainer1.AddChild(testBox4);
     hcontainer2.AddChild(testBox2);
     hcontainer2.AddChild(testBox5);
-    AddChild(vcontainer1);
+
+    mcontainer1.AddChild(vcontainer1);
+
+    AddChild(mcontainer1);
     AddChild(hcontainer2);
     AddChild(testBox3);
 
