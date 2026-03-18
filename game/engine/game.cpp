@@ -2,12 +2,11 @@
 #include "renderer.h"
 #include "logmanager/logmanager.h"
 #include "../config/config.h"
+#include "imgui.h"
 
 #include <SDL_timer.h>
+#include <SDL_ttf.h>
 
-#include "nodes/collisionmanager.h"
-
-#include "imgui.h"
 #include "../scenes/bouncingball/scenebouncingball.h"
 #include "../scenes/slashscreen/splashscreen.h"
 #include "../scenes/spaceinvader/scenespaceinvader.h"
@@ -83,12 +82,11 @@ namespace Engine {
 
         //################ INIT STUFF HERE ####################
 
-
-
         bbWidth = m_pRenderer->GetWidth();
         bbHeight = m_pRenderer->GetHeight();
         m_iLastTime = SDL_GetPerformanceCounter();
         m_pRenderer->SetClearColour(0, 255, 255);
+
 
 
         return true;
@@ -141,16 +139,17 @@ namespace Engine {
 
         // ####### RENDER STUFF HERE #############
 
+
+
+
         SceneManager::GetInstance().GetCurrentScene()->Draw(renderer);
 
         // #######################################
-
 
         if (m_bIsDebugView) {
             DrawDebug(&m_bIsDebugView);
             SceneManager::GetInstance().DrawDebug(&m_bIsDebugView);
         }
-
 
         ImguiManager::GetInstance().Draw();
         renderer.Present();

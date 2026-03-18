@@ -18,6 +18,7 @@ public:
     void Init() override;
     void Draw(Renderer& renderer) override;
 
+    Sprite* m_pWelcomeText;
     Control testBox1;
     Control testBox2;
     Control testBox3;

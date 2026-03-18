@@ -1,5 +1,6 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
+#include <SDL_surface.h>
 #include <vector>
 
 namespace Engine {
@@ -14,6 +15,9 @@ namespace Engine {
         int GetWidth() const;
         int GetHeight() const;
 
+        void LoadTextTexture(const char *text, const char *fontname, int pointsize);
+
+        void LoadSurfaceIntoTexture(SDL_Surface *pSurface);
 
     protected:
         unsigned int m_uiTextureId;

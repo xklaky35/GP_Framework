@@ -40,8 +40,24 @@ void MainMenu::Init() {
     AddChild(vcontainer1);
     AddChild(hcontainer2);
 
+
+
 }
 
 void MainMenu::Draw(Renderer &renderer) {
     VContainer::Draw(renderer);
+
+    // Load static text textures into the Texture Manager...
+    renderer.CreateStaticText("Auckland University of Technology", 50);
+    // Generate sprites that use the static text textures...
+    m_pWelcomeText = renderer.CreateSprite("Auckland University of Technology");
+    m_pWelcomeText->SetY(200);
+    m_pWelcomeText->SetX(500);
+    /*
+    m_pWelcomeText->SetAlpha(1);
+    m_pWelcomeText->SetRedTint(0);
+    m_pWelcomeText->SetGreenTint(0);
+    m_pWelcomeText->SetBlueTint(0);
+    */
+    m_pWelcomeText->Draw(renderer);
 }

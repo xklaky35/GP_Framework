@@ -16,6 +16,7 @@ namespace Engine {
         bool Initialise();
         Texture *GetTexture(const char *pcFilename);
 
+        void AddTexture(const char *key, Texture *pTexture);
 
     protected:
         std::map<std::string, Texture *> m_pLoadedTextures;

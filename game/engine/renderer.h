@@ -26,11 +26,15 @@ namespace Engine {
         void GetClearColour(unsigned char &r, unsigned char &g, unsigned char &b);
         int GetWidth() const;
         int GetHeight() const;
+
+
         Sprite *CreateSprite(const char *pcFilename);
         void DrawSprite(Sprite &sprite);
         void DrawAnimatedSprite(const Sprite &sprite, int frame, int width, int height);
         SDL_Window* GetSDLWindow();
         const SDL_GLContext GetSDLGLContext();
+
+        void CreateStaticText(const char *pText, int pointsize);
 
     protected:
         bool InitialiseOpenGL(int screenWidth, int screenHeight);

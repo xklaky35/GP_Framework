@@ -120,6 +120,8 @@ add_subdirectory(lib/SDL2 EXCLUDE_FROM_ALL)
 # this assumes the SDL source is available in lib/SDL2_image
 add_subdirectory(lib/SDL2_image EXCLUDE_FROM_ALL)
 
+add_subdirectory(lib/SDL2_ttf EXCLUDE_FROM_ALL)
+
 
 
 ############ GLEW ###############
@@ -136,6 +138,7 @@ target_link_libraries(
         PUBLIC
         SDL2::SDL2
         SDL2_image::SDL2_image
+        SDL2_ttf::SDL2_ttf
         ${GLEWLIB}
         OpenGL
 )

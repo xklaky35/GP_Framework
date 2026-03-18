@@ -183,6 +183,8 @@ namespace Engine {
         float sizeY = static_cast<float>(sprite.GetHeight());
         const float PI = 3.14159f;
         float angleInRadians = (angleInDegrees * PI) / 180.0f;
+
+
         Matrix4 world;
         SetIdentity(world);
         world.m[0][0] = cosf(angleInRadians) * (sizeX);
@@ -244,5 +246,11 @@ namespace Engine {
 
     const SDL_GLContext Renderer::GetSDLGLContext() {
        return m_glContext;
+    }
+
+    void Renderer::CreateStaticText(const char *pText, int pointsize) {
+        Texture *pTexture = new Texture();
+        pTexture->LoadTextTexture(pText, "../assets/Fonts/Romantic Mermaid.otf", pointsize);
+        m_pTextureManager->AddTexture(pText, pTexture);
     }
 }
