@@ -15,7 +15,7 @@ namespace Engine {
         int GetWidth() const;
         int GetHeight() const;
 
-        void LoadTextTexture(const char *text, const char *fontname, int pointsize);
+        void LoadTextTexture(const char *text, const char *fontname, int pointsize, SDL_Color);
 
         void LoadSurfaceIntoTexture(SDL_Surface *pSurface);
 

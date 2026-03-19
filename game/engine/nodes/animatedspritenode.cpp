@@ -105,7 +105,7 @@ namespace Engine {
     }
 
     void AnimatedSprite::Draw(Renderer& renderer) {
-        SpriteNode::Draw(renderer);
+        //SpriteNode::Draw(renderer);
         SetupSpriteRendering(renderer);
         if (m_pSprite != nullptr) {
             SetupFrames();

@@ -6,10 +6,11 @@
 #include "../../engine/nodes/ui/control.h"
 #include "../../engine/nodes/ui/margincontainer.h"
 #include "../../engine/nodes/ui/panelcontainer.h"
+#include "../../engine/nodes/ui/textcontrol.h"
 
 using namespace Engine;
 
-class MainMenu : public VContainer {
+class MainMenu : public HContainer {
 
 public:
     MainMenu();
@@ -28,6 +29,7 @@ public:
     HContainer hcontainer2;
     MarginContainer mcontainer1;
     PanelContainer panelcontainer1;
+    TextControl textcontrol;
 
 };
 

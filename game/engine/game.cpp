@@ -15,6 +15,9 @@
 #include "input/input.h"
 #include "scenemanager/scenemanager.h"
 
+
+#define DEBUG
+
 namespace Engine {
     // Static Members:
     Game *Game::sm_pInstance = nullptr;
@@ -129,8 +132,8 @@ namespace Engine {
             // ###########################################
         }
         SceneManager::GetInstance().GetCurrentScene()->SystemProcess();
-
     }
+
 
 
     void Game::Draw(Renderer &renderer) {
@@ -139,17 +142,17 @@ namespace Engine {
 
         // ####### RENDER STUFF HERE #############
 
-
-
-
         SceneManager::GetInstance().GetCurrentScene()->Draw(renderer);
+        renderer.Draw();
 
         // #######################################
 
+#ifdef DEBUG
         if (m_bIsDebugView) {
             DrawDebug(&m_bIsDebugView);
             SceneManager::GetInstance().DrawDebug(&m_bIsDebugView);
         }
+#endif
 
         ImguiManager::GetInstance().Draw();
         renderer.Present();
@@ -193,8 +196,7 @@ namespace Engine {
         ImGui::End();
     }
 
-    void
-    Game::ProcessFrameCounting(float deltaTime) {
+    void Game::ProcessFrameCounting(float deltaTime) {
         // Count total simulation time elapsed:
         m_fElapsedSeconds += deltaTime;
         // Frame Counter:

@@ -58,17 +58,12 @@ namespace Engine {
         assert(m_iHeight);
         return (m_iHeight);
     }
-    void Texture::LoadTextTexture(const char *text, const char *fontname, int pointsize) {
+    void Texture::LoadTextTexture(const char *text, const char *fontname, int pointsize, SDL_Color color) {
         TTF_Font *pFont = nullptr;
         TTF_Init();
         if (pFont == nullptr) {
             pFont = TTF_OpenFont(fontname, pointsize);
         }
-        SDL_Color color;
-        color.r = 0;
-        color.g = 0;
-        color.b = 0;
-        color.a = 255;
         SDL_Surface *pSurface = TTF_RenderText_Blended(pFont, text, color);
         glPixelStorei(GL_UNPACK_ROW_LENGTH, pSurface->pitch / pSurface->format->BytesPerPixel);
         LoadSurfaceIntoTexture(pSurface);

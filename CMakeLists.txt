@@ -90,6 +90,8 @@ set(IMGUI_SOURCES
         game/engine/nodes/ui/panelcontainer.cpp
         game/engine/nodes/ui/panelcontainer.h
         game/engine/nodes/ui/container.cpp
+        game/engine/nodes/ui/textcontrol.cpp
+        game/engine/nodes/ui/textcontrol.h
 )
 
 

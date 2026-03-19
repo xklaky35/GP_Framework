@@ -42,6 +42,9 @@ namespace Engine {
         float Clamp(float minimum, float value, float maximum);
 
 
+    public:
+        int m_iLayer;
+
     protected:
         Texture *m_pTexture;
         float m_x;

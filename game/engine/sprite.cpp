@@ -3,7 +3,7 @@
 
 namespace Engine {
     Sprite::Sprite()
-        : m_pTexture(nullptr)
+        : m_iLayer(1), m_pTexture(nullptr)
           , m_x(0)
           , m_y(0)
           , m_width(0)
@@ -31,7 +31,6 @@ namespace Engine {
     void Sprite::Process(float deltaTime) {}
 
     void Sprite::Draw(Renderer &renderer) {
-        m_pTexture->SetActive();
         renderer.DrawSprite(*this);
     }
 

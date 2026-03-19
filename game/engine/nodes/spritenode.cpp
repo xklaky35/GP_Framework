@@ -67,6 +67,14 @@ namespace Engine {
                 }
             }
         );
+        m_nodeInfo.push_back({
+                "Layer", [](Node &n) {
+                    if (SpriteNode *s = dynamic_cast<SpriteNode *>(&n)) {
+                        ImGui::DragInt("Layer", &s->m_pSprite->m_iLayer, 1, 0, 10);
+                    }
+                }
+            }
+        );
     }
 
     /**
@@ -113,8 +121,6 @@ namespace Engine {
                     m_pSprite->SetWidth(m_globalTransform.GetWidth());
                     m_pSprite->SetHeight(m_globalTransform.GetHeight());
                     break;
-
-
             }
             m_pSprite->SetX(m_globalTransform.position.x + m_pSprite->GetWidth() / 2);
             m_pSprite->SetY(m_globalTransform.position.y + m_pSprite->GetHeight() / 2);
@@ -147,6 +153,7 @@ namespace Engine {
 
         if (m_pSprite == nullptr && m_pRenderer != nullptr) {
             m_pSprite = m_pRenderer->CreateSprite(m_pSpritePath);
+            m_pSprite->m_iLayer = 0;
         }
     }
 

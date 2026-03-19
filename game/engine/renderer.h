@@ -31,10 +31,11 @@ namespace Engine {
         Sprite *CreateSprite(const char *pcFilename);
         void DrawSprite(Sprite &sprite);
         void DrawAnimatedSprite(const Sprite &sprite, int frame, int width, int height);
+        void Draw(); // draw all sprites collected
         SDL_Window* GetSDLWindow();
         const SDL_GLContext GetSDLGLContext();
 
-        void CreateStaticText(const char *pText, int pointsize);
+        void CreateStaticText(const char *pText, int pointsize, SDL_Color);
 
     protected:
         bool InitialiseOpenGL(int screenWidth, int screenHeight);
@@ -49,6 +50,7 @@ namespace Engine {
         // Member data:
     public:
     protected:
+        std::map<int, std::vector<Sprite*>> m_renderList;
         TextureManager *m_pTextureManager;
         SDL_Window *m_pWindow;
         SDL_GLContext m_glContext;

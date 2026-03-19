@@ -47,9 +47,12 @@ namespace Engine {
         void Process(float) override;
         void SystemProcess() override;
         void Draw(Renderer&) override;
+
+    protected:
         void CalculateChildBounds() const;
 
 
+    public:
         ContainerSizing m_containerSizing;
         PositionMode m_positionMode;
         bool m_bIsChildOfContainer;
@@ -58,12 +61,8 @@ namespace Engine {
         Vector2d m_controlBounds;
         Vector2d m_controlSpace;
         bool m_bUseDebugRect;
-
-       SpriteNode* m_debugRect;
-
+        SpriteNode* m_debugRect;
     };
-
-
 
 }
 #endif //GP_FRAMEWORK_CONTROL_H
