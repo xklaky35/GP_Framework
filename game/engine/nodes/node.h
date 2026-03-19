@@ -44,6 +44,7 @@ namespace Engine {
         int m_Id;
         const char* m_name;
         bool m_bIsVisible;;
+        Node* m_parent;
 
         // Flag indicating if this node inherits transformation information from the parent node
         InheritanceFlag m_globalTransformationFlag;
@@ -53,7 +54,6 @@ namespace Engine {
         Transform m_globalTransform;
 
     protected:
-        Node* m_parent;
         std::vector<Node*> m_children;
     };
 

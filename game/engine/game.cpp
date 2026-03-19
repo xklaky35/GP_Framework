@@ -78,10 +78,11 @@ namespace Engine {
         ImguiManager::GetInstance().Initialize(m_pRenderer->GetSDLWindow(), m_pRenderer->GetSDLGLContext());
 
         SceneManager::GetInstance().RegisterScene("Splash", new Splashscreen());
-        SceneManager::GetInstance().RegisterScene("Game", new SceneBouncingBall());
-        SceneManager::GetInstance().RegisterScene("Spaceinvader", new SceneSpaceinvader());
         SceneManager::GetInstance().RegisterScene("MainMenu", new MainMenu());
-        SceneManager::GetInstance().LoadScene("MainMenu");
+        SceneManager::GetInstance().RegisterScene("SpaceInvaders", new SceneSpaceinvader());
+        SceneManager::GetInstance().RegisterScene("Robotron", new SceneBouncingBall());
+        SceneManager::GetInstance().RegisterScene("Astroids", new SceneBouncingBall());
+        SceneManager::GetInstance().LoadScene("Splash");
 
         //################ INIT STUFF HERE ####################
 

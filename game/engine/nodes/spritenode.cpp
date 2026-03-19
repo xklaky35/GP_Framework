@@ -107,6 +107,8 @@ namespace Engine {
         if (m_pSprite != nullptr) {
             switch (m_spriteDisplayMode) {
                 case Original:
+                    m_globalTransform.SetWidth(m_pSprite->GetWidth());
+                    m_globalTransform.SetHeight(m_pSprite->GetHeight());
                     break;
                 case Fit:
                     m_pSprite->SetWidth(m_globalTransform.GetWidth());
@@ -138,6 +140,7 @@ namespace Engine {
             m_pSprite->SetRedTint(m_redTint);
             m_pSprite->SetGreenTint(m_greenTint);
             m_pSprite->SetBlueTint(m_blueTint);
+            m_pSprite->SetScale(m_globalTransform.GetScale());
             m_pSprite->Draw(renderer);
         }
     }

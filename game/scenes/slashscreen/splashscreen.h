@@ -3,10 +3,11 @@
 
 #include "../../engine/nodes/node.h"
 #include "../../engine/nodes/spritenode.h"
+#include "../../engine/nodes/ui/control.h"
 
 using namespace Engine;
 
-class Splashscreen : public Node {
+class Splashscreen : public Control {
 public:
     Splashscreen();
     ~Splashscreen() override;
@@ -17,9 +18,13 @@ public:
 private:
     float m_fFadeSpeed;
     float m_fCurrentAlphaLevel;
+    float m_windowWidth;
+    float m_windowHeight;
     int m_iCurrentScreen;
     std::vector<SpriteNode*> m_screens;
     SpriteNode* m_background;
+    SpriteNode* m_aut;
+    SpriteNode* m_kiwi;
 };
 
 

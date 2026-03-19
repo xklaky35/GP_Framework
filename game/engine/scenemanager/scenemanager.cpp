@@ -33,6 +33,7 @@ namespace Engine {
 
     void SceneManager::LoadScene(const std::string& sceneName) {
         m_currentScene = sceneName;
+        assert(m_loadedScenes[m_currentScene]);
         m_loadedScenes[m_currentScene]->Init();
     }
 

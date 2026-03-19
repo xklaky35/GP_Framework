@@ -1,46 +1,49 @@
 #include "splashscreen.h"
-
 #include "../../config/config.h"
 #include "../../engine/scenemanager/scenemanager.h"
 
 using namespace Engine;
 
-Splashscreen::Splashscreen() : m_fFadeSpeed(0.4), m_fCurrentAlphaLevel(0), m_iCurrentScreen(0), m_background(nullptr) {}
+Splashscreen::Splashscreen() : m_fFadeSpeed(0.4), m_fCurrentAlphaLevel(0),
+                               m_iCurrentScreen(0),
+                               m_background(nullptr),
+                               m_aut(nullptr),
+                               m_kiwi(nullptr) {
+    m_windowHeight = static_cast<float>(Config::GetInstance().windowsHeight);
+    m_windowWidth = static_cast<float>(Config::GetInstance().windowsWidth);
+}
+
 Splashscreen::~Splashscreen() = default;
 
 void Splashscreen::Init()  {
-    Node::Init();
-
-    int dimY = Config::GetInstance().windowsHeight;
-    int dimX = Config::GetInstance().windowsWidth;
-
-    m_globalTransform.position.x = dimX/2;
-    m_globalTransform.position.y = dimY/2;
+    Control::Init();
 
     m_background = new SpriteNode("../assets/Sprites/rect.png");
     m_background->m_spriteDisplayMode = Fit;
-    m_background->m_transform.SetSize(dimX, dimY);
+    m_background->m_transform.SetSize(m_windowWidth, m_windowHeight);
     m_background->SetRGBA(0,0,0,1);
     AddChild(*m_background);
 
-    auto* aut = new SpriteNode("../assets/Splash/aut.png");
-    aut->SetRGBA(1,1,1,0.01);
-    m_screens.push_back(aut);
-    aut->m_transform.SetScale(1.8);
-    AddChild(*aut);
+    m_aut = new SpriteNode("../assets/Splash/aut.png");
+    m_aut->SetRGBA(1,1,1,0.01);
+    m_aut->m_globalTransformationFlag = Disable;
+    m_aut->m_globalTransform.SetScale(1.7);
+    m_screens.push_back(m_aut);
+    AddChild(*m_aut);
 
-    auto* kiwi = new SpriteNode("../assets/Splash/kiwi.png");
-    kiwi->SetRGBA(1,1,1,0.01);
-    m_screens.push_back(kiwi);
-    kiwi->m_transform.SetScale(0.7);
-    AddChild(*kiwi);
+    m_kiwi = new SpriteNode("../assets/Splash/kiwi.png");
+    m_kiwi->SetRGBA(1,1,1,0.01);
+    m_kiwi->m_globalTransformationFlag = Disable;
+    m_kiwi->m_transform.SetScale(0.5);
+    m_screens.push_back(m_kiwi);
+    AddChild(*m_kiwi);
 }
 
 void Splashscreen::Process(float deltaTime) {
-    Node::Process(deltaTime);
+    Control::Process(deltaTime);
 
     if (m_iCurrentScreen >= m_screens.size()) {
-        SceneManager::GetInstance().LoadScene("Game");
+        SceneManager::GetInstance().LoadScene("MainMenu");
         return;
     }
 
@@ -54,4 +57,9 @@ void Splashscreen::Process(float deltaTime) {
         m_fFadeSpeed *= -1;
         m_screens[m_iCurrentScreen++]->SetRGBA(1,1,1,0);
     }
+
+    m_aut->m_globalTransform.position.x = m_windowWidth / 2 - m_aut->m_globalTransform.GetWidth() / 2;
+    m_aut->m_globalTransform.position.y = m_windowHeight / 2 - m_aut->m_globalTransform.GetHeight() / 2;
+    m_kiwi->m_globalTransform.position.x = m_windowWidth / 2 - m_kiwi->m_globalTransform.GetWidth() / 2;
+    m_kiwi->m_globalTransform.position.y = m_windowHeight / 2 - m_kiwi->m_globalTransform.GetHeight() / 2;
 }
