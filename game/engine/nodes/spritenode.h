@@ -16,7 +16,6 @@ namespace Engine {
         SpriteNode();
         SpriteNode(const char* spritePath);
         SpriteNode(float height, float weight, const char* spritePath);
-        ~SpriteNode() override;
 
         void Init() override;
         void SystemProcess() override;

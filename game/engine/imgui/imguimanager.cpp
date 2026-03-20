@@ -3,7 +3,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
-
+#include "../logmanager/logmanager.h"
 
 
 namespace Engine {
@@ -28,7 +28,7 @@ namespace Engine {
         m_pInstance = nullptr;
     }
 
-    void ImguiManager::Initialize(SDL_Window *window, SDL_GLContext context) {
+    bool ImguiManager::Initialise(SDL_Window *window, SDL_GLContext context) {
         // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -37,8 +37,11 @@ namespace Engine {
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
 
         // Setup Platform/Renderer backends
-        ImGui_ImplSDL2_InitForOpenGL(window, context);
-        ImGui_ImplOpenGL3_Init();
+        if (!ImGui_ImplSDL2_InitForOpenGL(window, context) || !ImGui_ImplOpenGL3_Init()) {
+            LogManager::GetInstance().Log(ERROR, "Failed to setup ImGui");
+            return false;
+        }
+        return true;
     }
 
     void ImguiManager::ProcessEvent(SDL_Event event) {

@@ -93,6 +93,8 @@ set(IMGUI_SOURCES
         game/engine/nodes/ui/container.cpp
         game/engine/nodes/ui/textcontrol.cpp
         game/engine/nodes/ui/textcontrol.h
+        game/engine/sound/soundmanager.cpp
+        game/engine/sound/soundmanager.h
 )
 
 
@@ -127,9 +129,13 @@ set(FMOD_FSBANK_LIB ${FMOD_DIR}/fsbank/lib/x86_64)
 set(FMOD_STUDIO_API ${FMOD_DIR}/studio/inc)
 set(FMOD_STUDIO_LIB ${FMOD_DIR}/studio/lib/x86_64)
 
+# setup include directories
 target_include_directories(GP_Framework PRIVATE ${FMOD_CORE_API} ${FMOD_FSBANK_API} ${FMOD_STUDIO_API})
-link_directories(${FMOD_CORE_LIB} ${FMOD_FSBANK_LIB} ${FMOD_STUDIO_LIB})
+
+# setup static library directories
 find_library(FMODCORELIB fmod ${FMOD_CORE_LIB})
+find_library(FMODSTUDIOLIB fmodstudio ${FMOD_STUDIO_LIB})
+find_library(FMODFSBANKLIB fsbank ${FMOD_FSBANK_LIB})
 
 
 
@@ -161,5 +167,7 @@ target_link_libraries(
         SDL2_ttf::SDL2_ttf
         ${GLEWLIB}
         ${FMODCORELIB}
+        ${FMODSTUDIOLIB}
+        ${FMODFSBANKLIB}
         OpenGL
 )

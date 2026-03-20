@@ -8,7 +8,6 @@ namespace Engine {
     ColliderNode::ColliderNode(Formtype type) : Node("Collider"), m_pForm(nullptr), m_type(type), m_pSpritenode(nullptr) {
         OnCollision = Event<Node>();
     }
-    ColliderNode::~ColliderNode() = default;
 
     void ColliderNode::Init() {
         Node::Init();

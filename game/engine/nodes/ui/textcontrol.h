@@ -8,7 +8,6 @@ namespace Engine {
 
     public:
         TextControl();
-        ~TextControl() override;
         void Init() override;
         void Draw(Renderer&) override;
         void SystemProcess() override;

@@ -6,7 +6,6 @@ namespace Engine {
     class HContainer : public Container {
     public:
         HContainer();
-        ~HContainer() override;
 
         void Init() override;
         void PositionChildren() override;

@@ -96,7 +96,6 @@ namespace Engine {
         m_globalTransform.SetWidth(width);
     }
 
-    SpriteNode::~SpriteNode() = default;
 
     void SpriteNode::Init() {
         Node::Init();

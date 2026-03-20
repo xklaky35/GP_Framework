@@ -163,8 +163,10 @@ namespace  Engine {
     }
 
     void Node::RemoveChildren() {
+        if (m_children.empty()) return;
         for (const Node* c : m_children) {
             delete c;
+            c = nullptr;
         }
         m_children.clear();
     }

@@ -2,7 +2,6 @@
 
 namespace Engine {
     VContainer::VContainer() = default;
-    VContainer::~VContainer() = default;
 
     void VContainer::Init() {
         Container::Init();

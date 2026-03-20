@@ -23,8 +23,8 @@ private:
     int m_iCurrentScreen;
     std::vector<SpriteNode*> m_screens;
     SpriteNode* m_background;
-    SpriteNode* m_aut;
-    SpriteNode* m_kiwi;
+    SpriteNode* m_autLogo;
+    SpriteNode* m_fmodLogo;
 };
 
 

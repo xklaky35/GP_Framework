@@ -12,7 +12,7 @@ namespace Engine {
             });
         m_nodeInfo.push_back({
                 "Transparency", [](Node &n) {
-                    if (PanelContainer *s = dynamic_cast<PanelContainer *>(&n)) {
+                    if (auto *s = dynamic_cast<PanelContainer *>(&n)) {
                         float v_min = 0, v_max = 1;
                         ImGui::SetNextItemWidth(-FLT_MIN);
                         ImGui::DragFloat("##Editor",  &s->m_transparency, 0.5f, v_min, v_max);
@@ -22,7 +22,6 @@ namespace Engine {
         );
     }
 
-    PanelContainer::~PanelContainer() = default;
 
     void PanelContainer::Init() {
         Container::Init();

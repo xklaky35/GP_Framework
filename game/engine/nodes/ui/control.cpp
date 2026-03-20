@@ -95,8 +95,6 @@ namespace Engine {
             });
     }
 
-    Control::~Control() = default;
-
     void Control::Init() {
         Node::Init();
         m_name = "Control";

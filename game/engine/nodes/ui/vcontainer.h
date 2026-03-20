@@ -7,7 +7,6 @@ namespace Engine {
     class VContainer : public Container {
     public:
         VContainer();
-        ~VContainer() override;
 
         void Init() override;
         void PositionChildren() override;

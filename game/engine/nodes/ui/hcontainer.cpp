@@ -4,7 +4,6 @@
 namespace Engine {
 
     HContainer::HContainer() = default;
-    HContainer::~HContainer() = default;
 
     void HContainer::Init() {
         Container::Init();

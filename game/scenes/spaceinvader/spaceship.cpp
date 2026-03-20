@@ -6,14 +6,7 @@
 
 
 Spaceship::Spaceship(float speed, const char* nodeName) :  Node(nodeName), m_spriteNode(nullptr), m_colliderNode(nullptr), speed(speed)  {}
-Spaceship::~Spaceship() {
-    Node::~Node();
 
-    delete m_spriteNode;
-    m_spriteNode = nullptr;
-    delete m_colliderNode;
-    m_colliderNode = nullptr;
-}
 
 void Spaceship::Init() {
     Node::Init();

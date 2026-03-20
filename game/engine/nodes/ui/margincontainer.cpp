@@ -69,8 +69,6 @@ namespace Engine {
             });
     }
 
-    MarginContainer::~MarginContainer() = default;
-
     void MarginContainer::Init() {
         Container::Init();
         m_name = "MarginContainer";

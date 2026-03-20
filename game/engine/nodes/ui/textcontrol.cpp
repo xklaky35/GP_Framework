@@ -41,8 +41,6 @@ namespace Engine {
         );
     }
 
-    TextControl::~TextControl() {}
-
 
     void TextControl::Init() {
         Control::Init();

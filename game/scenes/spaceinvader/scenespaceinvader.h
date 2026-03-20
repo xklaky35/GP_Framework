@@ -11,7 +11,6 @@ class SceneSpaceinvader : public Node {
 public:
 
     SceneSpaceinvader();
-    ~SceneSpaceinvader() override;
 
     void Init() override;
 

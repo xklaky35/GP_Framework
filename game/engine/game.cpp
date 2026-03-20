@@ -17,6 +17,7 @@
 
 #include "fmod.hpp"
 #include "fmod_errors.h"
+#include "sound/soundmanager.h"
 
 #define DEBUG
 
@@ -35,7 +36,10 @@ namespace Engine {
 
         LogManager::DestroyInstance();
         ImguiManager::DestroyInstance();
+        SoundManager::DestroyInstance();
+        InputManager::DestroyInstance();
         SceneManager::DestroyInstance();
+
 
         delete sm_pInstance;
         sm_pInstance = nullptr;
@@ -66,36 +70,25 @@ namespace Engine {
     bool Game::Initialise() {
         Config::GetInstance().SetDefaultConfig();
 
-        FMOD_RESULT result;
-        FMOD::System *system = NULL;
-
-        result = FMOD::System_Create(&system);      // Create the main system object.
-        if (result != FMOD_OK)
-        {
-            printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-            exit(-1);
-        }
-
-        result = system->init(512, FMOD_INIT_NORMAL, 0);    // Initialize FMOD.
-        if (result != FMOD_OK)
-        {
-            printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-            exit(-1);
-        }
-
-
         int bbWidth = Config::GetInstance().windowsWidth;
         int bbHeight = Config::GetInstance().windowsHeight;
+
         m_pRenderer = new Renderer();
         if (!m_pRenderer->Initialise(true, bbWidth, bbHeight)) {
             LogManager::GetInstance().Log(ERROR, "Renderer failed to initialise!");
             return false;
         }
 
+        if (!SoundManager::GetInstance().Initialise()) {
+            return false;
+        }
+        SoundManager::GetInstance().LoadAudio();
+
+        if (!ImguiManager::GetInstance().Initialise(m_pRenderer->GetSDLWindow(), m_pRenderer->GetSDLGLContext())) {
+            return false;
+        }
 
         //################ INIT STUFF HERE ####################
-
-        ImguiManager::GetInstance().Initialize(m_pRenderer->GetSDLWindow(), m_pRenderer->GetSDLGLContext());
 
         SceneManager::GetInstance().RegisterScene("Splash", new Splashscreen());
         SceneManager::GetInstance().RegisterScene("MainMenu", new MainMenu());
@@ -149,6 +142,7 @@ namespace Engine {
             // ####### MAKE LOGIC STUFF HERE #############
 
             SceneManager::GetInstance().GetCurrentScene()->Process(deltaTime);
+            SoundManager::GetInstance().Process(deltaTime);
 
             // ###########################################
         }

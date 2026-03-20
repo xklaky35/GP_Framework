@@ -22,7 +22,7 @@ namespace Engine {
         static void DestroyInstance();
 
 
-        void Initialize(SDL_Window*, SDL_GLContext);
+        bool Initialise(SDL_Window*, SDL_GLContext);
         void ProcessEvent(SDL_Event);
         void Process();
         void Draw();

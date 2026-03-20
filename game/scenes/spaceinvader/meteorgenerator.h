@@ -8,7 +8,6 @@ using namespace Engine;
 class MeteorGenerator : public Node {
 public:
     MeteorGenerator(int);
-    ~MeteorGenerator() override;
     void Process(float deltaTime) override;
     void GenerateMetheor();
     int GetRandomNumber(int min, int max) const;

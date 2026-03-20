@@ -41,7 +41,6 @@ namespace Engine {
 
         Control();
         Control(bool);
-        ~Control() override;
 
         void Init() override;
         void Process(float) override;

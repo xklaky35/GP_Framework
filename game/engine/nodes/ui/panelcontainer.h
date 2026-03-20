@@ -7,7 +7,6 @@ namespace Engine {
     public:
 
         PanelContainer();
-        ~PanelContainer() override;
         void Init() override;
         void PositionChildren() override;
         void CalculateChildSpace() const override;

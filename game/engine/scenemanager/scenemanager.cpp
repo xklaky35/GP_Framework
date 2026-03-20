@@ -6,7 +6,7 @@ namespace Engine {
     SceneManager::SceneManager() : m_visibleNodeDebug(nullptr) {}
 
     SceneManager::~SceneManager() {
-        for (auto& pair : m_loadedScenes) {
+        for (auto pair : m_loadedScenes) {
             delete pair.second;
             pair.second = nullptr;
         }
@@ -23,6 +23,7 @@ namespace Engine {
     }
 
     void SceneManager::DestroyInstance() {
+
         delete m_pInstance;
         m_pInstance = nullptr;
     }

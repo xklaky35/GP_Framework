@@ -9,7 +9,7 @@
 using namespace Engine;
 
 SceneSpaceinvader::SceneSpaceinvader() = default;
-SceneSpaceinvader::~SceneSpaceinvader() = default;
+
 
 void SceneSpaceinvader::Init() {
     Node::Init();
