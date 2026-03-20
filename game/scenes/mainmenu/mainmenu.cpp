@@ -135,19 +135,19 @@ void MainMenu::Init() {
 void MainMenu::Process(float deltaTime) {
     HContainer::Process(deltaTime);
 
-    if (Input::GetCurrentEvents().IsPressed(SDLK_DOWN)) {
+    if (InputManager::GetCurrentEvents().GetButtonState(SDLK_DOWN)) {
         if (!m_bSelectionLocked) {
             if (m_currentSelection < 3) m_currentSelection++;
             m_bSelectionLocked = true;
         }
     }
-    else if (Input::GetCurrentEvents().IsPressed(SDLK_UP)) {
+    else if (InputManager::GetCurrentEvents().GetButtonState(SDLK_UP)) {
         if (!m_bSelectionLocked) {
             if (m_currentSelection > 0) m_currentSelection--;
             m_bSelectionLocked = true;
         }
     }
-    else if (Input::GetCurrentEvents().IsPressed(SDLK_RETURN)) {
+    else if (InputManager::GetCurrentEvents().GetButtonState(SDLK_RETURN)) {
         if (!m_bSelectionLocked) {
             SceneManager::GetInstance().LoadScene(m_sceneOptions[m_currentSelection]);
             //return;

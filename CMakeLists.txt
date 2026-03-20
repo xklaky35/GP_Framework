@@ -30,6 +30,10 @@ set(ENGINE_SOURCES
         ${ENGINE_DIR}/structs/vector2d.h
         ${ENGINE_DIR}/structs/transform.cpp
         ${ENGINE_DIR}/structs/transform.h
+        ${ENGINE_DIR}/input/input.cpp
+        ${ENGINE_DIR}/input/input.h
+        ${ENGINE_DIR}/imgui/imguimanager.cpp
+        ${ENGINE_DIR}/imgui/imguimanager.h
         ${ENGINE_NODES}/node.cpp
         ${ENGINE_NODES}/node.h
         ${ENGINE_NODES}/spritenode.cpp
@@ -46,10 +50,7 @@ set(ENGINE_SOURCES
         ${ENGINE_NODES}/forms/form.cpp
         ${ENGINE_NODES}/ridgitbody.cpp
         ${ENGINE_NODES}/ridgitbody.h
-        ${ENGINE_DIR}/input/input.cpp
-        ${ENGINE_DIR}/input/input.h
-        ${ENGINE_DIR}/imgui/imguimanager.cpp
-        ${ENGINE_DIR}/imgui/imguimanager.h
+
         game/helper/inlinehelper.h
 
 )
@@ -116,6 +117,23 @@ add_executable(GP_Framework
 )
 
 
+########## FMOD ##############
+
+set(FMOD_DIR lib/FMOD/api)
+set(FMOD_CORE_API ${FMOD_DIR}/core/inc)
+set(FMOD_CORE_LIB ${FMOD_DIR}/core/lib/x86_64)
+set(FMOD_FSBANK_API ${FMOD_DIR}/fsbank/inc)
+set(FMOD_FSBANK_LIB ${FMOD_DIR}/fsbank/lib/x86_64)
+set(FMOD_STUDIO_API ${FMOD_DIR}/studio/inc)
+set(FMOD_STUDIO_LIB ${FMOD_DIR}/studio/lib/x86_64)
+
+target_include_directories(GP_Framework PRIVATE ${FMOD_CORE_API} ${FMOD_FSBANK_API} ${FMOD_STUDIO_API})
+link_directories(${FMOD_CORE_LIB} ${FMOD_FSBANK_LIB} ${FMOD_STUDIO_LIB})
+find_library(FMODCORELIB fmod ${FMOD_CORE_LIB})
+
+
+
+
 ########## SDL 2 ##############
 # this assumes the SDL source is available in lib/SDL2
 add_subdirectory(lib/SDL2 EXCLUDE_FROM_ALL)
@@ -142,5 +160,6 @@ target_link_libraries(
         SDL2_image::SDL2_image
         SDL2_ttf::SDL2_ttf
         ${GLEWLIB}
+        ${FMODCORELIB}
         OpenGL
 )

@@ -207,6 +207,8 @@ namespace Engine {
                                                        sprite->GetBlueTint(),
                                                        sprite->GetAlpha());
                     m_pSpriteShader->SetMatrixUniform("uViewProj", orthoViewProj);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
                     glEnable(GL_BLEND);
                     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

@@ -15,6 +15,8 @@
 #include "input/input.h"
 #include "scenemanager/scenemanager.h"
 
+#include "fmod.hpp"
+#include "fmod_errors.h"
 
 #define DEBUG
 
@@ -64,6 +66,24 @@ namespace Engine {
     bool Game::Initialise() {
         Config::GetInstance().SetDefaultConfig();
 
+        FMOD_RESULT result;
+        FMOD::System *system = NULL;
+
+        result = FMOD::System_Create(&system);      // Create the main system object.
+        if (result != FMOD_OK)
+        {
+            printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
+            exit(-1);
+        }
+
+        result = system->init(512, FMOD_INIT_NORMAL, 0);    // Initialize FMOD.
+        if (result != FMOD_OK)
+        {
+            printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
+            exit(-1);
+        }
+
+
         int bbWidth = Config::GetInstance().windowsWidth;
         int bbHeight = Config::GetInstance().windowsHeight;
         m_pRenderer = new Renderer();
@@ -102,7 +122,7 @@ namespace Engine {
         while (SDL_PollEvent(&event) != 0) {
 
             ImguiManager::GetInstance().ProcessEvent(event);
-            Input::GetCurrentEvents().RegisterEvent(event);
+            InputManager::GetCurrentEvents().RegisterEvent(event);
         }
 
         if (m_bLooping) {

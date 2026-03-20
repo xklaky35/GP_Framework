@@ -42,16 +42,16 @@ void Spaceship::Process(float deltaTime) {
 
 void Spaceship::HandleMovement(float deltaTime) {
     velocity = velocity.Zero();
-    if (Input::GetCurrentEvents().IsPressed(SDLK_w)) {
+    if (InputManager::GetCurrentEvents().GetButtonState(SDLK_w)) {
         velocity.y = -1;
     }
-    if (Input::GetCurrentEvents().IsPressed(SDLK_a)) {
+    if (InputManager::GetCurrentEvents().GetButtonState(SDLK_a)) {
         velocity.x = -1;
     }
-    if (Input::GetCurrentEvents().IsPressed(SDLK_s)) {
+    if (InputManager::GetCurrentEvents().GetButtonState(SDLK_s)) {
         velocity.y = 1;
     }
-    if (Input::GetCurrentEvents().IsPressed(SDLK_d)) {
+    if (InputManager::GetCurrentEvents().GetButtonState(SDLK_d)) {
         velocity.x = 1;
     }
 
