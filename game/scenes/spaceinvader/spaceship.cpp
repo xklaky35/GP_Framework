@@ -25,7 +25,7 @@ void Spaceship::Init() {
 }
 
 void Spaceship::OnCollision(const Node* node) {
-    LogManager::GetInstance().Log(INFO, "hit");
+    //LogManager::GetInstance().Log(INFO, "hit");
 }
 
 void Spaceship::Process(float deltaTime) {

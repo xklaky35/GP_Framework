@@ -56,10 +56,6 @@ namespace Engine {
             // Generate sprites that use the static text textures...
             m_textSprite = renderer.CreateSprite(m_text.c_str());
             m_bIsInitialised = true;
-            puts("");
-            LogManager::GetInstance().Log(INFO, "r:%f g:%f b:%f :%f",m_rgba[0],m_rgba[1],m_rgba[2],m_rgba[3]);
-            LogManager::GetInstance().Log(INFO, "r:%d g:%d b:%d :%d",color.r, color.g,color.b,color.a);
-            puts("");
         }
         m_textSprite->Draw(renderer);
     }

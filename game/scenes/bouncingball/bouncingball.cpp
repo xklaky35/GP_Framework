@@ -21,12 +21,6 @@ void BouncingBall::Init() {
     m_globalTransform.SetSize(100,100);
     RandomizeSize();
 
-    // avg size
-
-    if (m_globalTransform.GetScale() == 0) {
-        LogManager::GetInstance().Log(INFO, "");
-    }
-
     m_globalTransform.position.x = static_cast<float>(GetRandomInt(m_globalTransform.GetWidth() / 2, SCREEN_WIDTH - m_globalTransform.GetWidth() / 2));
     m_globalTransform.position.y = static_cast<float>(GetRandomInt(m_globalTransform.GetHeight() / 2, SCREEN_HEIGHT - m_globalTransform.GetHeight() / 2));
     m_velocity.x = GetRandomPercentage() * static_cast<float>(GetRandomPosOrNeg()) * MAX_SPEED;
@@ -36,9 +30,7 @@ void BouncingBall::Init() {
 
     m_ballSprite = new SpriteNode("../assets/Sprites/ball.png");
     m_ballSprite->m_spriteDisplayMode = Fit;
-    LogManager::GetInstance().Log(INFO, "Height: %f, Width: %f",m_globalTransform.GetHeight(), m_globalTransform.GetWidth());
     AddChild(*m_ballSprite);
-
     RandomizeColor();
 }
 

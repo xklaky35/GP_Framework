@@ -82,7 +82,6 @@ namespace Engine {
             FMOD_RESULT result;
             FMOD::Channel *channel;
             result = m_pSystem->playSound(m_loadedSounds[soundOnSelection], nullptr, false, &channel);
-            LogManager::GetInstance().Log(INFO,"sound!");
         }
     }
 }
