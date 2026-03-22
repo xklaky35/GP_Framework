@@ -1,6 +1,7 @@
 #ifndef GP_FRAMEWORK_RECTANGLE_H
 #define GP_FRAMEWORK_RECTANGLE_H
 
+#include "bulletspawner.h"
 #include "../../engine/nodes/node.h"
 #include "../../engine/nodes/spritenode.h"
 #include "../../engine/nodes/collidernode.h"
@@ -16,14 +17,21 @@ public:
     void HandleMovement(float);
     void Process(float deltaTime) override;
     void Draw(Renderer &) override;
+    void Rotate(float);
 
 public:
-    Vector2d velocity;
-    float speed;
+    Vector2d direction;
+    Vector2d new_velocity;
+    float m_accellerationFactor;
+    float m_breakFactor;
+    float m_maxSpeed;
+    float m_rotationSpeed;
+    bool m_isPressed;
 
     // child setup
     SpriteNode* m_spriteNode;
     ColliderNode* m_colliderNode;
+    BulletSpawner* m_bulletSpawner;
 
 };
 

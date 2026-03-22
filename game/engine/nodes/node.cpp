@@ -184,9 +184,9 @@ namespace  Engine {
         m_globalTransform.position = m_parent->m_globalTransform.position + m_transform.position;
 
         // angle
-        const Vector2d vecX(cos(m_globalTransform.GetRotation()), sin(m_globalTransform.GetRotation()));
-        const Vector2d vecY(-sin(m_globalTransform.GetRotation()), cos(m_globalTransform.GetRotation()));
-        m_globalTransform.position = (vecX * m_globalTransform.position.x) + (vecY * m_globalTransform.position.y);
+        const Vector2d vecX(cos(m_globalTransform.GetRotationDeg()), sin(m_globalTransform.GetRotationDeg()));
+        const Vector2d vecY(-sin(m_globalTransform.GetRotationDeg()), cos(m_globalTransform.GetRotationDeg()));
+        //m_globalTransform.position = (vecX * m_globalTransform.position.x) + (vecY * m_globalTransform.position.y);
 
         // scale
         m_globalTransform.SetScale(m_parent->m_globalTransform.GetScale() * m_transform.GetScale());

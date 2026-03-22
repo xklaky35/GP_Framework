@@ -19,7 +19,6 @@ public:
     void DrawDebug() override;
     void OnImpact(const Node*);
     void Spin(float deltaTime);
-    void SetVelocity(float);
     void SetSpinDirection(signed char);
     void SetDamage(int);
     void SetSpinSpeed(float);
@@ -27,13 +26,14 @@ public:
 
 
 private:
-    float m_velocity;
+    Vector2d m_velocity;
     float m_spinSpeed;
     signed char m_spinDirection;
     int m_damage;
+    float m_speed;
 
     ColliderNode* m_collider;
-    AnimatedSprite* m_animation;
+    SpriteNode* m_animation;
 };
 
 

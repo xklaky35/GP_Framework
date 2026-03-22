@@ -15,7 +15,8 @@ namespace Engine {
         void SetRotation(float degrees);
 
         float GetScale() const;
-        float GetRotation() const;
+        float GetRotationDeg() const;
+        float GetRotationRad() const;
         float GetWidth() const;
         float GetHeight() const;
 

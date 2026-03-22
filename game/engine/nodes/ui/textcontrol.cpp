@@ -68,7 +68,7 @@ namespace Engine {
             m_initialSize.y = m_textSprite->GetHeight();
             m_textSprite->SetX(m_globalTransform.position.x + m_textSprite->GetWidth() / 2);
             m_textSprite->SetY(m_globalTransform.position.y + m_textSprite->GetHeight() / 2);
-            m_textSprite->SetAngle(m_globalTransform.GetRotation());
+            m_textSprite->SetAngle(m_globalTransform.GetRotationDeg());
         }
     }
 

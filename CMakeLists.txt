@@ -23,6 +23,8 @@ set(SCENES_SOURCES
         ${SCENES_DIR}/spaceinvader/meteorgenerator.h
         ${SCENES_DIR}/spaceinvader/scenespaceinvader.cpp
         ${SCENES_DIR}/spaceinvader/scenespaceinvader.h
+        game/scenes/spaceinvader/bullet.cpp
+        game/scenes/spaceinvader/bullet.h
 )
 
 
@@ -110,6 +112,8 @@ set(IMGUI_SOURCES
         ${IMGUI_DIR}/imgui_widgets.cpp
         ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp
         ${IMGUI_BACKENDS_DIR}/imgui_impl_sdl2.cpp
+        game/scenes/spaceinvader/bulletspawner.cpp
+        game/scenes/spaceinvader/bulletspawner.h
 
 )
 

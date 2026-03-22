@@ -125,7 +125,7 @@ namespace Engine {
             }
             m_pSprite->SetX(m_globalTransform.position.x + m_pSprite->GetWidth() / 2);
             m_pSprite->SetY(m_globalTransform.position.y + m_pSprite->GetHeight() / 2);
-            m_pSprite->SetAngle(m_globalTransform.GetRotation());
+            m_pSprite->SetAngle(m_globalTransform.GetRotationDeg());
         }
     }
 
@@ -140,6 +140,7 @@ namespace Engine {
             m_pSprite->SetGreenTint(m_greenTint);
             m_pSprite->SetBlueTint(m_blueTint);
             m_pSprite->SetScale(m_globalTransform.GetScale());
+            m_pSprite->SetAngle(m_globalTransform.GetRotationDeg());
             m_pSprite->Draw(renderer);
         }
     }

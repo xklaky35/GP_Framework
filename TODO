@@ -1,0 +1,6 @@
+TODO:
+
+- Rework ImGui Node Tree Configuration -> Simple registration of member variables to change on the UI
+- Refactor animation sprite node -> extract low level code from animation node to a inherited sprite class
+- Make scene reload work in the UI
+- Fix main menu (enter exits the program insted of choosing menu item)

@@ -44,6 +44,10 @@ namespace Engine {
         return Vector2d{x * vector, y * vector};
     }
 
+    Vector2d Vector2d::operator*(Vector2d vector) const {
+        return Vector2d{x * vector.x, y * vector.y};
+    }
+
     bool Vector2d::operator==(const Vector2d &vector) const {
         if (x == vector.x && y == vector.y) return true;
         return false;

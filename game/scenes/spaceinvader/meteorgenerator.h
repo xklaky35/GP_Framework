@@ -10,7 +10,6 @@ public:
     MeteorGenerator(int);
     void Process(float deltaTime) override;
     void GenerateMetheor();
-    int GetRandomNumber(int min, int max) const;
 
 private:
     int m_meteorCount;

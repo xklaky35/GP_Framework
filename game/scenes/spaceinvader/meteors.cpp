@@ -1,8 +1,8 @@
 #include "meteors.h"
+#include "../../helper/inlinehelper.h"
 
-#include "../../engine/nodes/animatedspritenode.h"
 
-Meteors::Meteors() : Node("Meteor"), m_velocity(0), m_spinSpeed(0), m_spinDirection(1), m_damage(0),
+Meteors::Meteors() : Node("Meteor"), m_spinSpeed(0), m_spinDirection(1), m_damage(0), m_speed(0),
                      m_collider(), m_animation(nullptr) {
 }
 
@@ -16,23 +16,24 @@ void Meteors::Init() {
     m_collider->OnCollision.Register<Meteors>(&Meteors::OnImpact, *this);
     AddChild(*m_collider);
 
-    m_animation = new AnimatedSprite("../assets/Sprites/explosion.png", 64,64);
-    m_animation->SetFrameDuration(0.3);
-    m_animation->SetLooping(false);
-    m_animation->StopAnimate();
+    m_animation = new SpriteNode("../assets/Sprites/ball.png");
+    //m_animation->m_spriteDisplayMode = Fit;
     AddChild(*m_animation);
+
+    m_velocity = Vector2d{GetRandomPercentage(),GetRandomPercentage()};
+    m_speed = GetRandomInt(1, 20);
 }
 
 void Meteors::Process(float deltaTime) {
     Node::Process(deltaTime);
 
-    m_globalTransform.position.y += m_velocity*deltaTime;
+    m_globalTransform.position += m_velocity * m_speed * deltaTime;
     Spin(deltaTime);
 }
 
 
 void Meteors::Spin(const float deltaTime) {
-    m_transform.SetRotation(m_globalTransform.GetRotation() + (m_spinSpeed * deltaTime) * static_cast<float>(m_spinDirection));
+    m_transform.SetRotation(m_globalTransform.GetRotationDeg() + (m_spinSpeed * deltaTime) * static_cast<float>(m_spinDirection));
 }
 
 void Meteors::Draw(Renderer &renderer) {
@@ -45,13 +46,9 @@ void Meteors::DrawDebug() {
 
 void Meteors::OnImpact(const Node* e) {
     if (e->m_name == "Spaceship") {
-        m_animation->Animate();
     }
 }
 
-void Meteors::SetVelocity(const float v) {
-    m_velocity = v;
-}
 
 void Meteors::SetSpinDirection(const signed char dir) {
     m_spinDirection = dir;

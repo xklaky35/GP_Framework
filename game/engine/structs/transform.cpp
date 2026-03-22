@@ -1,5 +1,7 @@
 #include "transform.h"
 
+#include <numbers>
+
 namespace Engine {
     void Transform::SetScale(const float s) {
         scale = s;
@@ -30,8 +32,12 @@ namespace Engine {
         return scale;
     }
 
-    float Transform::GetRotation() const {
+    float Transform::GetRotationDeg() const {
         return rotation;
+    }
+
+    float Transform::GetRotationRad() const {
+        return rotation * (std::numbers::pi / 180);
     }
 
     float Transform::GetWidth() const {
@@ -46,7 +52,7 @@ namespace Engine {
         position.x = t.position.x;
         position.y = t.position.y;
         SetScale(t.GetScale());
-        SetRotation(t.GetRotation());
+        SetRotation(t.GetRotationDeg());
         SetSize(t.GetWidth(), t.GetHeight());
         return *this;
     }
