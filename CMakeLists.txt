@@ -25,6 +25,8 @@ set(SCENES_SOURCES
         ${SCENES_DIR}/spaceinvader/scenespaceinvader.h
         game/scenes/spaceinvader/bullet.cpp
         game/scenes/spaceinvader/bullet.h
+        game/scenes/whoosh/scenewhoosh.cpp
+        game/scenes/whoosh/scenewhoosh.h
 )
 
 
@@ -97,6 +99,8 @@ set(ENGINE_SOURCES
         ${ENGINE_NODES}/ui/panelcontainer.h
         ${ENGINE_NODES}/ui/textcontrol.cpp
         ${ENGINE_NODES}/ui/textcontrol.h
+        game/engine/nodes/rigidbodynode.cpp
+        game/engine/nodes/rigidbodynode.h
 )
 
 ################## IMGUI ####################
@@ -114,6 +118,8 @@ set(IMGUI_SOURCES
         ${IMGUI_BACKENDS_DIR}/imgui_impl_sdl2.cpp
         game/scenes/spaceinvader/bulletspawner.cpp
         game/scenes/spaceinvader/bulletspawner.h
+        game/engine/physics/physicsmanager.cpp
+        game/engine/physics/physicsmanager.h
 
 )
 
@@ -154,6 +160,8 @@ add_subdirectory(lib/SDL2_image EXCLUDE_FROM_ALL)
 
 add_subdirectory(lib/SDL2_ttf EXCLUDE_FROM_ALL)
 
+add_subdirectory(lib/BOX2D EXCLUDE_FROM_ALL)
+
 
 
 ############ GLEW ###############
@@ -180,6 +188,7 @@ target_link_libraries(
         SDL2::SDL2
         SDL2_image::SDL2_image
         SDL2_ttf::SDL2_ttf
+        box2d::box2d
         ${GLEWLIB}
         ${FMODCORELIB}
         ${FMODSTUDIOLIB}

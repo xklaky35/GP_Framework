@@ -17,6 +17,8 @@
 
 #include "fmod.hpp"
 #include "fmod_errors.h"
+#include "../../lib/BOX2D/include/box2d/types.h"
+#include "physics/physicsmanager.h"
 #include "sound/soundmanager.h"
 
 #define DEBUG
@@ -87,8 +89,12 @@ namespace Engine {
         if (!ImguiManager::GetInstance().Initialise(m_pRenderer->GetSDLWindow(), m_pRenderer->GetSDLGLContext())) {
             return false;
         }
+        if (!PhysicsManager::GetInstance().Initialise()) {
+            return false;
+        }
 
         //################ INIT STUFF HERE ####################
+
 
         SceneManager::GetInstance().RegisterScene("Splash", new Splashscreen());
         SceneManager::GetInstance().RegisterScene("MainMenu", new MainMenu());
@@ -134,6 +140,7 @@ namespace Engine {
     void Game::Process(const float deltaTime) {
         ProcessFrameCounting(deltaTime);
         ImguiManager::GetInstance().Process();
+
         if (ImGui::IsKeyPressed(ImGuiKey_Tab, false)) {
             ToggleViewDebug();
         }
@@ -142,6 +149,7 @@ namespace Engine {
             // ####### MAKE LOGIC STUFF HERE #############
 
             SceneManager::GetInstance().GetCurrentScene()->Process(deltaTime);
+            PhysicsManager::GetInstance().Process(deltaTime);
             SoundManager::GetInstance().Process(deltaTime);
 
             // ###########################################

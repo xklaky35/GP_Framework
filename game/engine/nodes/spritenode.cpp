@@ -2,6 +2,8 @@
 
 #include <numeric>
 
+#include "imgui.h"
+
 namespace Engine {
     /**
      * This node uses the sprites dimensions by default.

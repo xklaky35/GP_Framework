@@ -1,5 +1,6 @@
 #include "textcontrol.h"
 
+#include "imgui.h"
 #include "../../logmanager/logmanager.h"
 
 namespace Engine {

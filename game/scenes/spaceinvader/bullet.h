@@ -2,6 +2,7 @@
 #define GP_FRAMEWORK_BULLET_H
 
 #include "../../engine/nodes/spritenode.h"
+#include "../../engine/nodes/collidernode.h"
 
 using namespace Engine;
 
@@ -18,7 +19,10 @@ private:
     Vector2d m_dir;
     Vector2d m_pos;
     float m_speed;
-    float TTL;
+    float m_ttl;
+    float m_deltaSum;
+
+    ColliderNode* m_colliderNode;
 };
 
 

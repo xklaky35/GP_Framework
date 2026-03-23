@@ -1,8 +1,13 @@
 #include "meteors.h"
+
+#include <cstring>
+
+#include "../../engine/logmanager/logmanager.h"
 #include "../../helper/inlinehelper.h"
 
 
-Meteors::Meteors() : Node("Meteor"), m_spinSpeed(0), m_spinDirection(1), m_damage(0), m_speed(0),
+Meteors::Meteors() : Node("Meteor"), m_spinSpeed(0), m_spinDirection(1), m_damage(0), m_speed(0), splitLevel(0),
+                     maxLevel(0),
                      m_collider(), m_animation(nullptr) {
 }
 
@@ -14,13 +19,17 @@ void Meteors::Init() {
     // setup collider
     m_collider = new ColliderNode(ft_CIRCLE);
     m_collider->OnCollision.Register<Meteors>(&Meteors::OnImpact, *this);
+
+    m_collider->m_transform.position.x += m_globalTransform.GetWidth() / 2;
+    m_collider->m_transform.position.y += m_globalTransform.GetHeight() / 2;
+    m_collider->m_transform.SetScale(m_globalTransform.GetScale());
     AddChild(*m_collider);
 
     m_animation = new SpriteNode("../assets/Sprites/ball.png");
     //m_animation->m_spriteDisplayMode = Fit;
     AddChild(*m_animation);
 
-    m_velocity = Vector2d{GetRandomPercentage(),GetRandomPercentage()};
+    m_velocity = Vector2d{GetRandomPercentage() * GetRandomPosOrNeg(),GetRandomPercentage() * GetRandomPosOrNeg()};
     m_speed = GetRandomInt(1, 20);
 }
 
@@ -45,7 +54,9 @@ void Meteors::DrawDebug() {
 }
 
 void Meteors::OnImpact(const Node* e) {
-    if (e->m_name == "Spaceship") {
+    if (std::strcmp(e->m_name, "Collider") != 0) {
+        LogManager::GetInstance().Log(INFO, "Metheor hit %s", e->m_name);
+        Split();
     }
 }
 
@@ -63,6 +74,24 @@ void Meteors::SetSpinSpeed(const float ss) {
 
 int Meteors::GetDamage() const {
     return m_damage;
+}
+
+void Meteors::Split() {
+
+        Meteors* m1 = new Meteors();
+        m1->m_globalTransform.position = m_globalTransform.position;
+        m1->m_globalTransform.SetScale(m_globalTransform.GetScale() / 2);
+        Meteors* m2 = new Meteors();
+        m2->m_globalTransform.position = m_globalTransform.position;
+        m2->m_globalTransform.SetScale(m_globalTransform.GetScale() / 2);
+        Meteors* m3 = new Meteors();
+        m3->m_globalTransform.position = m_globalTransform.position;
+        m3->m_globalTransform.SetScale(m_globalTransform.GetScale() / 2);
+
+        m_parent->AddChild(*m1);
+        m_parent->AddChild(*m2);
+        m_parent->AddChild(*m3);
+        m_parent->RemoveChild(this);
 }
 
 

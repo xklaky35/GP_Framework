@@ -9,6 +9,14 @@ namespace Engine {
         OnCollision = Event<Node>();
     }
 
+    ColliderNode::~ColliderNode() {
+        delete m_pForm;
+        m_pForm = nullptr;
+
+        Node::~Node();
+    }
+
+
     void ColliderNode::Init() {
         Node::Init();
 
@@ -18,6 +26,7 @@ namespace Engine {
         m_pSpritenode = new SpriteNode();
         m_pSpritenode->SetRGBA(1,0,0,0.3);
         m_pSpritenode->m_spriteDisplayMode = Fit;
+        m_pSpritenode->m_globalTransform.SetSize(m_globalTransform.GetWidth(), m_globalTransform.GetHeight());
 
         switch (m_type) {
             case ft_CIRCLE: {
@@ -42,6 +51,7 @@ namespace Engine {
 
 
     void ColliderNode::SystemProcess() {
+        Node::SystemProcess();
         UpdateForm();
     }
 

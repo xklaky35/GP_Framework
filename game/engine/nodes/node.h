@@ -2,10 +2,8 @@
 #define GP_FRAMEWORK_NODE_H
 
 #include <functional>
-#include <string>
 #include <vector>
 
-#include "imgui.h"
 #include "../renderer.h"
 #include "../structs/transform.h"
 
@@ -14,7 +12,6 @@ namespace Engine {
         Inherit,
         Disable
     };
-
 
 
     struct NodeInfo;
@@ -55,6 +52,8 @@ namespace Engine {
 
     protected:
         std::vector<Node*> m_children;
+        std::vector<Node*> m_childrenToAdd;
+        std::vector<Node*> m_childrenToDelete;
     };
 
     struct NodeInfo

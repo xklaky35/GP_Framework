@@ -1,8 +1,6 @@
-//
-// Created by leon on 18.03.26.
-//
-
 #include "margincontainer.h"
+
+#include "imgui.h"
 
 namespace Engine {
     MarginContainer::MarginContainer() : m_MarginLeft(0), m_MarginRight(0), m_MarginTop(0), m_MarginBottom(0) {

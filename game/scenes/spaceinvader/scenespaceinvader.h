@@ -3,6 +3,7 @@
 
 #include "meteorgenerator.h"
 #include "spaceship.h"
+#include "../../../lib/BOX2D/include/box2d/id.h"
 #include "../../engine/nodes/node.h"
 
 using namespace Engine;
@@ -17,7 +18,8 @@ public:
 private:
     MeteorGenerator* m_metheorGenerator;
     Spaceship* m_spaceship;
-
+    b2WorldId m_worldId;
+    b2BodyId m_bodyId;
 };
 
 

@@ -94,6 +94,19 @@ namespace  Engine {
     }
 
     void Node::Process(const float deltaTime) {
+        for (Node *c: m_childrenToAdd) {
+            m_children.push_back(c);
+        }
+        m_childrenToAdd.clear();
+
+
+        for (Node *c: m_childrenToDelete) {
+            std::erase<Node*>(m_children, c);
+            delete c;
+        }
+        m_childrenToDelete.clear();
+
+
         for (Node *c: m_children) {
             c->Process(deltaTime);
         }
@@ -147,7 +160,7 @@ namespace  Engine {
     void Node::AddChild(Node& node) {
         node.m_Id = ++m_Id;
         node.SetParent(this);
-        m_children.push_back(&node);
+        m_childrenToAdd.push_back(&node);
         node.Init();
     }
 
@@ -158,17 +171,15 @@ namespace  Engine {
     }
 
     void Node::RemoveChild(Node* node) {
-        std::erase<Node*>(m_children, node);
-        delete node;
+        m_childrenToDelete.push_back(node);
     }
 
     void Node::RemoveChildren() {
         if (m_children.empty()) return;
-        for (const Node* c : m_children) {
-            delete c;
-            c = nullptr;
+        for (Node* c : m_children) {
+            RemoveChild(c);
         }
-        m_children.clear();
+        //m_children.clear();
     }
 
     void Node::SetParent(Node* node) {

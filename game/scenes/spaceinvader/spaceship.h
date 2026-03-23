@@ -5,6 +5,7 @@
 #include "../../engine/nodes/node.h"
 #include "../../engine/nodes/spritenode.h"
 #include "../../engine/nodes/collidernode.h"
+#include "../../engine/nodes/rigidbodynode.h"
 
 using namespace Engine;
 
@@ -26,12 +27,15 @@ public:
     float m_breakFactor;
     float m_maxSpeed;
     float m_rotationSpeed;
+    float m_dps;
+    float m_deltaSum;
     bool m_isPressed;
 
     // child setup
     SpriteNode* m_spriteNode;
     ColliderNode* m_colliderNode;
     BulletSpawner* m_bulletSpawner;
+    RigidbodyNode* m_rigidBody;
 
 };
 

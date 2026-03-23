@@ -1,5 +1,7 @@
 #include "panelcontainer.h"
 
+#include "imgui.h"
+
 namespace Engine {
     PanelContainer::PanelContainer() : m_background(nullptr), m_transparency(0.4) {
 

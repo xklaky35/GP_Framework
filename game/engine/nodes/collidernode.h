@@ -17,6 +17,7 @@ namespace Engine {
     class ColliderNode : public Node {
     public:
         ColliderNode(Formtype);
+        ~ColliderNode() override;
 
         void Init() override;
         void Process(float deltaTime) override;

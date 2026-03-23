@@ -45,7 +45,6 @@ namespace Engine {
         float m_iFPS;
         float m_fElapsedSeconds;
         int m_iFrameCount;
-        int m_iCurrentFps;
 
         bool m_bLooping;
         bool m_bIsPaused;

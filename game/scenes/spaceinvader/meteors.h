@@ -24,6 +24,7 @@ public:
     void SetSpinSpeed(float);
     int GetDamage() const;
 
+    void Split();
 
 private:
     Vector2d m_velocity;
@@ -31,6 +32,8 @@ private:
     signed char m_spinDirection;
     int m_damage;
     float m_speed;
+    int splitLevel;
+    int maxLevel;
 
     ColliderNode* m_collider;
     SpriteNode* m_animation;
