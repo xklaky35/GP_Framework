@@ -34,9 +34,21 @@ namespace Engine {
         return *this;
     }
 
+    Vector2d & Vector2d::operator-=(float f) {
+        x -= f;
+        y -= f;
+        return *this;
+    }
+
     Vector2d& Vector2d::operator+=(const Vector2d& vector) {
         x += vector.x;
         y += vector.y;
+        return *this;
+    }
+
+    Vector2d & Vector2d::operator-=(const Vector2d& vector) {
+        x -= vector.x;
+        y -= vector.y;
         return *this;
     }
 

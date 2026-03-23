@@ -14,10 +14,12 @@ namespace Engine {
         void Init() override;
 
         void Process(float deltaTime) override;
+        void AddForceToCenter(Vector2d vec);
 
     private:
         b2BodyId m_bodyId;
         b2BodyType m_bodyType;
+        b2Polygon m_bodyPolygon;
         bool m_bIsStatic;
     };
 }

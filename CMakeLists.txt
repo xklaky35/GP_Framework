@@ -120,6 +120,8 @@ set(IMGUI_SOURCES
         game/scenes/spaceinvader/bulletspawner.h
         game/engine/physics/physicsmanager.cpp
         game/engine/physics/physicsmanager.h
+        game/scenes/whoosh/player.cpp
+        game/scenes/whoosh/player.h
 
 )
 

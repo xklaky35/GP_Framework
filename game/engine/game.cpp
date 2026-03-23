@@ -18,6 +18,7 @@
 #include "fmod.hpp"
 #include "fmod_errors.h"
 #include "../../lib/BOX2D/include/box2d/types.h"
+#include "../scenes/whoosh/scenewhoosh.h"
 #include "physics/physicsmanager.h"
 #include "sound/soundmanager.h"
 
@@ -99,8 +100,7 @@ namespace Engine {
         SceneManager::GetInstance().RegisterScene("Splash", new Splashscreen());
         SceneManager::GetInstance().RegisterScene("MainMenu", new MainMenu());
         SceneManager::GetInstance().RegisterScene("SpaceInvaders", new SceneSpaceinvader());
-        SceneManager::GetInstance().RegisterScene("Robotron", new SceneBouncingBall());
-        SceneManager::GetInstance().RegisterScene("Astroids", new SceneBouncingBall());
+        SceneManager::GetInstance().RegisterScene("Whoosh", new SceneWhoosh());
         SceneManager::GetInstance().LoadScene("Splash");
 
         //################ INIT STUFF HERE ####################
