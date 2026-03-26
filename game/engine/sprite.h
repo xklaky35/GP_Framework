@@ -17,8 +17,14 @@ namespace Engine {
         void Process(float deltaTime);
         void Draw(Renderer &renderer);
         float GetWidth() const;
+
+        float GetOriginalWidth() const;
+
         void SetWidth(float x);
         float GetHeight() const;
+
+        float GetOriginalHeight() const;
+
         void SetHeight(float x);
         void SetX(float x);
         float GetX() const;
@@ -54,6 +60,8 @@ namespace Engine {
         float m_centerY;
         float m_width;
         float m_height;
+        float m_originalWidth;
+        float m_originalHeight;
         float m_scale;
         float m_alpha;
         float m_tintRed;

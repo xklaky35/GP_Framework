@@ -18,6 +18,7 @@ public:
 public:
 
     Player* m_player;
+    RigidbodyNode* m_floor;
 
 
 };

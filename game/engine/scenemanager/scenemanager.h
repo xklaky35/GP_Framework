@@ -19,7 +19,6 @@ namespace Engine {
         void DrawDebug(bool* p_open);
         void ResetCurrentScene();
 
-
     public:
         Node* m_visibleNodeDebug;
     private:

@@ -6,7 +6,7 @@
 #include "../../helper/inlinehelper.h"
 
 
-Meteors::Meteors() : Node("Meteor"), m_spinSpeed(0), m_spinDirection(1), m_damage(0), m_speed(0), splitLevel(0),
+Meteors::Meteors() : m_spinSpeed(0), m_spinDirection(1), m_damage(0), m_speed(0), splitLevel(0),
                      maxLevel(0),
                      m_collider(), m_animation(nullptr) {
 }
@@ -25,7 +25,8 @@ void Meteors::Init() {
     m_collider->m_transform.SetScale(m_globalTransform.GetScale());
     AddChild(*m_collider);
 
-    m_animation = new SpriteNode("../assets/Sprites/ball.png");
+    m_animation = new SpriteNode();
+    m_animation->SetSpritePath(std::string("../assets/Sprites/ball.png").data());
     //m_animation->m_spriteDisplayMode = Fit;
     AddChild(*m_animation);
 
@@ -54,8 +55,8 @@ void Meteors::DrawDebug() {
 }
 
 void Meteors::OnImpact(const Node* e) {
-    if (std::strcmp(e->m_name, "Collider") != 0) {
-        LogManager::GetInstance().Log(INFO, "Metheor hit %s", e->m_name);
+    if (std::strcmp(e->m_name.c_str(), "Collider") != 0) {
+        LogManager::GetInstance().Log(INFO, "Metheor hit %s", e->m_name.c_str());
         Split();
     }
 }

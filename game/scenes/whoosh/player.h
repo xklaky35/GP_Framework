@@ -10,7 +10,7 @@ class Player : public Node {
 
 public:
     Player();
-    ~Player();
+    ~Player() override;
 
     void Init() override;
     void Process(float deltaTime) override;

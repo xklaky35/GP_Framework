@@ -20,7 +20,7 @@ void SceneSpaceinvader::Init() {
     m_metheorGenerator = new MeteorGenerator(20);
     AddChild(*m_metheorGenerator);
 
-    m_spaceship = new Spaceship(200);
+    m_spaceship = new Spaceship();
     m_spaceship->m_globalTransform.position.x = Config::GetInstance().windowsWidth / 2;
     m_spaceship->m_globalTransform.position.y = Config::GetInstance().windowsHeight - Config::GetInstance().windowsHeight / 4;
     AddChild(*m_spaceship);

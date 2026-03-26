@@ -28,7 +28,8 @@ void BouncingBall::Init() {
 
     ComputeBoundary(SCREEN_HEIGHT, SCREEN_WIDTH);
 
-    m_ballSprite = new SpriteNode("../assets/Sprites/ball.png");
+    m_ballSprite = new SpriteNode();
+    m_ballSprite->SetSpritePath(std::string("../assets/Sprites/ball.png").data());
     m_ballSprite->m_spriteDisplayMode = Fit;
     AddChild(*m_ballSprite);
     RandomizeColor();

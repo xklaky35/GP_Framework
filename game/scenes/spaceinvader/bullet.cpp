@@ -6,7 +6,7 @@ using namespace Engine;
 
 Bullet::Bullet(const float speed, const float ttl, const Vector2d dir, const Vector2d pos) : m_dir(dir), m_speed(speed),
     m_ttl(ttl), m_deltaSum(0), m_colliderNode(nullptr), m_pos(pos) {
-    m_pSpritePath = "../assets/Sprites/ball.png";
+    m_spritePath = "../assets/Sprites/ball.png";
     m_name = "Bullet";
 }
 

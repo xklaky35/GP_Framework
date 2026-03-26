@@ -9,10 +9,8 @@ namespace Engine {
     class RigidbodyNode : public Engine::Node {
     public:
         RigidbodyNode(b2BodyType);
-        ~RigidbodyNode();
 
         void Init() override;
-
         void Process(float deltaTime) override;
         void AddForceToCenter(Vector2d vec);
 

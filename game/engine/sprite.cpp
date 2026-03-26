@@ -25,6 +25,8 @@ namespace Engine {
         m_pTexture = &texture;
         m_width = m_pTexture->GetWidth();
         m_height = m_pTexture->GetHeight();
+        m_originalWidth = m_pTexture->GetWidth();
+        m_originalHeight = m_pTexture->GetHeight();
         return true;
     }
 
@@ -79,7 +81,11 @@ namespace Engine {
     }
 
     float Sprite::GetWidth() const {
-        return static_cast<int>(ceilf(m_width * m_scale));
+        return m_width;
+    }
+
+    float Sprite::GetOriginalWidth() const {
+        return m_originalWidth;
     }
 
     void Sprite::SetWidth(const float w) {
@@ -91,7 +97,11 @@ namespace Engine {
     }
 
     float Sprite::GetHeight() const {
-        return static_cast<int>(ceilf(m_height * m_scale));
+        return m_height;
+    }
+
+    float Sprite::GetOriginalHeight() const {
+        return m_originalHeight;
     }
 
     float Sprite::Clamp(float minimum, float value, float maximum) {

@@ -25,7 +25,6 @@ namespace Engine {
         Vector2d position;
         Vector2d scaledSize;
         Vector2d baseSize;
-    private:
         float scale;
         float rotation;
 

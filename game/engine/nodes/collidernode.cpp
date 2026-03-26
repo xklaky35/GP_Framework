@@ -5,7 +5,7 @@
 #include "forms/rectangle.h"
 
 namespace Engine {
-    ColliderNode::ColliderNode(Formtype type) : Node("Collider"), m_pForm(nullptr), m_type(type), m_pSpritenode(nullptr) {
+    ColliderNode::ColliderNode(Formtype type) : m_pForm(nullptr), m_type(type), m_pSpritenode(nullptr) {
         OnCollision = Event<Node>();
     }
 
@@ -31,12 +31,12 @@ namespace Engine {
         switch (m_type) {
             case ft_CIRCLE: {
                 m_pForm = new Circle(m_globalTransform);
-                m_pSpritenode->SetSpritePath("../assets/Sprites/ball.png");
+                //m_pSpritenode->SetSpritePath("../assets/Sprites/ball.png");
                 break;
             }
             case ft_RECTANGLE: {
                 m_pForm = new Rectangle(m_globalTransform);
-                m_pSpritenode->SetSpritePath("../assets/Sprites/rect.png");
+                //m_pSpritenode->SetSpritePath("../assets/Sprites/rect.png");
                 break;
             }
         }

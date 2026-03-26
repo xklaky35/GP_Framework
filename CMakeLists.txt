@@ -101,6 +101,10 @@ set(ENGINE_SOURCES
         ${ENGINE_NODES}/ui/textcontrol.h
         game/engine/nodes/rigidbodynode.cpp
         game/engine/nodes/rigidbodynode.h
+        game/engine/iniparser/iniparser.cpp
+        game/engine/iniparser/iniparser.h
+        game/engine/scenebuilder/scenebuilder.cpp
+        game/engine/scenebuilder/scenebuilder.h
 )
 
 ################## IMGUI ####################
@@ -116,12 +120,15 @@ set(IMGUI_SOURCES
         ${IMGUI_DIR}/imgui_widgets.cpp
         ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp
         ${IMGUI_BACKENDS_DIR}/imgui_impl_sdl2.cpp
+        ${IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
         game/scenes/spaceinvader/bulletspawner.cpp
         game/scenes/spaceinvader/bulletspawner.h
-        game/engine/physics/physicsmanager.cpp
-        game/engine/physics/physicsmanager.h
         game/scenes/whoosh/player.cpp
         game/scenes/whoosh/player.h
+        game/engine/physics/physicsmanager.cpp
+        game/engine/physics/physicsmanager.h
+        game/engine/nodes/nodefactory.cpp
+        game/engine/nodes/nodefactory.h
 
 )
 

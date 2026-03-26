@@ -11,14 +11,13 @@ using namespace Engine;
 
 class Spaceship : public Node {
 public:
-    Spaceship(float, const char* = "Spaceship");
+    Spaceship();
 
     void Init() override;
     void OnCollision(const Node *node);
     void HandleMovement(float);
     void Process(float deltaTime) override;
     void Draw(Renderer &) override;
-    void Rotate(float);
 
 public:
     Vector2d direction;

@@ -6,9 +6,8 @@
 namespace Engine {
     Control::Control() : Control(false) {}
     Control::Control(bool useDebugRect) : m_bUseDebugRect(useDebugRect), m_positionMode(Position), m_bIsChildOfContainer(false), m_debugRect(nullptr) {
+
         m_containerSizing = ContainerSizing();
-
-
         m_nodeInfo.push_back(
             {
                 "", [](Node &n) {
@@ -99,11 +98,11 @@ namespace Engine {
 
     void Control::Init() {
         Node::Init();
-        m_name = "Control";
         m_globalTransformationFlag = Disable;
 
         if (m_bUseDebugRect) {
-            m_debugRect = new SpriteNode("../assets/Sprites/board8x8.png");
+            m_debugRect = new SpriteNode();
+            m_debugRect->SetSpritePath(std::string("../assets/Sprites/board8x8.png").data());
             m_debugRect->m_spriteDisplayMode = Fit;
             m_debugRect->SetRGBA(GetRandomPercentage(), GetRandomPercentage(),GetRandomPercentage(),1);
             AddChild(*m_debugRect);

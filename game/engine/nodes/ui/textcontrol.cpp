@@ -45,7 +45,7 @@ namespace Engine {
 
     void TextControl::Init() {
         Control::Init();
-        m_name = "Textcontrol";
+        m_name = std::string("Textcontrol").data();
     }
 
     void TextControl::Draw(Renderer& renderer) {

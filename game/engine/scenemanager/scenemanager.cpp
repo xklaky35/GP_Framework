@@ -51,6 +51,8 @@ namespace Engine {
 
 
     void SceneManager::DrawDebug(bool* p_open) {
+
+        // ########## Scene selector ##############
         ImGui::Begin("Scene Manager", p_open, ImGuiWindowFlags_MenuBar);
         ImGui::BeginMultiSelect(ImGuiMultiSelectFlags_NoSelectAll, m_loadedScenes.size()-1, m_loadedScenes.size()-1);
 
@@ -65,7 +67,7 @@ namespace Engine {
 
 
 
-
+        // ########### Node Tree ###################
         ImGui::Begin("Nodes");
         if (ImGui::BeginChild("##tree", ImVec2(300, 0), ImGuiChildFlags_ResizeX | ImGuiChildFlags_Borders | ImGuiChildFlags_NavFlattened))
         {
@@ -77,6 +79,7 @@ namespace Engine {
         ImGui::End();
 
 
+        // ########## Selected node properties
         ImGui::Begin("NodesProperties");
         //ImGui::SameLine();
         ImGui::BeginGroup(); // Lock X position
@@ -90,6 +93,9 @@ namespace Engine {
                 ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 2.0f); // Default twice larger
                 for (const NodeInfo &field_desc: m_visibleNodeDebug->m_nodeInfo) {
+                    if (m_visibleNodeDebug->m_iniParser == nullptr) {
+                        continue;
+                    }
                     ImGui::TableNextRow();
                     ImGui::PushID(field_desc.Name);
                     ImGui::TableNextColumn();
@@ -106,6 +112,7 @@ namespace Engine {
         }
         ImGui::EndGroup(); // Lock X position
         ImGui::End();
+
     }
 
     const std::pmr::map<std::string, Node *> &SceneManager::GetScenes() {

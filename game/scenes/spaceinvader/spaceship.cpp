@@ -7,15 +7,15 @@
 #include "../../engine/logmanager/logmanager.h"
 #include "../../engine/sound/soundmanager.h"
 
-Spaceship::Spaceship(float max_speed, const char* nodeName) : Node(nodeName), m_accellerationFactor(200),
-                                                              m_breakFactor(70),
-                                                              m_maxSpeed(500),
-                                                              m_rotationSpeed(300),
-                                                              m_dps(5),
-                                                              m_deltaSum(0),
-                                                              m_isPressed(false),
-                                                              m_spriteNode(nullptr), m_colliderNode(nullptr),
-                                                              m_bulletSpawner(nullptr), m_rigidBody(nullptr) {
+Spaceship::Spaceship() : m_accellerationFactor(200),
+                         m_breakFactor(70),
+                         m_maxSpeed(500),
+                         m_rotationSpeed(300),
+                         m_dps(5),
+                         m_deltaSum(0),
+                         m_isPressed(false),
+                         m_spriteNode(nullptr), m_colliderNode(nullptr),
+                         m_bulletSpawner(nullptr), m_rigidBody(nullptr) {
     direction.x = 0;
     direction.y = -1;
 }
@@ -27,7 +27,8 @@ void Spaceship::Init() {
 
     m_globalTransform.SetSize(200,200);
     // setup sprite
-    m_spriteNode = new SpriteNode("../assets/Sprites/spaceship.png");
+    m_spriteNode = new SpriteNode();
+    m_spriteNode->SetSpritePath(std::string("../assets/Sprites/spaceship.png").data());
     m_spriteNode->m_spriteDisplayMode = Scale;
     AddChild(*m_spriteNode);
 

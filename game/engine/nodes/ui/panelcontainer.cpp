@@ -29,7 +29,8 @@ namespace Engine {
         Container::Init();
         m_name = "PanelContainer";
 
-        m_background = new SpriteNode("../assets/Sprites/rect.png");
+        m_background = new SpriteNode();
+        m_background->SetSpritePath(std::string("../assets/Sprites/rect.png").data());
         m_background->m_spriteDisplayMode = Fit;
         m_background->SetRGBA(1,1,1,m_transparency);
         AddChild(*m_background);

@@ -10,22 +10,22 @@ namespace Engine {
         Scale,  // chains width and hight of original sprite to keep dimensions
         Fit     // fit the specified hight and width values
     };
+    static const char* SpriteDisplayFlagStrings[] = { "Original", "Scale", "Fit"};
+
     class SpriteNode : public Node {
 
     public:
         SpriteNode();
-        SpriteNode(const char* spritePath);
-        SpriteNode(float height, float weight, const char* spritePath);
+        SpriteNode(IniParser* iniParser);
 
         void Init() override;
         void SystemProcess() override;
         void Draw(Renderer &) override;
         void DrawDebug() override;
         void SetRGBA(float,float,float,float);
-        void SetSpritePath(const char*);
+        void SetSpritePath(std::string);
 
 
-        SpriteDisplayFlag m_spriteDisplayMode;
 
     protected:
 
@@ -33,7 +33,9 @@ namespace Engine {
 
 
     public:
-        const char* m_pSpritePath;
+        std::string m_spritePath;
+        int m_iLayer;
+        SpriteDisplayFlag m_spriteDisplayMode;
 
     protected:
         Sprite *m_pSprite;
