@@ -5,6 +5,7 @@
 #include "shader.h"
 #include "texturemanager.h"
 #include "sprite.h"
+#include "animatedsprite.h"
 
 
 // Library includes:
@@ -29,8 +30,10 @@ namespace Engine {
 
 
         Sprite *CreateSprite(const char *pcFilename);
+        AnimatedSprite *CreateAnimatedSprite(const char *pcFilename);
+
         void DrawSprite(Sprite &sprite);
-        void DrawAnimatedSprite(const Sprite &sprite, int frame, int width, int height);
+        void DrawAnimatedSprite(Sprite &sprite, int frame, int width, int height);
         void Draw(); // draw all sprites collected
         SDL_Window* GetSDLWindow();
         const SDL_GLContext GetSDLGLContext();

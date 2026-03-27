@@ -11,17 +11,17 @@ namespace Engine {
         // Member methods:
     public:
         Sprite();
-        ~Sprite();
-
-        bool Initialise(Texture &texture);
-        void Process(float deltaTime);
-        void Draw(Renderer &renderer);
-        float GetWidth() const;
+        virtual ~Sprite();
+        virtual bool Initialise(Texture &texture);
+        virtual void Process(float deltaTime);
+        virtual void Draw(Renderer &renderer);
+        virtual void DrawDebug();
+        virtual float GetWidth() const;
 
         float GetOriginalWidth() const;
 
         void SetWidth(float x);
-        float GetHeight() const;
+        virtual float GetHeight() const;
 
         float GetOriginalHeight() const;
 

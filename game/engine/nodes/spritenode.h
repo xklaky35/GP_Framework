@@ -26,10 +26,9 @@ namespace Engine {
         void SetSpritePath(std::string);
 
 
-
     protected:
 
-        void SetupSpriteRendering(Renderer&);
+        virtual void SetupSpriteRendering(Renderer&);
 
 
     public:
@@ -39,7 +38,6 @@ namespace Engine {
 
     protected:
         Sprite *m_pSprite;
-    private:
         Renderer *m_pRenderer;
         Vector2d m_aspectRatio;
         float m_redTint;

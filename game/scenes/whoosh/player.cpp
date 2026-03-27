@@ -155,7 +155,7 @@ void Player::HandleMovement(float deltaTime) {
 
     if (InputManager::GetCurrentEvents().GetButtonState(SDLK_SPACE)) {
         if (m_jumpsMade < m_maxJumps) {
-            m_rigidBody->AddForceToCenter(Vector2d(0,500));
+            m_rigidBody->AddForceToCenter(Vector2d(0,-500));
             //m_jumpsMade++;
         }
     }

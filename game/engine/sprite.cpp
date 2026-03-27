@@ -20,8 +20,7 @@ namespace Engine {
 
     Sprite::~Sprite() = default;
 
-    bool
-    Sprite::Initialise(Texture &texture) {
+    bool Sprite::Initialise(Texture &texture) {
         m_pTexture = &texture;
         m_width = m_pTexture->GetWidth();
         m_height = m_pTexture->GetHeight();
@@ -35,6 +34,8 @@ namespace Engine {
     void Sprite::Draw(Renderer &renderer) {
         renderer.DrawSprite(*this);
     }
+
+    void Sprite::DrawDebug() {}
 
     void Sprite::SetX(float x) {
         m_x = x;

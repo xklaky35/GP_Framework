@@ -13,6 +13,7 @@
 #include <cassert>
 #include <cmath>
 
+
 namespace Engine {
     Renderer::Renderer()
         : m_pTextureManager(nullptr)
@@ -152,6 +153,16 @@ namespace Engine {
         return (pSprite);
     }
 
+    AnimatedSprite *Renderer::CreateAnimatedSprite(const char *pcFilename) {
+        assert(m_pTextureManager);
+        Texture *pTexture = m_pTextureManager->GetTexture(pcFilename);
+        AnimatedSprite *pSprite = new AnimatedSprite();
+        if (!pSprite->Initialise(*pTexture)) {
+            LogManager::GetInstance().Log(ERROR, "Animated Sprite Failed to Create!");
+        }
+        return (pSprite);
+    }
+
     void Renderer::LogSdlError() {
         LogManager::GetInstance().Log(ERROR, SDL_GetError());
     }
@@ -219,7 +230,7 @@ namespace Engine {
         m_renderList.clear();
     }
 
-    void Renderer::DrawAnimatedSprite(const Sprite &sprite, const int frame, const int frameHeight, const int frameWidth) {
+    void Renderer::DrawAnimatedSprite(Sprite &sprite, const int frame, const int frameHeight, const int frameWidth) {
         m_pSpriteShader->SetActive();
 
         float angleInDegrees = sprite.GetAngle();

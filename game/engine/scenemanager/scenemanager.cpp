@@ -84,7 +84,7 @@ namespace Engine {
         //ImGui::SameLine();
         ImGui::BeginGroup(); // Lock X position
         if (m_visibleNodeDebug) {
-            ImGui::Text("%s", m_visibleNodeDebug->m_name);
+            ImGui::Text("%s", m_visibleNodeDebug->m_name.c_str());
             ImGui::TextDisabled("UID: 0x%08X", m_visibleNodeDebug->m_Id);
             ImGui::Separator();
             if (ImGui::BeginTable("##properties", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY)) {

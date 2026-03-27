@@ -2,16 +2,23 @@ TODO:
 
 
 
+
 Woosh:
 - make playernode
 
 
 
+
 Engine:
+
 
 - Integrate box2d engine
     -> rework collidernode/collidermanager
-    -> add rigidbody node
 - Refactor animation sprite node -> extract low level code from animation node to a inherited sprite class
 - Make scene reload work in the UI
 - Fix main menu (enter exits the program insted of choosing menu item)
+
+
+
+DONE:
+- Add rigid body node

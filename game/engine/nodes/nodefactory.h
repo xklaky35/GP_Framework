@@ -2,6 +2,7 @@
 #ifndef GP_FRAMEWORK_NODEFACTORY_H
 #define GP_FRAMEWORK_NODEFACTORY_H
 #include "node.h"
+#include "spritenode.h"
 
 namespace Engine {
     class NodeFactory {
@@ -13,6 +14,8 @@ namespace Engine {
 
     private:
         static void SetupNodeParameter(Node *n, IniParser *parser, std::string sectionName);
+        static void SetupSpriteParameter(SpriteNode *spriteNode, IniParser *parser, std::string section);
+
         static int GetIndexOf(const char*[], const char*, int length);
 
 

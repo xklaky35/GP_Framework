@@ -105,6 +105,8 @@ set(ENGINE_SOURCES
         game/engine/iniparser/iniparser.h
         game/engine/scenebuilder/scenebuilder.cpp
         game/engine/scenebuilder/scenebuilder.h
+        game/engine/animatedsprite.cpp
+        game/engine/animatedsprite.h
 )
 
 ################## IMGUI ####################

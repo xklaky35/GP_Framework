@@ -6,6 +6,7 @@
 
 #include <cassert>
 
+#include "animatedspritenode.h"
 #include "spritenode.h"
 
 namespace Engine {
@@ -33,18 +34,17 @@ namespace Engine {
             if (section == "SpriteNode") {
                 auto* spriteNode = new SpriteNode();
                 SetupNodeParameter(spriteNode, parser, section);
-                spriteNode->m_spriteDisplayMode =  static_cast<SpriteDisplayFlag>(GetIndexOf(SpriteDisplayFlagStrings, parser->GetValueAsString(section, "spriteDisplayMode").c_str(), 3));
-                spriteNode->m_iLayer = parser->GetValueAsInt(section, "layer");
-                spriteNode->SetRGBA(
-                    parser->GetValueAsFloat(section, "redTint"),
-                    parser->GetValueAsFloat(section, "blueTint"),
-                    parser->GetValueAsFloat(section, "greenTint"),
-                    parser->GetValueAsFloat(section, "alpha")
-                    );
-
-                spriteNode->SetSpritePath(parser->GetValueAsString(section, "spritePath"));
-                spriteNode->m_iniParser = parser;
+                SetupSpriteParameter(spriteNode, parser, section);
                 n->AddChild(*spriteNode);
+            }
+            if (section== "AnimatedSpriteNode") {
+                auto* animatedSprite = new AnimatedSpriteNode();
+                SetupNodeParameter(animatedSprite, parser, section);
+                SetupSpriteParameter(animatedSprite, parser, section);
+                animatedSprite->m_bIsLooping = parser->GetValueAsBoolean(section, "isLooping");
+                animatedSprite->m_bIsAnimating = parser->GetValueAsBoolean(section, "isAnimating");
+                animatedSprite->m_fFrameDuration = parser->GetValueAsFloat(section, "frameDuration");
+                n->AddChild(*animatedSprite);
             }
         }
     }
@@ -60,6 +60,21 @@ namespace Engine {
         n->m_globalTransform.position.y = parser->GetValueAsFloat(sectionName, "globalPosY");
         n->m_globalTransform.position.x = parser->GetValueAsFloat(sectionName, "globalPosX");
         n->m_name =  parser->GetValueAsString(sectionName, "name");
+    }
+
+    void NodeFactory::SetupSpriteParameter(SpriteNode* spriteNode, IniParser* parser, std::string section) {
+        spriteNode->m_spriteDisplayMode = static_cast<SpriteDisplayFlag>(GetIndexOf(
+            SpriteDisplayFlagStrings, parser->GetValueAsString(section, "spriteDisplayMode").c_str(), 3));
+        spriteNode->m_iLayer = parser->GetValueAsInt(section, "layer");
+        spriteNode->SetRGBA(
+            parser->GetValueAsFloat(section, "redTint"),
+            parser->GetValueAsFloat(section, "blueTint"),
+            parser->GetValueAsFloat(section, "greenTint"),
+            parser->GetValueAsFloat(section, "alpha")
+        );
+
+        spriteNode->SetSpritePath(parser->GetValueAsString(section, "spritePath"));
+        spriteNode->m_iniParser = parser;
     }
 
     int NodeFactory::GetIndexOf(const char *arr[] , const char * str, const int length) {
