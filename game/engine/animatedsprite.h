@@ -42,10 +42,11 @@ namespace Engine {
         bool m_bAnimating;
         bool m_bLooping;
         int m_iTotalFrames;
-    protected:
-        VertexArray *m_pVertexData;
+        bool m_bIsFlipped;
         int m_iFrameWidth;
         int m_iFrameHeight;
+    protected:
+        VertexArray *m_pVertexData;
         float m_fTimeElapsed;
         float totalTime;
 

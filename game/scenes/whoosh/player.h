@@ -18,12 +18,12 @@ public:
     void OnLandOnGround();
 
 public:
-    SpriteNode* m_spriteNode;
     RigidbodyNode* m_rigidBody;
 
 
     // Ground
     bool m_bIsGrounded;
+    bool m_bIsFlipped;
     float m_fGroundAcceleration;
     float m_fGroundDeceleration;
     float m_fGroundMaxSpeed;

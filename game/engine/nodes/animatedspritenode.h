@@ -22,11 +22,15 @@ namespace Engine {
         void Process(float deltaTime) override;
         void Draw(Renderer &renderer) override;
         void SetupSpriteRendering(Renderer& renderer) override;
+
+        void SetupFrames();
+
         void SetLooping(bool);
         void SetAnimating(bool);
         bool IsAnimating() const;
         void Restart();
         void SetFrameDuration(float seconds);
+        void Flip();
 
     private:
         AnimatedSpriteNode(const AnimatedSpriteNode &animatedsprite);
@@ -37,6 +41,8 @@ namespace Engine {
         bool m_bIsLooping;
         bool m_bIsAnimating;
         float m_fFrameDuration;
+        int m_frameHeight;
+        int m_frameWidth;
     };
 }
 #endif

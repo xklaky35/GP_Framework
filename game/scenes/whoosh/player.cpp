@@ -4,10 +4,12 @@
 #include "imgui.h"
 #include "../../engine/input/input.h"
 #include "../../engine/nodes/nodefactory.h"
+#include "../../engine/nodes/animatedspritenode.h"
+
 
 using namespace Engine;
 
-Player::Player() : m_spriteNode(nullptr), m_rigidBody(nullptr), m_bIsGrounded(true), m_fGroundAcceleration(200),
+Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false), m_fGroundAcceleration(200),
                    m_fGroundDeceleration(400),
                    m_fGroundMaxSpeed(400), m_jumpsMade(0), m_maxJumps(1) {
     m_name = "Player";
@@ -23,12 +25,13 @@ Player::Player() : m_spriteNode(nullptr), m_rigidBody(nullptr), m_bIsGrounded(tr
                 if (auto *s = dynamic_cast<Player *>(&n)) {
                     int v_min = 0, v_max = 100000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
-                        if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_fGroundAcceleration, 1, 0.5f, &v_min, &v_max)) {
-                            s->m_iniParser->SetValue("Player", "groundAcceleration", s->m_fGroundAcceleration);
-                        }
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_fGroundAcceleration, 1, 0.5f, &v_min,
+                                           &v_max)) {
+                        s->m_iniParser->SetValue("Player", "groundAcceleration", s->m_fGroundAcceleration);
                     }
                 }
             }
+        }
     );
     m_nodeInfo.push_back({
             "Ground Deceleration", [](Node &n) {
@@ -48,7 +51,8 @@ Player::Player() : m_spriteNode(nullptr), m_rigidBody(nullptr), m_bIsGrounded(tr
                 if (auto *s = dynamic_cast<Player *>(&n)) {
                     int v_min = 0, v_max = 100000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
-                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_fGroundMaxSpeed, 1, 0.5f, &v_min, &v_max)) {
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_fGroundMaxSpeed, 1, 0.5f, &v_min,
+                                           &v_max)) {
                         s->m_iniParser->SetValue("Player", "maxGroundSpeed", s->m_fGroundMaxSpeed);
                     }
                 }
@@ -129,10 +133,22 @@ void Player::Process(float deltaTime) {
 
 void Player::HandleMovement(float deltaTime) {
 
+    AnimatedSpriteNode* animNode = nullptr;
+    for (auto* c : m_children) {
+        if (c->m_name == "AnimatedSpriteNode") {
+            animNode = dynamic_cast<AnimatedSpriteNode*>(c);
+        }
+    }
+
+
     if (InputManager::GetCurrentEvents().GetButtonState(SDLK_d)) {
         if (m_velocity.x < m_fGroundMaxSpeed) {
             m_moveDirection.x = 1;
             m_velocity += m_moveDirection * m_fGroundAcceleration * deltaTime;
+            if (m_bIsFlipped && animNode != nullptr) {
+                animNode->Flip();
+                m_bIsFlipped = false;
+            }
         }
     }
     else {
@@ -145,6 +161,10 @@ void Player::HandleMovement(float deltaTime) {
         if (abs(m_velocity.x) < m_fGroundMaxSpeed) {
             m_moveDirection.x = -1;
             m_velocity += m_moveDirection * m_fGroundAcceleration * deltaTime;
+            if (!m_bIsFlipped && animNode != nullptr) {
+                animNode->Flip();
+                m_bIsFlipped = true;
+            }
         }
     }
     else {
@@ -155,7 +175,7 @@ void Player::HandleMovement(float deltaTime) {
 
     if (InputManager::GetCurrentEvents().GetButtonState(SDLK_SPACE)) {
         if (m_jumpsMade < m_maxJumps) {
-            m_rigidBody->AddForceToCenter(Vector2d(0,-500));
+            m_rigidBody->AddForceToCenter(Vector2d(0,-10000));
             //m_jumpsMade++;
         }
     }

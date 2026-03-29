@@ -44,6 +44,8 @@ namespace Engine {
                 animatedSprite->m_bIsLooping = parser->GetValueAsBoolean(section, "isLooping");
                 animatedSprite->m_bIsAnimating = parser->GetValueAsBoolean(section, "isAnimating");
                 animatedSprite->m_fFrameDuration = parser->GetValueAsFloat(section, "frameDuration");
+                animatedSprite->m_frameWidth = parser->GetValueAsFloat(section, "frameWidth");
+                animatedSprite->m_frameHeight = parser->GetValueAsFloat(section, "frameHeight");
                 n->AddChild(*animatedSprite);
             }
         }

@@ -12,17 +12,16 @@
 namespace Engine {
 
     AnimatedSprite::AnimatedSprite()
-    : m_pVertexData(0)
-    , m_iFrameWidth(0)
-    , m_iFrameHeight(0)
-    , m_iCurrentFrame(0)
-    , m_iTotalFrames(0)
-    , m_fTimeElapsed(0.0f)
-    , m_bAnimating(true)
-    , m_bLooping(true)
-    , m_frameDuration(1.0f)
-    , totalTime(0.0f)
-    {
+        : m_pVertexData(0)
+          , m_iFrameWidth(0)
+          , m_iFrameHeight(0)
+          , m_iCurrentFrame(0)
+          , m_iTotalFrames(0)
+          , m_bIsFlipped(false), m_fTimeElapsed(0.0f)
+          , m_bAnimating(true)
+          , m_bLooping(true)
+          , m_frameDuration(1.0f)
+          , totalTime(0.0f) {
     }
 
     AnimatedSprite::~AnimatedSprite()
@@ -36,7 +35,6 @@ namespace Engine {
         if (!Sprite::Initialise(texture)) {
             return false;
         }
-        SetupFrames(128,128);
         return true;
     }
     float AnimatedSprite::GetWidth() const
@@ -53,6 +51,8 @@ namespace Engine {
     }
     void AnimatedSprite::SetupFrames(int fixedFrameWidth, int fixedFrameHeight)
     {
+        if (fixedFrameWidth <= 0 || fixedFrameHeight <= 0) return;
+
         m_iFrameWidth = fixedFrameWidth;
         m_iFrameHeight = fixedFrameHeight;
         const int textureWidth = m_pTexture->GetWidth();
@@ -75,10 +75,10 @@ namespace Engine {
                 float quad[] =
                 {
                     // x      y      z      u                      v
-                    -0.5f,  0.5f,  0.0f,  uOffset,               vOffset + vFrameHeight,               // top-left
-                     0.5f,  0.5f,  0.0f,  uOffset + uFrameWidth, vOffset + vFrameHeight,               // top-right
-                     0.5f, -0.5f,  0.0f,  uOffset + uFrameWidth, vOffset , // bottom-right
-                    -0.5f, -0.5f,  0.0f,  uOffset,               vOffset , // bottom-left
+                    -0.5f,  0.5f,  0.0f,  uOffset + (uFrameWidth * m_bIsFlipped), vOffset + vFrameHeight,               // top-left
+                     0.5f,  0.5f,  0.0f,  uOffset + (uFrameWidth * !m_bIsFlipped),               vOffset + vFrameHeight,               // top-right
+                     0.5f, -0.5f,  0.0f,  uOffset + (uFrameWidth * !m_bIsFlipped),               vOffset , // bottom-right
+                    -0.5f, -0.5f,  0.0f,  uOffset + (uFrameWidth * m_bIsFlipped), vOffset , // bottom-left
                 };
 
                 const int floatsPerSprite = stride * vertsPerSprite;
