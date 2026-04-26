@@ -37,6 +37,21 @@ namespace Engine {
     }
 
 
+    // 50 pixels per meter
+    float PhysicsManager::PixelsToMeter(float pixels) {
+        return 0.02f * pixels;
+    }
+    Vector2d PhysicsManager::PixelsToMeterVector(Vector2d pixels) {
+        return {0.02f * pixels.x, 0.02f * pixels.y};
+    }
+
+    float PhysicsManager::MeterToPixels(float meter) {
+        return 50.0f * meter;
+    }
+    Vector2d PhysicsManager::MeterToPixelsVector(Vector2d meter) {
+        return {50.0f * meter.x, 50.0f * meter.y};
+    }
+
     PhysicsManager::PhysicsManager() = default;
     PhysicsManager::~PhysicsManager() {
         b2DestroyWorld(m_gameWorldId);

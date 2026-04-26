@@ -9,12 +9,11 @@ namespace Engine {
     public:
         static NodeFactory &GetInstance();
         static void DestroyInstance();
-
-        void AttachChildren(Node*);
+        void InitWithConfiguration(Node*, const std::string&);
 
     private:
-        static void SetupNodeParameter(Node *n, IniParser *parser, std::string sectionName);
-        static void SetupSpriteParameter(SpriteNode *spriteNode, IniParser *parser, std::string section);
+        static void SetupNodeParameter(Node *n, IniParser*, const std::string& sectionName);
+        static void SetupSpriteParameter(SpriteNode *spriteNode, IniParser*, const std::string& section);
 
         static int GetIndexOf(const char*[], const char*, int length);
 

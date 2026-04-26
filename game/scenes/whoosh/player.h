@@ -10,7 +10,6 @@ class Player : public Node {
 
 public:
     Player();
-    ~Player() override;
 
     void Init() override;
     void Process(float deltaTime) override;
@@ -26,6 +25,7 @@ public:
     bool m_bIsFlipped;
     float m_fGroundAcceleration;
     float m_fGroundDeceleration;
+    float m_fGroundMinSpeed;
     float m_fGroundMaxSpeed;
 
     int m_jumpsMade;

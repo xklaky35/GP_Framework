@@ -17,13 +17,11 @@ void SceneWhoosh::Init() {
     AddChild(*m_player);
 
 
-    b2BodyDef groundBodyDef = b2DefaultBodyDef();
-    groundBodyDef.position = (b2Vec2){200.0f, 500.0f};
-    b2BodyId groundId = b2CreateBody(PhysicsManager::GetInstance().GetWorld(), &groundBodyDef);
-    b2Polygon groundBox = b2MakeBox(2000.0f, 10.0f);
-    b2ShapeDef groundShapeDef = b2DefaultShapeDef();
-    b2CreatePolygonShape(groundId, &groundShapeDef, &groundBox);
+    m_floor = new RigidbodyNode(b2_staticBody, 0, 0);
+    m_floor->m_globalTransform.position = Vector2d(100,700);
+    m_floor->m_globalTransform.SetSize(1000,10);
+    m_floor->m_globalTransformationFlag = Disable;
+    AddChild(*m_floor);
 
-    LogManager::GetInstance().Log(INFO, "%f %f", b2Body_GetPosition(groundId).x ,b2Body_GetPosition(groundId).y);
 
 }

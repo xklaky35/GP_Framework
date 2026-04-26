@@ -19,6 +19,7 @@
 #include "fmod_errors.h"
 #include "../../lib/BOX2D/include/box2d/types.h"
 #include "../scenes/whoosh/scenewhoosh.h"
+#include "assetmanager/assetmanager.h"
 #include "physics/physicsmanager.h"
 #include "sound/soundmanager.h"
 
@@ -121,7 +122,7 @@ namespace Engine {
         while (SDL_PollEvent(&event) != 0) {
 
             ImguiManager::GetInstance().ProcessEvent(event);
-            InputManager::GetCurrentEvents().RegisterEvent(event);
+            InputManager::GetInstance().RegisterEvent(event);
         }
 
         if (m_bLooping) {
@@ -151,6 +152,7 @@ namespace Engine {
             SceneManager::GetInstance().GetCurrentScene()->Process(deltaTime);
             PhysicsManager::GetInstance().Process(deltaTime);
             SoundManager::GetInstance().Process(deltaTime);
+            InputManager::GetInstance().Process(deltaTime);
 
             // ###########################################
         }
@@ -173,7 +175,8 @@ namespace Engine {
 #ifdef DEBUG
         if (m_bIsDebugView) {
             DrawDebug(&m_bIsDebugView);
-            SceneManager::GetInstance().DrawDebug(&m_bIsDebugView);
+            AssetManager::GetInstance().DrawDebug();
+
         }
 #endif
 

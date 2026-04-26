@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include "../imgui/imguiwindowbaseclass.h"
 
 #include "../nodes/node.h"
 
@@ -16,18 +17,18 @@ namespace Engine {
         void LoadScene(const std::string&);
         Node* GetCurrentScene();
         const std::pmr::map<std::string, Node*>& GetScenes();
-        void DrawDebug(bool* p_open);
         void ResetCurrentScene();
 
     public:
         Node* m_visibleNodeDebug;
+        std::string m_currentScene;
+        std::pmr::map<std::string, Node*> m_loadedScenes;
+
     private:
         SceneManager();
         ~SceneManager();
         static SceneManager* m_pInstance;
 
-        std::string m_currentScene;
-        std::pmr::map<std::string, Node*> m_loadedScenes;
     };
 }
 

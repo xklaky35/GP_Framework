@@ -23,10 +23,14 @@ set(SCENES_SOURCES
         ${SCENES_DIR}/spaceinvader/meteorgenerator.h
         ${SCENES_DIR}/spaceinvader/scenespaceinvader.cpp
         ${SCENES_DIR}/spaceinvader/scenespaceinvader.h
-        game/scenes/spaceinvader/bullet.cpp
-        game/scenes/spaceinvader/bullet.h
-        game/scenes/whoosh/scenewhoosh.cpp
-        game/scenes/whoosh/scenewhoosh.h
+        ${SCENES_DIR}/spaceinvader/bullet.cpp
+        ${SCENES_DIR}/spaceinvader/bullet.h
+        ${SCENES_DIR}/whoosh/scenewhoosh.cpp
+        ${SCENES_DIR}/whoosh/scenewhoosh.h
+        ${SCENES_DIR}/spaceinvader/bulletspawner.cpp
+        ${SCENES_DIR}/spaceinvader/bulletspawner.h
+        ${SCENES_DIR}/whoosh/player.cpp
+        ${SCENES_DIR}/whoosh/player.h
 )
 
 
@@ -66,6 +70,21 @@ set(ENGINE_SOURCES
         ${ENGINE_DIR}/event.h
         ${ENGINE_DIR}/sound/soundmanager.cpp
         ${ENGINE_DIR}/sound/soundmanager.h
+        ${ENGINE_DIR}/physics/physicsmanager.cpp
+        ${ENGINE_DIR}/physics/physicsmanager.h
+        ${ENGINE_DIR}/nodes/nodefactory.cpp
+        ${ENGINE_DIR}/nodes/nodefactory.h
+        ${ENGINE_DIR}/assetmanager/assetmanager.cpp
+        ${ENGINE_DIR}/assetmanager/assetmanager.h
+        ${ENGINE_DIR}/assetmanager/assetbrowser.cpp
+        ${ENGINE_DIR}/assetmanager/assetbrowser.h
+        ${ENGINE_DIR}/assetmanager/sceneeditor.cpp
+        ${ENGINE_DIR}/assetmanager/sceneeditor.h
+        ${ENGINE_DIR}/imgui/imguiwindowbaseclass.h
+        ${ENGINE_DIR}/iniparser/iniparser.cpp
+        ${ENGINE_DIR}/iniparser/iniparser.h
+        ${ENGINE_DIR}/animatedsprite.cpp
+        ${ENGINE_DIR}/animatedsprite.h
 
         ${ENGINE_NODES}/node.cpp
         ${ENGINE_NODES}/node.h
@@ -99,14 +118,9 @@ set(ENGINE_SOURCES
         ${ENGINE_NODES}/ui/panelcontainer.h
         ${ENGINE_NODES}/ui/textcontrol.cpp
         ${ENGINE_NODES}/ui/textcontrol.h
-        game/engine/nodes/rigidbodynode.cpp
-        game/engine/nodes/rigidbodynode.h
-        game/engine/iniparser/iniparser.cpp
-        game/engine/iniparser/iniparser.h
-        game/engine/scenebuilder/scenebuilder.cpp
-        game/engine/scenebuilder/scenebuilder.h
-        game/engine/animatedsprite.cpp
-        game/engine/animatedsprite.h
+        ${ENGINE_NODES}/rigidbodynode.cpp
+        ${ENGINE_NODES}/rigidbodynode.h
+
 )
 
 ################## IMGUI ####################
@@ -123,14 +137,9 @@ set(IMGUI_SOURCES
         ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp
         ${IMGUI_BACKENDS_DIR}/imgui_impl_sdl2.cpp
         ${IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
-        game/scenes/spaceinvader/bulletspawner.cpp
-        game/scenes/spaceinvader/bulletspawner.h
-        game/scenes/whoosh/player.cpp
-        game/scenes/whoosh/player.h
-        game/engine/physics/physicsmanager.cpp
-        game/engine/physics/physicsmanager.h
-        game/engine/nodes/nodefactory.cpp
-        game/engine/nodes/nodefactory.h
+        game/engine/scenemanager/sceneselector.cpp
+        game/engine/scenemanager/sceneselector.h
+
 
 )
 
@@ -205,4 +214,7 @@ target_link_libraries(
         ${FMODSTUDIOLIB}
         ${FMODFSBANKLIB}
         OpenGL
+        GL
+        GLU
+        glut
 )

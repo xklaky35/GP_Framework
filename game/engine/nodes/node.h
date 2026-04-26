@@ -14,6 +14,7 @@ namespace Engine {
         Disable
     };
     static const char* InheritanceFlagStrings[] = { "Inherit", "Disable"};
+    static constexpr int INHERITANCE_FLAG_STRINGS_COUNT = 2;
 
 
     struct NodeInfo;

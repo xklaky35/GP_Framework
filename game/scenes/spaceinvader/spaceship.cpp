@@ -42,7 +42,7 @@ void Spaceship::Init() {
     m_bulletSpawner->m_transform.position.y += m_globalTransform.GetHeight() / 2;
     AddChild(*m_bulletSpawner);
 
-    m_rigidBody = new RigidbodyNode(b2_dynamicBody);
+    m_rigidBody = new RigidbodyNode(b2_dynamicBody, 1000, 0);
     AddChild(*m_rigidBody);
 }
 
@@ -57,7 +57,7 @@ void Spaceship::Process(float deltaTime) {
 
 void Spaceship::HandleMovement(float deltaTime) {
 
-    if (InputManager::GetCurrentEvents().GetButtonState(SDLK_w)) {
+    if (InputManager::GetInstance().GetButtonState(SDLK_w)) {
 
         Vector2d maxNewVelocity = direction * m_maxSpeed;
 
@@ -86,7 +86,7 @@ void Spaceship::HandleMovement(float deltaTime) {
     }
 
 
-    if (InputManager::GetCurrentEvents().GetButtonState(SDLK_a)) {
+    if (InputManager::GetInstance().GetButtonState(SDLK_a)) {
         m_globalTransform.SetRotation(m_globalTransform.GetRotationDeg() + m_rotationSpeed * deltaTime);
         const Vector2d vecX(cos(m_globalTransform.GetRotationRad()), sin(m_globalTransform.GetRotationRad()));
         const Vector2d vecY(-sin(m_globalTransform.GetRotationRad()), -cos(m_globalTransform.GetRotationRad()));
@@ -94,14 +94,14 @@ void Spaceship::HandleMovement(float deltaTime) {
     }
 
 
-    if (InputManager::GetCurrentEvents().GetButtonState(SDLK_d)) {
+    if (InputManager::GetInstance().GetButtonState(SDLK_d)) {
         m_globalTransform.SetRotation(m_globalTransform.GetRotationDeg() - m_rotationSpeed * deltaTime);
         const Vector2d vecX(cos(m_globalTransform.GetRotationRad()), sin(m_globalTransform.GetRotationRad()));
         const Vector2d vecY(-sin(m_globalTransform.GetRotationRad()), -cos(m_globalTransform.GetRotationRad()));
         direction = ((vecX * 0) + (vecY * 1));
     }
 
-    if (InputManager::GetCurrentEvents().GetButtonState(SDLK_SPACE)) {
+    if (InputManager::GetInstance().GetButtonState(SDLK_SPACE)) {
         if (m_deltaSum >= 1 / m_dps) {
             SoundManager::GetInstance().Play("hardpop-mainmenu-onSelection.wav");
             m_bulletSpawner->ShootInDirection(direction);

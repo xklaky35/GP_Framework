@@ -99,7 +99,14 @@ namespace Engine {
         // Disable VSYNC
         SDL_GL_SetSwapInterval(0);
         bool shadersLoaded = SetupSpriteShader();
+
+
+        // Scale to fit pixels to meters
+        float lowerX = -25.0f, upperX = 25.0f, lowerY = -25.0f, upperY = 25.0f;
+        gluOrtho2D(lowerX, upperX, lowerY, upperY);
+
         return shadersLoaded;
+
     }
 
 

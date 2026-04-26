@@ -11,6 +11,7 @@ namespace Engine {
         Fit     // fit the specified hight and width values
     };
     static const char* SpriteDisplayFlagStrings[] = { "Original", "Scale", "Fit"};
+    static constexpr int SPRITE_DISPLAY_FLAG_STRING_COUNT = 3;
 
     class SpriteNode : public Node {
 

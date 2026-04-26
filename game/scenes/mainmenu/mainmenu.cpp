@@ -135,7 +135,7 @@ void MainMenu::Process(float deltaTime) {
     HContainer::Process(deltaTime);
     const char* soundOnSelection = "hardpop-mainmenu-onSelection.wav";
 
-    if (InputManager::GetCurrentEvents().GetButtonState(SDLK_DOWN)) {
+    if (InputManager::GetInstance().GetButtonState(SDLK_DOWN)) {
         if (!m_bSelectionLocked) {
             if (m_currentSelection < 3) {
                 SoundManager::GetInstance().Play(soundOnSelection);
@@ -144,7 +144,7 @@ void MainMenu::Process(float deltaTime) {
             m_bSelectionLocked = true;
         }
     }
-    else if (InputManager::GetCurrentEvents().GetButtonState(SDLK_UP)) {
+    else if (InputManager::GetInstance().GetButtonState(SDLK_UP)) {
         if (!m_bSelectionLocked) {
             if (m_currentSelection > 0) {
                 SoundManager::GetInstance().Play(soundOnSelection);
@@ -153,7 +153,7 @@ void MainMenu::Process(float deltaTime) {
             m_bSelectionLocked = true;
         }
     }
-    else if (InputManager::GetCurrentEvents().GetButtonState(SDLK_RETURN)) {
+    else if (InputManager::GetInstance().GetButtonState(SDLK_RETURN)) {
         if (!m_bSelectionLocked) {
             Game::GetInstance().Quit();
             return;

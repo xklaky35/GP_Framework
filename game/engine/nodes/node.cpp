@@ -142,10 +142,19 @@ namespace  Engine {
     }
 
     Node::~Node() {
+
+        if (m_iniParser != nullptr) {
+            m_iniParser->SaveChangesToIniFile();
+            delete m_iniParser;
+            m_iniParser = nullptr;
+        }
+
         RemoveChildren();
     }
 
     void Node::Init() {
+
+
     }
 
     void Node::Process(const float deltaTime) {

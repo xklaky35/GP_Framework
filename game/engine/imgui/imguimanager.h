@@ -1,6 +1,8 @@
 #ifndef GP_FRAMEWORK_IMGUIMANAGER_H
 #define GP_FRAMEWORK_IMGUIMANAGER_H
 
+#define IS_HELP_SHOWN false
+
 #include <SDL_video.h>
 #include <SDL.h>
 
@@ -20,6 +22,7 @@ namespace Engine {
 
         static ImguiManager& GetInstance();
         static void DestroyInstance();
+        static void HelpMarker(const char*);
 
 
         bool Initialise(SDL_Window*, SDL_GLContext);

@@ -3,15 +3,17 @@
 
 #include "imgui.h"
 #include "../../engine/input/input.h"
+#include "../../engine/logmanager/logmanager.h"
 #include "../../engine/nodes/nodefactory.h"
 #include "../../engine/nodes/animatedspritenode.h"
+#include "../../engine/physics/physicsmanager.h"
 
 
 using namespace Engine;
 
-Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false), m_fGroundAcceleration(200),
-                   m_fGroundDeceleration(400),
-                   m_fGroundMaxSpeed(400), m_jumpsMade(0), m_maxJumps(1) {
+Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false),
+                   m_fGroundAcceleration(0), m_fGroundDeceleration(0), m_fGroundMinSpeed(0),
+                   m_fGroundMaxSpeed(0), m_jumpsMade(0), m_maxJumps(1) {
     m_name = "Player";
     m_nodeInfo.push_back(
         {
@@ -99,17 +101,12 @@ Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false
     );
 }
 
-Player::~Player() {
-    m_iniParser->SaveChangesToIniFile();
-    delete m_iniParser;
-    m_iniParser = nullptr;
-};
 
 void Player::Init() {
     Node::Init();
 
-    m_iniParser = new IniParser();
-    m_iniParser->LoadIniFile("../game/scenes/whoosh/player.ini");
+    // child setup
+    NodeFactory::GetInstance().InitWithConfiguration(this, "../game/scenes/whoosh/player.ini");
 
     // own setup of variables
     m_fGroundAcceleration = m_iniParser->GetValueAsFloat("Player", "groundAcceleration");
@@ -117,11 +114,11 @@ void Player::Init() {
     m_fGroundMaxSpeed = m_iniParser->GetValueAsFloat("Player", "maxGroundSpeed");
     m_maxJumps = m_iniParser->GetValueAsInt("Player", "maxJumps");
 
-    // child setup
-    NodeFactory::GetInstance().AttachChildren(this);
 
-    m_rigidBody = new RigidbodyNode(b2_dynamicBody);
+    m_rigidBody = new RigidbodyNode(b2_dynamicBody, 0, 0);
+    m_rigidBody->m_globalTransform.SetSize(m_globalTransform.GetWidth(), m_globalTransform.GetHeight());
     AddChild(*m_rigidBody);
+
 
 }
 
@@ -133,22 +130,11 @@ void Player::Process(float deltaTime) {
 
 void Player::HandleMovement(float deltaTime) {
 
-    AnimatedSpriteNode* animNode = nullptr;
-    for (auto* c : m_children) {
-        if (c->m_name == "AnimatedSpriteNode") {
-            animNode = dynamic_cast<AnimatedSpriteNode*>(c);
-        }
-    }
+    if (InputManager::GetInstance().GetButtonState(SDLK_d) == BS_HELD) {
 
-
-    if (InputManager::GetCurrentEvents().GetButtonState(SDLK_d)) {
         if (m_velocity.x < m_fGroundMaxSpeed) {
             m_moveDirection.x = 1;
             m_velocity += m_moveDirection * m_fGroundAcceleration * deltaTime;
-            if (m_bIsFlipped && animNode != nullptr) {
-                animNode->Flip();
-                m_bIsFlipped = false;
-            }
         }
     }
     else {
@@ -157,14 +143,10 @@ void Player::HandleMovement(float deltaTime) {
         }
     }
 
-    if (InputManager::GetCurrentEvents().GetButtonState(SDLK_a)) {
+    if (InputManager::GetInstance().GetButtonState(SDLK_a) == BS_HELD) {
         if (abs(m_velocity.x) < m_fGroundMaxSpeed) {
             m_moveDirection.x = -1;
             m_velocity += m_moveDirection * m_fGroundAcceleration * deltaTime;
-            if (!m_bIsFlipped && animNode != nullptr) {
-                animNode->Flip();
-                m_bIsFlipped = true;
-            }
         }
     }
     else {
@@ -173,16 +155,16 @@ void Player::HandleMovement(float deltaTime) {
         }
     }
 
-    if (InputManager::GetCurrentEvents().GetButtonState(SDLK_SPACE)) {
+    if (InputManager::GetInstance().GetButtonState(SDLK_SPACE) == BS_PRESSED) {
         if (m_jumpsMade < m_maxJumps) {
-            m_rigidBody->AddForceToCenter(Vector2d(0,-10000));
-            //m_jumpsMade++;
+            m_rigidBody->ResetBody();
+            m_rigidBody->ApplyImpluseToCenter(Vector2d(0,-150));
+            m_jumpsMade++;
         }
     }
 
-    //m_deltaSum += deltaTime;
-    m_globalTransform.position.x += m_velocity.x * deltaTime;
-    m_globalTransform.position.y += m_velocity.y * deltaTime;
+    m_rigidBody->SetVelocity(m_velocity);
+    m_globalTransform.position = m_rigidBody->GetBodyPosition();
 }
 
 

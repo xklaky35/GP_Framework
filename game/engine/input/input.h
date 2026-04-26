@@ -2,10 +2,13 @@
 #define GP_FRAMEWORK_INPUT_H
 
 #include <map>
+#include <queue>
+
 #include "SDL.h"
 #include "../structs/vector2d.h"
 
 namespace Engine {
+
     enum ButtonState
     {
         BS_NEUTRAL,
@@ -13,36 +16,40 @@ namespace Engine {
         BS_RELEASED,
         BS_HELD
     };
+
+    struct KeyState {
+        SDL_Keycode code;
+        ButtonState state;
+    };
+
     class XboxController;
 
     class InputManager {
     public:
-        static InputManager &GetCurrentEvents();
+        static InputManager &GetInstance();
         static void DestroyInstance();
         void RegisterEvent(SDL_Event&);
-        bool GetButtonState(SDL_Keycode);
+        ButtonState GetButtonState(SDL_Keycode);
 
+        void Process(float delta_time);
 
     protected:
         Vector2d m_mousePosition;
         Vector2d m_mouseWheel;
-        unsigned int m_previousMouseButtons;
-        unsigned int m_currentMouseButtons;
         bool m_bRelativeMouseMode;
         XboxController* m_pXboxController;
         int m_iNumAttachedControllers;
-
-        //################################
-
 
 
 
     private:
         InputManager();
         ~InputManager();
-        SDL_Event* m_pCurrentEvent;
         static InputManager *m_pInstance;
-        std::map<SDL_Keycode, bool> m_pressedKeys;
+
+        SDL_Keycode m_previousKey;
+        std::map<SDL_Keycode, ButtonState> m_pressedKeys;
+        std::queue<KeyState> m_isInInstableState;
     };
 
 }
