@@ -11,7 +11,7 @@ BouncingBall::~BouncingBall() = default;
 void BouncingBall::Init() {
     Node::Init();
     // ignore parent transform;
-    m_globalTransformationFlag = Disable;
+    m_globalTransformationFlag = IF_Disable;
 
     const float MAX_SPEED = 250.f;
     const int SCREEN_WIDTH =  Config::GetInstance().windowsWidth;

@@ -1,5 +1,6 @@
 #include "splashscreen.h"
 #include "../../config/config.h"
+#include "../../engine/nodes/nodefactory.h"
 #include "../../engine/scenemanager/scenemanager.h"
 
 using namespace Engine;
@@ -18,6 +19,8 @@ Splashscreen::~Splashscreen() = default;
 void Splashscreen::Init()  {
     Control::Init();
 
+    NodeFactory::GetInstance().InitWithConfiguration(this, "../game/scenes/slashscreen/splashscreen.ini");
+
     m_background = new SpriteNode();
     m_background->SetSpritePath(std::string("../assets/Sprites/rect.png").data());
     m_background->m_spriteDisplayMode = Fit;
@@ -28,7 +31,7 @@ void Splashscreen::Init()  {
     m_autLogo = new SpriteNode();
     m_autLogo->SetSpritePath(std::string("../assets/Splash/aut.png").data());
     m_autLogo->SetRGBA(1,1,1,0.01);
-    m_autLogo->m_globalTransformationFlag = Disable;
+    m_autLogo->m_globalTransformationFlag = IF_Disable;
     m_autLogo->m_globalTransform.SetScale(1.7);
     m_screens.push_back(m_autLogo);
     AddChild(*m_autLogo);
@@ -36,7 +39,7 @@ void Splashscreen::Init()  {
     m_fmodLogo = new SpriteNode();
     m_fmodLogo->SetSpritePath(std::string("../assets/Splash/FMOD_Logo.png").data());
     m_fmodLogo->SetRGBA(1,1,1,0.01);
-    m_fmodLogo->m_globalTransformationFlag = Disable;
+    m_fmodLogo->m_globalTransformationFlag = IF_Disable;
     m_fmodLogo->m_transform.SetScale(0.5);
     m_screens.push_back(m_fmodLogo);
     AddChild(*m_fmodLogo);

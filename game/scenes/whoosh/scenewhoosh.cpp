@@ -20,7 +20,7 @@ void SceneWhoosh::Init() {
     m_floor = new RigidbodyNode(b2_staticBody, 0, 0);
     m_floor->m_globalTransform.position = Vector2d(100,700);
     m_floor->m_globalTransform.SetSize(1000,10);
-    m_floor->m_globalTransformationFlag = Disable;
+    m_floor->m_globalTransformationFlag = IF_Disable;
     AddChild(*m_floor);
 
 

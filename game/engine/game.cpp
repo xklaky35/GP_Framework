@@ -94,6 +94,9 @@ namespace Engine {
         if (!PhysicsManager::GetInstance().Initialise()) {
             return false;
         }
+        if (!AssetManager::GetInstance().Initialise()) {
+            return false;
+        }
 
         //################ INIT STUFF HERE ####################
 

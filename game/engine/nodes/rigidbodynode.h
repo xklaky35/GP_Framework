@@ -8,6 +8,7 @@
 namespace Engine {
     class RigidbodyNode : public Engine::Node {
     public:
+        RigidbodyNode();
         RigidbodyNode(b2BodyType, float mass, float friction);
 
         void Init() override;

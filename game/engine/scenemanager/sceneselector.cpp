@@ -2,6 +2,8 @@
 
 #include "imgui.h"
 #include "scenemanager.h"
+#include "../assetmanager/assetbrowser.h"
+#include "../logmanager/logmanager.h"
 
 
 namespace Engine {
@@ -32,6 +34,7 @@ namespace Engine {
 
         // ########### Node Tree ###################
         ImGui::Begin("Nodes");
+
         if (ImGui::BeginChild("##tree", ImVec2(300, 0), ImGuiChildFlags_ResizeX | ImGuiChildFlags_Borders | ImGuiChildFlags_NavFlattened))
         {
             ImGui::SetNextItemWidth(-FLT_MIN);

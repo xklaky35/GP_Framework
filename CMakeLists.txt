@@ -100,8 +100,6 @@ set(ENGINE_SOURCES
         ${ENGINE_NODES}/forms/rectangle.cpp
         ${ENGINE_NODES}/forms/rectangle.h
         ${ENGINE_NODES}/forms/form.cpp
-        ${ENGINE_NODES}/ridgitbody.cpp
-        ${ENGINE_NODES}/ridgitbody.h
         ${ENGINE_NODES}/animatedspritenode.cpp
         ${ENGINE_NODES}/animatedspritenode.h
         ${ENGINE_NODES}/ui/control.cpp
@@ -193,6 +191,8 @@ find_package(OpenGL REQUIRED)
 
 
 
+
+
 target_include_directories(GP_Framework PRIVATE
         lib/GLEW/include
         ${IMGUI_DIR}
@@ -218,3 +218,5 @@ target_link_libraries(
         GLU
         glut
 )
+
+add_definitions(-DPROJECT_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")

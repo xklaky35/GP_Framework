@@ -1,6 +1,3 @@
-//
-// Created by leon on 20.03.26.
-//
 
 #include "soundmanager.h"
 

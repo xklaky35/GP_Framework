@@ -5,6 +5,7 @@
 
 
 namespace Engine {
+    class Node;
     class IniParser {
     public:
 
@@ -20,11 +21,11 @@ namespace Engine {
         float GetValueAsFloat(const std::string &iniSection, const std::string &key);
         bool GetValueAsBoolean(const std::string &iniSection, const std::string &key);
 
-        void SetValue(const std::string &iniSection, const std::string &key, std::string& value);
-        void SetValue(const std::string &iniSection, const std::string &key, const char *value);
-        void SetValue(const std::string &iniSection, const std::string &key, int value);
-        void SetValue(const std::string &iniSection, const std::string &key, float value);
-        void SetValue(const std::string &iniSection, const std::string &key, bool value);
+        void SetValue(const std::string &iniSection, const std::string &key, std::string& value, Node* src);
+        void SetValue(const std::string &iniSection, const std::string &key, const char *value, Node* src);
+        void SetValue(const std::string &iniSection, const std::string &key, int value, Node* src);
+        void SetValue(const std::string &iniSection, const std::string &key, float value, Node* src);
+        void SetValue(const std::string &iniSection, const std::string &key, bool value, Node* src);
 
         std::unordered_map<std::string, std::unordered_map<std::string, std::string> > m_data;
     private:

@@ -1,5 +1,7 @@
 #include <random>
 
+
+
 inline int GetRandomInt(const int min, const int max) {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -27,6 +29,20 @@ inline std::vector<std::string> SplitString(std::string s, std::string delimiter
     }
 
     res.push_back (s.substr (pos_start));
+    return res;
+}
+
+inline std::string GenerateUID() {
+
+    const char* v = "0123456789abcdef";
+    const bool dash[] = {0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0};
+
+    std::string res;
+    for (bool i : dash) {
+        if (i) res+= "-";
+        res += v[GetRandomInt(0,15)];
+        res += v[GetRandomInt(0,15)];
+    }
     return res;
 }
 

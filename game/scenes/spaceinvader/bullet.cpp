@@ -13,7 +13,7 @@ Bullet::Bullet(const float speed, const float ttl, const Vector2d dir, const Vec
 
 void Bullet::Init() {
     SpriteNode::Init();
-    m_globalTransformationFlag = Disable;
+    m_globalTransformationFlag = IF_Disable;
     m_spriteDisplayMode = Scale;
     m_globalTransform.SetHeight(10);
     m_globalTransform.SetWidth(10);

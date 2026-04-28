@@ -12,7 +12,11 @@ namespace Engine {
                                                     m_bHasFixedRotation(false),
                                                     m_bIsBullet(false), m_shapeId(), m_fFriction(friction),
                                                     m_bIsStatic(true) {
+        m_name = "RigidBodyNode";
+        m_nodeType = NT_RigidBody;
     }
+
+    RigidbodyNode::RigidbodyNode() : RigidbodyNode(b2_dynamicBody, 0,0) {}
 
     void RigidbodyNode::Init() {
         Node::Init();
@@ -30,10 +34,10 @@ namespace Engine {
         b2ShapeDef shapeDef = b2DefaultShapeDef();
 
         // create shape with definition
-        m_bodyPolygon = b2MakeBox(PhysicsManager::PixelsToMeter(m_globalTransform.GetWidth()), PhysicsManager::PixelsToMeter(m_globalTransform.GetHeight()));
+        m_bodyPolygon = b2MakeBox(PhysicsManager::PixelsToMeter(m_globalTransform.GetWidth() > 0 ? m_globalTransform.GetWidth() : 1), PhysicsManager::PixelsToMeter(m_globalTransform.GetHeight() > 0 ? m_globalTransform.GetHeight() : 1));
         m_shapeId = b2CreatePolygonShape(m_bodyId, &shapeDef, &m_bodyPolygon);
 
-        m_parent->m_globalTransformationFlag = Disable;
+        m_parent->m_globalTransformationFlag = IF_Disable;
         b2Body_SetType(m_bodyId, m_bodyType);
     }
 

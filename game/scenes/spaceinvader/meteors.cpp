@@ -13,7 +13,7 @@ Meteors::Meteors() : m_spinSpeed(0), m_spinDirection(1), m_damage(0), m_speed(0)
 
 void Meteors::Init() {
     Node::Init();
-    m_globalTransformationFlag = Disable;
+    m_globalTransformationFlag = IF_Disable;
     m_globalTransform.SetSize(100,100);
 
     // setup collider

@@ -1,21 +1,28 @@
 #include "node.h"
 
-#include "../scenemanager/scenemanager.h"
+#include <random>
 
+#include "../scenemanager/scenemanager.h"
+#include "../../helper/inlinehelper.h"
 #include "imgui.h"
+#include "../assetmanager/assetbrowser.h"
+#include "../logmanager/logmanager.h"
 #include "misc/cpp/imgui_stdlib.h"
+#include "../assetmanager/assetmanager.h"
 
 namespace  Engine {
     Node::Node() : m_Id(0),
                    m_bIsVisible(true),
                    m_parent(nullptr),
-                   m_globalTransformationFlag(Inherit),
+                   m_globalTransformationFlag(IF_Inherit),
                    m_iniParser(nullptr) {
 
 
         m_name = "Node";
         m_globalTransform = Transform();
+        m_nodeType = NT_Node;
         m_transform = Transform();
+        m_UId = GenerateUID();
 
         m_nodeInfo = {
             {
@@ -25,9 +32,18 @@ namespace  Engine {
                 }
             },
             {
+                "", [](Node &n) {
+                    ImGui::Separator();
+                    ImGui::Text("UID");
+                    ImGui::Text(n.GetUId().c_str());
+                    ImGui::Separator();
+                }
+            },
+            {
                 "Name", [](Node &n) {
-                    if (ImGui::InputText("##Editor", &n.m_name)) { // only works by including "misc/cpp/imgui_stdlib.cpp"
-                        n.m_iniParser->SetValue(n.m_name, "name", n.m_name);
+                    if (ImGui::InputText("##Editor", &n.m_name)) {
+                        // only works by including "misc/cpp/imgui_stdlib.cpp"
+                        n.m_iniParser->SetValue(n.GetUId(), "name", n.m_name, &n);
                     }
                 }
             },
@@ -36,22 +52,22 @@ namespace  Engine {
                     int v_min = -10000, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
 
-                    if (n.m_globalTransformationFlag == Inherit) ImGui::BeginDisabled(); // only make the field editable if contidion is met
+                    if (n.m_globalTransformationFlag == IF_Inherit) ImGui::BeginDisabled(); // only make the field editable if contidion is met
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.position.x, 1, 0.5f, &v_min, &v_max)) {
-                        n.m_iniParser->SetValue(n.m_name, "globalPosX", n.m_globalTransform.position.x);
+                        n.m_iniParser->SetValue(n.GetUId(), "globalPosX", n.m_globalTransform.position.x, &n);
                     }
-                    if (n.m_globalTransformationFlag == Inherit) ImGui::EndDisabled();
+                    if (n.m_globalTransformationFlag == IF_Inherit) ImGui::EndDisabled();
                 }
             },
             {
                 "GlobalPosY", [](Node &n) {
                     int v_min = -10000, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
-                    if (n.m_globalTransformationFlag == Inherit) ImGui::BeginDisabled();
+                    if (n.m_globalTransformationFlag == IF_Inherit) ImGui::BeginDisabled();
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.position.y, 1, 0.5f, &v_min, &v_max)) {
-                        n.m_iniParser->SetValue(n.m_name, "globalPosY", n.m_globalTransform.position.y);
+                        n.m_iniParser->SetValue(n.GetUId(), "globalPosY", n.m_globalTransform.position.y, &n);
                     }
-                    if (n.m_globalTransformationFlag == Inherit) ImGui::EndDisabled();
+                    if (n.m_globalTransformationFlag == IF_Inherit) ImGui::EndDisabled();
                 }
             },
             {
@@ -59,7 +75,7 @@ namespace  Engine {
                     int v_min = -10000, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_transform.position.x, 1, 0.5f, &v_min, &v_max)) {
-                        n.m_iniParser->SetValue(n.m_name, "localPosX", n.m_transform.position.x);
+                        n.m_iniParser->SetValue(n.m_name, "localPosX", n.m_transform.position.x, &n);
                     };
                 }
             },
@@ -68,7 +84,7 @@ namespace  Engine {
                     int v_min = -10000, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_transform.position.y, 1, 0.5f, &v_min, &v_max)) {
-                        n.m_iniParser->SetValue(n.m_name, "localPosY", n.m_transform.position.y);
+                        n.m_iniParser->SetValue(n.GetUId(), "localPosY", n.m_transform.position.y, &n);
                     }
                 }
             },
@@ -76,50 +92,50 @@ namespace  Engine {
                 "Base SizeX", [](Node &n) {
                     int v_min = -10000, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
-                    if (n.m_globalTransformationFlag == Inherit) ImGui::BeginDisabled();
+                    if (n.m_globalTransformationFlag == IF_Inherit) ImGui::BeginDisabled();
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.baseSize.x, 1, 0.5f, &v_min, &v_max)) {
-                        n.m_iniParser->SetValue(n.m_name, "baseSizeX", n.m_globalTransform.baseSize.x);
+                        n.m_iniParser->SetValue(n.GetUId(), "baseSizeX", n.m_globalTransform.baseSize.x, &n);
                     }
-                    if (n.m_globalTransformationFlag == Inherit) ImGui::EndDisabled();
+                    if (n.m_globalTransformationFlag == IF_Inherit) ImGui::EndDisabled();
                 }
             },
             {
                 "Base SizeY", [](Node &n) {
                     int v_min = -10000, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
-                    if (n.m_globalTransformationFlag == Inherit) ImGui::BeginDisabled();
+                    if (n.m_globalTransformationFlag == IF_Inherit) ImGui::BeginDisabled();
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.baseSize.y, 1, 0.5f, &v_min, &v_max)) {
-                        n.m_iniParser->SetValue(n.m_name, "baseSizeY", n.m_globalTransform.baseSize.y);
+                        n.m_iniParser->SetValue(n.GetUId(), "baseSizeY", n.m_globalTransform.baseSize.y, &n);
                     };
-                    if (n.m_globalTransformationFlag == Inherit) ImGui::EndDisabled();
+                    if (n.m_globalTransformationFlag == IF_Inherit) ImGui::EndDisabled();
                 }
             },
             {
                 "Scale", [](Node &n) {
                     int v_min = 0, v_max = 100;
-                    if (n.m_globalTransformationFlag == Inherit) ImGui::BeginDisabled();
+                    if (n.m_globalTransformationFlag == IF_Inherit) ImGui::BeginDisabled();
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.scale, 1, 0.5f, &v_min,
                                            &v_max)) {
-                        n.m_iniParser->SetValue(n.m_name, "scale", n.m_globalTransform.scale);
+                        n.m_iniParser->SetValue(n.GetUId(), "scale", n.m_globalTransform.scale, &n);
                     };
-                    if (n.m_globalTransformationFlag == Inherit) ImGui::EndDisabled();
+                    if (n.m_globalTransformationFlag == IF_Inherit) ImGui::EndDisabled();
                 }
             },
             {
                 "Rotation", [](Node &n) {
                     int v_min = 0, v_max = 100;
-                    if (n.m_globalTransformationFlag == Inherit) ImGui::BeginDisabled();
+                    if (n.m_globalTransformationFlag == IF_Inherit) ImGui::BeginDisabled();
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.rotation, 1, 0.5f, &v_min,
                                            &v_max)) {
-                        n.m_iniParser->SetValue(n.m_name, "rotation", n.m_globalTransform.rotation);
+                        n.m_iniParser->SetValue(n.GetUId(), "rotation", n.m_globalTransform.rotation, &n);
                     };
-                    if (n.m_globalTransformationFlag == Inherit) ImGui::EndDisabled();
+                    if (n.m_globalTransformationFlag == IF_Inherit) ImGui::EndDisabled();
                 }
             },
             {
                 "IsVisible", [](Node &n) {
                     if (ImGui::Checkbox("##Editor", &n.m_bIsVisible)) {
-                        n.m_iniParser->SetValue(n.m_name, "isVisible", n.m_bIsVisible);
+                        n.m_iniParser->SetValue(n.GetUId(), "isVisible", n.m_bIsVisible, &n);
                     };
                 }
             },
@@ -131,7 +147,7 @@ namespace  Engine {
                                     n.m_globalTransformationFlag == static_cast<InheritanceFlag>(i);
                             if (ImGui::Selectable(InheritanceFlagStrings[i], is_selected)) {
                                 n.m_globalTransformationFlag = static_cast<InheritanceFlag> (i);
-                                n.m_iniParser->SetValue(n.m_name, "inheritanceFlag", InheritanceFlagStrings[i]);
+                                n.m_iniParser->SetValue(n.GetUId(), "inheritanceFlag", InheritanceFlagStrings[i], &n);
                             }
                         }
                         ImGui::EndCombo();
@@ -153,8 +169,11 @@ namespace  Engine {
     }
 
     void Node::Init() {
+        m_iniParser = new IniParser();
 
-
+        if (!m_dataFilePath.empty()) {
+            m_iniParser->LoadIniFile(m_dataFilePath);
+        }
     }
 
     void Node::Process(const float deltaTime) {
@@ -178,7 +197,7 @@ namespace  Engine {
 
     void Node::SystemProcess() {
         // bubbles up the node tree so that the root of the element dictates the global m_position
-        if (m_parent != nullptr && m_globalTransformationFlag == Inherit) {
+        if (m_parent != nullptr && m_globalTransformationFlag == IF_Inherit) {
             m_globalTransform = m_parent->m_globalTransform;
             ApplyLocalTransform();
         }
@@ -197,6 +216,7 @@ namespace  Engine {
 
 
     void Node::DrawDebug() {
+
         if (ImGui::BeginTable("##bg", 1, ImGuiTableFlags_RowBg)) {
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
@@ -207,7 +227,34 @@ namespace  Engine {
             tree_flags |= ImGuiTreeNodeFlags_NavLeftJumpsToParent; // Left arrow support
             tree_flags |= ImGuiTreeNodeFlags_SpanFullWidth; // Span full width for easier mouse reach
             tree_flags |= ImGuiTreeNodeFlags_DrawLinesToNodes; // Always draw hierarchy outlines
+
+
+
+            if (ImGui::BeginDragDropTarget()) {
+
+                const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSETS_BROWSER_ITEMS");;
+
+                if (payload != nullptr) {
+
+                    ImGuiID* pAssetField = (ImGuiID*)payload->Data;
+
+                    auto items = AssetManager::GetInstance().assets;
+                    for (auto& item : *items) {
+                        if (item.ID == *pAssetField) {
+                            LogManager::GetInstance().Log(INFO, "%s", (*items)[item.ID].AssetName.c_str());
+                            m_parent->AddChild(*(*items)[item.ID].GetNode());
+                        }
+                    }
+                }
+                ImGui::EndDragDropTarget();
+            }
+
+
             bool node_open = ImGui::TreeNodeEx("", tree_flags, "%s", m_name.c_str());
+
+
+
+
             if (ImGui::IsItemFocused())
                 SceneManager::GetInstance().m_visibleNodeDebug = this;
             if (node_open) {
@@ -224,6 +271,7 @@ namespace  Engine {
     void Node::AddChild(Node& node) {
         node.m_Id = ++m_Id;
         node.SetParent(this);
+        node.m_dataFilePath = m_dataFilePath;
         m_childrenToAdd.push_back(&node);
         node.Init();
     }
@@ -254,6 +302,7 @@ namespace  Engine {
         return m_children;
     }
 
+
     void Node::ApplyLocalTransform() {
         // position
         m_globalTransform.position = m_parent->m_globalTransform.position + m_transform.position;
@@ -269,6 +318,10 @@ namespace  Engine {
         // size
         m_globalTransform.SetHeight(m_parent->m_globalTransform.GetHeight() + m_transform.GetHeight());
         m_globalTransform.SetWidth(m_parent->m_globalTransform.GetWidth() + m_transform.GetWidth());
+    }
+
+    std::string Node::GetUId() {
+        return m_UId;
     }
 }
 

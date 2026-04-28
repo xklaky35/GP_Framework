@@ -6,15 +6,24 @@
 #define IM_CLAMP(V, MN, MX)     ((V) < (MN) ? (MN) : (V) > (MX) ? (MX) : (V))
 
 #include <vector>
-#include "../imgui/imguiwindowbaseclass.h"
+#include "assetbrowser.h"
+
+
+class ImGuiWindowBaseClass;
 
 namespace Engine {
+
+
 
 
     class AssetManager {
     public:
         static AssetManager& GetInstance();
         static void DeleteInstance();
+
+        bool Initialise();
+
+        bool LoadAssets(AssetBrowser *assetBrowser);
 
         void DrawDebug() const;
 
@@ -26,6 +35,8 @@ namespace Engine {
     protected:
         static AssetManager *m_pInstance;
 
+    public:
+        std::vector<AssetField>* assets;
     private:
         std::vector<ImGuiWindowBaseClass*> windows;
     };

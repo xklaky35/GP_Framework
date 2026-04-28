@@ -17,6 +17,7 @@ namespace Engine {
                                m_greenTint(1), m_blueTint(1), m_alpha(1), m_scaleFactor(0) {
 
         m_name = "SpriteNode";
+        m_nodeType = NT_SpriteNode;
         m_spritePath = {};
         m_nodeInfo.push_back(
             {
@@ -29,7 +30,7 @@ namespace Engine {
                 "SpritePath", [](Node &n) {
                     if (auto *s = dynamic_cast<SpriteNode *>(&n)) {
                         if (ImGui::InputText("##Editor", &s->m_spritePath)) { // only works by including "misc/cpp/imgui_stdlib.cpp"
-                            s->m_iniParser->SetValue(s->m_name, "spritePath", s->m_spritePath);
+                            s->m_iniParser->SetValue(s->GetUId(), "spritePath", s->m_spritePath, s);
                         }
                     }
                 }
@@ -42,7 +43,7 @@ namespace Engine {
                         ImGui::SetNextItemWidth(-FLT_MIN);
                         if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_redTint, 1, 0.5f, &v_min,
                                                &v_max)) {
-                            s->m_iniParser->SetValue(n.m_name, "redTint", s->m_redTint);
+                            s->m_iniParser->SetValue(s->GetUId(), "redTint", s->m_redTint, s);
                         }
                     }
                 }
@@ -55,7 +56,7 @@ namespace Engine {
                         ImGui::SetNextItemWidth(-FLT_MIN);
                         if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_greenTint, 1, 0.5f, &v_min,
                                                &v_max)) {
-                            s->m_iniParser->SetValue(s->m_name, "greenTint", s->m_greenTint);
+                            s->m_iniParser->SetValue(s->GetUId(), "greenTint", s->m_greenTint, s);
                         }
                     }
                 }
@@ -68,7 +69,7 @@ namespace Engine {
                         ImGui::SetNextItemWidth(-FLT_MIN);
                         if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_blueTint, 1, 0.5f, &v_min,
                                                &v_max)) {
-                            s->m_iniParser->SetValue(s->m_name, "blueTint", s->m_blueTint);
+                            s->m_iniParser->SetValue(s->GetUId(), "blueTint", s->m_blueTint, s);
                         }
                     }
                 }
@@ -80,7 +81,7 @@ namespace Engine {
                         int v_min = 0, v_max = 1;
                         ImGui::SetNextItemWidth(-FLT_MIN);
                         if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_alpha, 1, 0.5f, &v_min, &v_max)) {
-                            s->m_iniParser->SetValue(s->m_name, "alpha", s->m_alpha);
+                            s->m_iniParser->SetValue(s->GetUId(), "alpha", s->m_alpha, s);
                         }
                     }
                 }
@@ -91,7 +92,7 @@ namespace Engine {
                     if (auto *s = dynamic_cast<SpriteNode *>(&n)) {
                         if (s->m_pSprite == nullptr) return;
                         if (ImGui::DragInt("Layer", &s->m_pSprite->m_iLayer, 1, 0, 10)) {
-                            s->m_iniParser->SetValue(s->m_name, "layer", s->m_pSprite->m_iLayer);
+                            s->m_iniParser->SetValue(s->GetUId(), "layer", s->m_pSprite->m_iLayer, s);
                         }
                     }
                 }
@@ -106,8 +107,8 @@ namespace Engine {
                                 bool is_selected = s->m_spriteDisplayMode == static_cast<SpriteDisplayFlag>(i);
                                 if (ImGui::Selectable(SpriteDisplayFlagStrings[i], is_selected)) {
                                     s->m_spriteDisplayMode = static_cast<SpriteDisplayFlag>(i);
-                                    s->m_iniParser->SetValue(s->m_name, "spriteDisplayMode",
-                                                             SpriteDisplayFlagStrings[i]);
+                                    s->m_iniParser->SetValue(s->GetUId(), "spriteDisplayMode",
+                                                             SpriteDisplayFlagStrings[i], s);
                                 }
                             }
                             ImGui::EndCombo();

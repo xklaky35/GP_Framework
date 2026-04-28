@@ -23,7 +23,7 @@ Spaceship::Spaceship() : m_accellerationFactor(200),
 
 void Spaceship::Init() {
     Node::Init();
-    m_globalTransformationFlag = Disable;
+    m_globalTransformationFlag = IF_Disable;
 
     m_globalTransform.SetSize(200,200);
     // setup sprite

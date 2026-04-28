@@ -9,9 +9,21 @@
 #include "../iniparser/iniparser.h"
 
 namespace Engine {
+
+    enum NodeType {
+        NT_Node,
+        NT_SpriteNode,
+        NT_AnimatedSpriteNode,
+        NT_RigidBody,
+        NT_ColliderNode
+    };
+    static const char* NodeTypeStrings[] = {"Node", "SpriteNode", "AnimatedSpriteNode", "RigidBody", "ColliderNode"};
+
+
+
     enum InheritanceFlag {
-        Inherit,
-        Disable
+        IF_Inherit,
+        IF_Disable
     };
     static const char* InheritanceFlagStrings[] = { "Inherit", "Disable"};
     static constexpr int INHERITANCE_FLAG_STRINGS_COUNT = 2;
@@ -22,6 +34,7 @@ namespace Engine {
     public:
 
         Node();
+
         virtual ~Node();
         virtual void Init();
         virtual void Process(float deltaTime);
@@ -35,9 +48,12 @@ namespace Engine {
         void RemoveChildren();
         void SetParent(Node *);
         void ApplyLocalTransform();
+        std::string GetUId();
 
     public:
+        std::string m_UId;
         std::vector<NodeInfo> m_nodeInfo;
+        std::string m_dataFilePath;
 
         int m_Id;
         std::string m_name;
@@ -46,6 +62,8 @@ namespace Engine {
 
         // Flag indicating if this node inherits transformation information from the parent node
         InheritanceFlag m_globalTransformationFlag;
+
+        NodeType m_nodeType;
         //Local transformation in the scope of the parent node
         Transform m_transform;
         //Global transformation using world coordinates
@@ -56,7 +74,6 @@ namespace Engine {
         std::vector<Node*> m_children;
         std::vector<Node*> m_childrenToAdd;
         std::vector<Node*> m_childrenToDelete;
-        std::string m_dataFilePath;
     };
 
     struct NodeInfo

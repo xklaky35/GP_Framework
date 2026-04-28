@@ -5,12 +5,14 @@
 #include <fstream>
 
 #include "../logmanager/logmanager.h"
+#include "../nodes/node.h"
 
 namespace Engine {
 
     // ############# Loader ############
 
     IniParser::IniParser() = default;
+
     IniParser::~IniParser() = default;
 
     bool IniParser::LoadIniFile(const std::string &filename) {
@@ -113,28 +115,38 @@ namespace Engine {
 
     // ################### Setter ######################
 
-    void IniParser::SetValue(const std::string &iniSection, const std::string &key, std::string& value) {
+    void IniParser::SetValue(const std::string &iniSection, const std::string &key, std::string& value, Node* node) {
         m_data[iniSection][key] = value;
+        m_data[iniSection]["name"] = node->m_name;
+        m_data[iniSection]["nodeType"] = NodeTypeStrings[node->m_nodeType];
     }
 
-    void IniParser::SetValue(const std::string &iniSection, const std::string &key, const char* value) {
+    void IniParser::SetValue(const std::string &iniSection, const std::string &key, const char* value, Node* node) {
         m_data[iniSection][key] = value;
+        m_data[iniSection]["name"] = node->m_name;
+        m_data[iniSection]["nodeType"] = NodeTypeStrings[node->m_nodeType];
     }
 
-    void IniParser::SetValue(const std::string &iniSection, const std::string &key, int value) {
+    void IniParser::SetValue(const std::string &iniSection, const std::string &key, int value, Node* node) {
         auto str_value = std::to_string(value);
         m_data[iniSection][key] = str_value;
+        m_data[iniSection]["name"] = node->m_name;
+        m_data[iniSection]["nodeType"] = NodeTypeStrings[node->m_nodeType];
 
     }
 
-    void IniParser::SetValue(const std::string &iniSection, const std::string &key, float value) {
+    void IniParser::SetValue(const std::string &iniSection, const std::string &key, float value, Node* node) {
         auto str_value = std::to_string(value);
         m_data[iniSection][key] = str_value;
+        m_data[iniSection]["name"] = node->m_name;
+        m_data[iniSection]["nodeType"] = NodeTypeStrings[node->m_nodeType];
 
     }
 
-    void IniParser::SetValue(const std::string &iniSection, const std::string &key, bool value) {
+    void IniParser::SetValue(const std::string &iniSection, const std::string &key, bool value, Node* node) {
         m_data[iniSection][key] = value == true ? "true" : "false";
+        m_data[iniSection]["name"] = node->m_name;
+        m_data[iniSection]["nodeType"] = NodeTypeStrings[node->m_nodeType];
     }
 
     // ######### Helper ############

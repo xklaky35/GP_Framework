@@ -98,7 +98,7 @@ namespace Engine {
 
     void Control::Init() {
         Node::Init();
-        m_globalTransformationFlag = Disable;
+        m_globalTransformationFlag = IF_Disable;
 
         if (m_bUseDebugRect) {
             m_debugRect = new SpriteNode();

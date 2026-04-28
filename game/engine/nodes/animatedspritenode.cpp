@@ -1,7 +1,5 @@
 #include "animatedspritenode.h"
 
-#include <cassert>
-
 #include "imgui.h"
 #include "../animatedsprite.h"
 
@@ -10,6 +8,7 @@ namespace Engine {
                                                m_frameHeight(0),
                                                m_frameWidth(0) {
         m_name = "AnimatedSpriteNode";
+        m_nodeType = NT_AnimatedSpriteNode;
         m_nodeInfo.push_back({
             "Frame Duration", [](Node &n) {
                 auto *animNode = dynamic_cast<AnimatedSpriteNode *>(&n);
@@ -19,8 +18,8 @@ namespace Engine {
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &animSprite->m_frameDuration, 1, 0.5f,
                                            &v_min, &v_max)) {
-                        animNode->m_iniParser->SetValue("AnimatedSpriteNode", "frameDuration",
-                                                        animSprite->m_frameDuration);
+                        animNode->m_iniParser->SetValue(animNode->GetUId(), "frameDuration",
+                                                        animSprite->m_frameDuration, animNode);
                     }
                 }
             }
@@ -34,8 +33,8 @@ namespace Engine {
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &animNode->m_frameWidth, 1, 0.5f,
                                            &v_min, &v_max)) {
-                        animNode->m_iniParser->SetValue("AnimatedSpriteNode", "frameWidth",
-                                                        animNode->m_frameWidth);
+                        animNode->m_iniParser->SetValue(animNode->GetUId(), "frameWidth",
+                                                        animNode->m_frameWidth, animNode);
                         animNode->SetupFrames();
                     }
                 }
@@ -50,8 +49,8 @@ namespace Engine {
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &animNode->m_frameHeight, 1, 0.5f,
                                            &v_min, &v_max)) {
-                        animNode->m_iniParser->SetValue("AnimatedSpriteNode", "frameHeight",
-                                                        animNode->m_frameHeight);
+                        animNode->m_iniParser->SetValue(animNode->GetUId(), "frameHeight",
+                                                        animNode->m_frameHeight, animNode);
                         animNode->SetupFrames();
                     }
                 }
@@ -63,7 +62,7 @@ namespace Engine {
                 if (animNode) {
                     auto *animSprite = dynamic_cast<AnimatedSprite *>(animNode->m_pSprite);
                     if (ImGui::Checkbox("##Editor", &animSprite->m_bLooping)) {
-                        animNode->m_iniParser->SetValue("AnimatedSpriteNode", "isLooping", animSprite->m_bLooping);
+                        animNode->m_iniParser->SetValue(animNode->GetUId(), "isLooping", animSprite->m_bLooping, animNode);
                     }
                 }
             }
@@ -74,7 +73,7 @@ namespace Engine {
                 if (animNode) {
                     auto *animSprite = dynamic_cast<AnimatedSprite *>(animNode->m_pSprite);
                     if (ImGui::Checkbox("##Editor", &animSprite->m_bAnimating)) {
-                        animNode->m_iniParser->SetValue("AnimatedSpriteNode", "isAnimating", animSprite->m_bAnimating);
+                        animNode->m_iniParser->SetValue(animNode->GetUId(), "isAnimating", animSprite->m_bAnimating, animNode);
                     }
                 }
             }
@@ -85,7 +84,7 @@ namespace Engine {
                 if (animNode) {
                     auto *animSprite = dynamic_cast<AnimatedSprite *>(animNode->m_pSprite);
                     if (ImGui::Checkbox("##Editor", &animSprite->m_bIsFlipped)) {
-                        animNode->m_iniParser->SetValue("AnimatedSpriteNode", "isFlipped", animSprite->m_bIsFlipped);
+                        animNode->m_iniParser->SetValue(animNode->GetUId(), "isFlipped", animSprite->m_bIsFlipped, animNode);
                         animNode->SetupFrames();
                     }
                 }
