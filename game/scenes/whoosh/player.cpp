@@ -26,7 +26,7 @@ Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_fGroundAcceleration, 1, 0.5f, &v_min,
                                            &v_max)) {
-                        s->m_iniParser->SetValue(s->GetUId(), "groundAcceleration", s->m_fGroundAcceleration, s);
+                        s->SetValue("groundAcceleration", s->m_fGroundAcceleration);
                     }
                 }
             }
@@ -39,7 +39,7 @@ Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_fGroundDeceleration, 1, 0.5f, &v_min,
                                            &v_max)) {
-                        s->m_iniParser->SetValue(s->GetUId(), "groundDeceleration", s->m_fGroundDeceleration, s);
+                        s->SetValue("groundDeceleration", s->m_fGroundDeceleration);
                     }
                 }
             }
@@ -52,7 +52,7 @@ Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_fGroundMaxSpeed, 1, 0.5f, &v_min,
                                            &v_max)) {
-                        s->m_iniParser->SetValue(s->GetUId(), "maxGroundSpeed", s->m_fGroundMaxSpeed, s);
+                        s->SetValue("maxGroundSpeed", s->m_fGroundMaxSpeed);
                     }
                 }
             }
@@ -64,7 +64,7 @@ Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false
                     int v_min = 0, v_max = 100000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_U32, &s->m_maxJumps, 1, 0.5f, &v_min, &v_max)) {
-                        s->m_iniParser->SetValue(s->GetUId(), "maxJumps", s->m_maxJumps, s);
+                        s->SetValue("maxJumps", s->m_maxJumps);
                     }
                 }
             }
@@ -101,22 +101,15 @@ Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false
 
 void Player::Init() {
     Node::Init();
+    m_nodeType = NT_Custom;
 
-    // child setup
-    NodeFactory::GetInstance().InitWithConfiguration(this, "../game/scenes/whoosh/player.ini");
 
-    // own setup of variables
-    m_fGroundAcceleration = m_iniParser->GetValueAsFloat(GetUId(), "groundAcceleration");
-    m_fGroundDeceleration = m_iniParser->GetValueAsFloat(GetUId(), "groundDeceleration");
-    m_fGroundMaxSpeed = m_iniParser->GetValueAsFloat(GetUId(), "maxGroundSpeed");
-    m_maxJumps = m_iniParser->GetValueAsInt(GetUId(), "maxJumps");
+
 
 
     m_rigidBody = new RigidbodyNode(b2_dynamicBody, 0, 0);
     m_rigidBody->m_globalTransform.SetSize(m_globalTransform.GetWidth(), m_globalTransform.GetHeight());
     AddChild(*m_rigidBody);
-
-
 }
 
 void Player::Process(float deltaTime) {
@@ -168,6 +161,19 @@ void Player::HandleMovement(float deltaTime) {
 void Player::OnLandOnGround() {
     m_bIsGrounded = true;
     m_jumpsMade = 0;
+}
+
+void Player::Setup(IniParser *parser, std::string section) {
+    Node::Setup(parser, section); // IMORTANT!!
+
+    // own setup of variables
+    m_fGroundAcceleration = parser->GetValueAsFloat(section, "groundAcceleration");
+    m_fGroundDeceleration = parser->GetValueAsFloat(section, "groundDeceleration");
+    m_fGroundMaxSpeed = parser->GetValueAsFloat(section, "maxGroundSpeed");
+    m_maxJumps = parser->GetValueAsInt(section, "maxJumps");
+
+    // child setup
+    NodeFactory::GetInstance().InitWithConfiguration(this, "../game/scenes/whoosh/Player.ini");
 }
 
 

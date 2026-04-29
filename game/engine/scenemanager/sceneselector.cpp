@@ -59,9 +59,11 @@ namespace Engine {
                 ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 2.0f); // Default twice larger
                 for (const NodeInfo &field_desc: sceneManager.m_visibleNodeDebug->m_nodeInfo) {
+                    /*
                     if (sceneManager.m_visibleNodeDebug->m_iniParser == nullptr) {
                         continue;
                     }
+                    */
                     ImGui::TableNextRow();
                     ImGui::PushID(field_desc.Name);
                     ImGui::TableNextColumn();

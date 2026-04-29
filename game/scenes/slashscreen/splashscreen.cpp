@@ -1,4 +1,7 @@
 #include "splashscreen.h"
+
+#include <cassert>
+
 #include "../../config/config.h"
 #include "../../engine/nodes/nodefactory.h"
 #include "../../engine/scenemanager/scenemanager.h"
@@ -21,32 +24,19 @@ void Splashscreen::Init()  {
 
     NodeFactory::GetInstance().InitWithConfiguration(this, "../game/scenes/slashscreen/splashscreen.ini");
 
-    m_background = new SpriteNode();
-    m_background->SetSpritePath(std::string("../assets/Sprites/rect.png").data());
-    m_background->m_spriteDisplayMode = Fit;
-    m_background->m_transform.SetSize(m_windowWidth, m_windowHeight);
-    m_background->SetRGBA(0,0,0,1);
-    AddChild(*m_background);
+    m_background = dynamic_cast<SpriteNode *>(GetChild("Background"));
+    m_autLogo = dynamic_cast<SpriteNode *>(GetChild("AUTLogo"));
+    m_fmodLogo = dynamic_cast<SpriteNode *>(GetChild("FMODLogo"));
 
-    m_autLogo = new SpriteNode();
-    m_autLogo->SetSpritePath(std::string("../assets/Splash/aut.png").data());
-    m_autLogo->SetRGBA(1,1,1,0.01);
-    m_autLogo->m_globalTransformationFlag = IF_Disable;
-    m_autLogo->m_globalTransform.SetScale(1.7);
     m_screens.push_back(m_autLogo);
-    AddChild(*m_autLogo);
-
-    m_fmodLogo = new SpriteNode();
-    m_fmodLogo->SetSpritePath(std::string("../assets/Splash/FMOD_Logo.png").data());
-    m_fmodLogo->SetRGBA(1,1,1,0.01);
-    m_fmodLogo->m_globalTransformationFlag = IF_Disable;
-    m_fmodLogo->m_transform.SetScale(0.5);
     m_screens.push_back(m_fmodLogo);
-    AddChild(*m_fmodLogo);
 }
 
 void Splashscreen::Process(float deltaTime) {
     Control::Process(deltaTime);
+
+    if (m_autLogo == nullptr || m_fmodLogo == nullptr || m_background == nullptr)
+        return;
 
     if (m_iCurrentScreen >= m_screens.size()) {
         SceneManager::GetInstance().LoadScene("MainMenu");

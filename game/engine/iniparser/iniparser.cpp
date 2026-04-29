@@ -115,38 +115,28 @@ namespace Engine {
 
     // ################### Setter ######################
 
-    void IniParser::SetValue(const std::string &iniSection, const std::string &key, std::string& value, Node* node) {
+    void IniParser::SetValue(const std::string &iniSection, const std::string &key, std::string& value) {
         m_data[iniSection][key] = value;
-        m_data[iniSection]["name"] = node->m_name;
-        m_data[iniSection]["nodeType"] = NodeTypeStrings[node->m_nodeType];
     }
 
-    void IniParser::SetValue(const std::string &iniSection, const std::string &key, const char* value, Node* node) {
+    void IniParser::SetValue(const std::string &iniSection, const std::string &key, const char* value) {
         m_data[iniSection][key] = value;
-        m_data[iniSection]["name"] = node->m_name;
-        m_data[iniSection]["nodeType"] = NodeTypeStrings[node->m_nodeType];
     }
 
-    void IniParser::SetValue(const std::string &iniSection, const std::string &key, int value, Node* node) {
+    void IniParser::SetValue(const std::string &iniSection, const std::string &key, int value) {
         auto str_value = std::to_string(value);
         m_data[iniSection][key] = str_value;
-        m_data[iniSection]["name"] = node->m_name;
-        m_data[iniSection]["nodeType"] = NodeTypeStrings[node->m_nodeType];
 
     }
 
-    void IniParser::SetValue(const std::string &iniSection, const std::string &key, float value, Node* node) {
+    void IniParser::SetValue(const std::string &iniSection, const std::string &key, float value) {
         auto str_value = std::to_string(value);
         m_data[iniSection][key] = str_value;
-        m_data[iniSection]["name"] = node->m_name;
-        m_data[iniSection]["nodeType"] = NodeTypeStrings[node->m_nodeType];
 
     }
 
-    void IniParser::SetValue(const std::string &iniSection, const std::string &key, bool value, Node* node) {
+    void IniParser::SetValue(const std::string &iniSection, const std::string &key, bool value) {
         m_data[iniSection][key] = value == true ? "true" : "false";
-        m_data[iniSection]["name"] = node->m_name;
-        m_data[iniSection]["nodeType"] = NodeTypeStrings[node->m_nodeType];
     }
 
     // ######### Helper ############
@@ -156,5 +146,12 @@ namespace Engine {
         if (begin == std::string::npos) return "";
         const auto end = s.find_last_not_of(" \t\r\n");
         return s.substr(begin, end - begin + 1);
+    }
+
+    int IniParser::GetIndexOf(const char *arr[] , const char * str, const int length) {
+        for (int i = 0; i < length; i++) {
+            if (strcmp(arr[i], str) == 0) return i;
+        }
+        return 0;
     }
 }

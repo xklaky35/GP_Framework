@@ -17,15 +17,14 @@ namespace Engine {
 
     public:
         SpriteNode();
-        SpriteNode(IniParser* iniParser);
 
         void Init() override;
+        void Setup(IniParser *parser, std::string section) override;
         void SystemProcess() override;
         void Draw(Renderer &) override;
         void DrawDebug() override;
         void SetRGBA(float,float,float,float);
         void SetSpritePath(std::string);
-
 
     protected:
 

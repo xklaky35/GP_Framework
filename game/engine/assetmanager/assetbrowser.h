@@ -39,6 +39,11 @@ namespace Engine {
                 pathCpy.erase(0, pos + 1);
             }
             AssetName = pathCpy; // everything exept the last part of the path got deleted
+
+            pos = pathCpy.find('.');
+            if (pos != std::string::npos) {
+                AssetName = pathCpy.substr(0, pos);
+            }
         }
 
         AssetField(const AssetType type, Node *node) : ID(0), Type(type), IsSelected(false),
@@ -47,7 +52,7 @@ namespace Engine {
 
         Node *GetNode() {
             if (!AssetPath.empty())
-                NodeFactory::GetInstance().InitWithConfiguration(node, AssetPath);
+                node = NodeFactory::GetInstance().CreateCustomNode(AssetName, AssetPath);
 
             return node;
         }

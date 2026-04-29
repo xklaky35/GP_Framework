@@ -17,12 +17,11 @@ namespace  Engine {
                    m_globalTransformationFlag(IF_Inherit),
                    m_iniParser(nullptr) {
 
-
         m_name = "Node";
         m_globalTransform = Transform();
-        m_nodeType = NT_Node;
         m_transform = Transform();
-        m_UId = GenerateUID();
+
+        m_nodeType = NT_Node;
 
         m_nodeInfo = {
             {
@@ -43,7 +42,7 @@ namespace  Engine {
                 "Name", [](Node &n) {
                     if (ImGui::InputText("##Editor", &n.m_name)) {
                         // only works by including "misc/cpp/imgui_stdlib.cpp"
-                        n.m_iniParser->SetValue(n.GetUId(), "name", n.m_name, &n);
+                        n.SetValue("name", n.m_name);
                     }
                 }
             },
@@ -52,9 +51,11 @@ namespace  Engine {
                     int v_min = -10000, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
 
-                    if (n.m_globalTransformationFlag == IF_Inherit) ImGui::BeginDisabled(); // only make the field editable if contidion is met
-                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.position.x, 1, 0.5f, &v_min, &v_max)) {
-                        n.m_iniParser->SetValue(n.GetUId(), "globalPosX", n.m_globalTransform.position.x, &n);
+                    if (n.m_globalTransformationFlag == IF_Inherit) ImGui::BeginDisabled();
+                    // only make the field editable if contidion is met
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.position.x, 1, 0.5f,
+                                           &v_min, &v_max)) {
+                        n.SetValue("globalPosX", n.m_globalTransform.position.x);
                     }
                     if (n.m_globalTransformationFlag == IF_Inherit) ImGui::EndDisabled();
                 }
@@ -64,8 +65,9 @@ namespace  Engine {
                     int v_min = -10000, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (n.m_globalTransformationFlag == IF_Inherit) ImGui::BeginDisabled();
-                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.position.y, 1, 0.5f, &v_min, &v_max)) {
-                        n.m_iniParser->SetValue(n.GetUId(), "globalPosY", n.m_globalTransform.position.y, &n);
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.position.y, 1, 0.5f,
+                                           &v_min, &v_max)) {
+                        n.SetValue("globalPosY", n.m_globalTransform.position.y);
                     }
                     if (n.m_globalTransformationFlag == IF_Inherit) ImGui::EndDisabled();
                 }
@@ -74,8 +76,9 @@ namespace  Engine {
                 "LocalPosX", [](Node &n) {
                     int v_min = -10000, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
-                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_transform.position.x, 1, 0.5f, &v_min, &v_max)) {
-                        n.m_iniParser->SetValue(n.m_name, "localPosX", n.m_transform.position.x, &n);
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_transform.position.x, 1, 0.5f, &v_min,
+                                           &v_max)) {
+                        n.SetValue("localPosX", n.m_transform.position.x);
                     };
                 }
             },
@@ -83,8 +86,9 @@ namespace  Engine {
                 "LocalPosY", [](Node &n) {
                     int v_min = -10000, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
-                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_transform.position.y, 1, 0.5f, &v_min, &v_max)) {
-                        n.m_iniParser->SetValue(n.GetUId(), "localPosY", n.m_transform.position.y, &n);
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_transform.position.y, 1, 0.5f, &v_min,
+                                           &v_max)) {
+                        n.SetValue("localPosY", n.m_transform.position.y);
                     }
                 }
             },
@@ -93,8 +97,9 @@ namespace  Engine {
                     int v_min = -10000, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (n.m_globalTransformationFlag == IF_Inherit) ImGui::BeginDisabled();
-                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.baseSize.x, 1, 0.5f, &v_min, &v_max)) {
-                        n.m_iniParser->SetValue(n.GetUId(), "baseSizeX", n.m_globalTransform.baseSize.x, &n);
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.baseSize.x, 1, 0.5f,
+                                           &v_min, &v_max)) {
+                        n.SetValue("baseSizeX",n.m_globalTransform.baseSize.x);
                     }
                     if (n.m_globalTransformationFlag == IF_Inherit) ImGui::EndDisabled();
                 }
@@ -104,8 +109,9 @@ namespace  Engine {
                     int v_min = -10000, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (n.m_globalTransformationFlag == IF_Inherit) ImGui::BeginDisabled();
-                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.baseSize.y, 1, 0.5f, &v_min, &v_max)) {
-                        n.m_iniParser->SetValue(n.GetUId(), "baseSizeY", n.m_globalTransform.baseSize.y, &n);
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.baseSize.y, 1, 0.5f,
+                                           &v_min, &v_max)) {
+                        n.SetValue("baseSizeY",n.m_globalTransform.baseSize.y);
                     };
                     if (n.m_globalTransformationFlag == IF_Inherit) ImGui::EndDisabled();
                 }
@@ -116,7 +122,7 @@ namespace  Engine {
                     if (n.m_globalTransformationFlag == IF_Inherit) ImGui::BeginDisabled();
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.scale, 1, 0.5f, &v_min,
                                            &v_max)) {
-                        n.m_iniParser->SetValue(n.GetUId(), "scale", n.m_globalTransform.scale, &n);
+                        n.SetValue("scale", n.m_globalTransform.scale);
                     };
                     if (n.m_globalTransformationFlag == IF_Inherit) ImGui::EndDisabled();
                 }
@@ -125,9 +131,10 @@ namespace  Engine {
                 "Rotation", [](Node &n) {
                     int v_min = 0, v_max = 100;
                     if (n.m_globalTransformationFlag == IF_Inherit) ImGui::BeginDisabled();
-                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.rotation, 1, 0.5f, &v_min,
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &n.m_globalTransform.rotation, 1, 0.5f,
+                                           &v_min,
                                            &v_max)) {
-                        n.m_iniParser->SetValue(n.GetUId(), "rotation", n.m_globalTransform.rotation, &n);
+                        n.SetValue("rotation", n.m_globalTransform.rotation);
                     };
                     if (n.m_globalTransformationFlag == IF_Inherit) ImGui::EndDisabled();
                 }
@@ -135,7 +142,7 @@ namespace  Engine {
             {
                 "IsVisible", [](Node &n) {
                     if (ImGui::Checkbox("##Editor", &n.m_bIsVisible)) {
-                        n.m_iniParser->SetValue(n.GetUId(), "isVisible", n.m_bIsVisible, &n);
+                        n.SetValue("isVisible", n.m_bIsVisible);
                     };
                 }
             },
@@ -146,8 +153,8 @@ namespace  Engine {
                             bool is_selected =
                                     n.m_globalTransformationFlag == static_cast<InheritanceFlag>(i);
                             if (ImGui::Selectable(InheritanceFlagStrings[i], is_selected)) {
-                                n.m_globalTransformationFlag = static_cast<InheritanceFlag> (i);
-                                n.m_iniParser->SetValue(n.GetUId(), "inheritanceFlag", InheritanceFlagStrings[i], &n);
+                                n.m_globalTransformationFlag = static_cast<InheritanceFlag>(i);
+                                n.SetValue("inheritanceFlag", InheritanceFlagStrings[i]);
                             }
                         }
                         ImGui::EndCombo();
@@ -169,11 +176,6 @@ namespace  Engine {
     }
 
     void Node::Init() {
-        m_iniParser = new IniParser();
-
-        if (!m_dataFilePath.empty()) {
-            m_iniParser->LoadIniFile(m_dataFilePath);
-        }
     }
 
     void Node::Process(const float deltaTime) {
@@ -230,11 +232,11 @@ namespace  Engine {
 
 
 
+            bool node_open = ImGui::TreeNodeEx("", tree_flags, "%s", m_name.c_str());
             if (ImGui::BeginDragDropTarget()) {
-
                 const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSETS_BROWSER_ITEMS");;
 
-                if (payload != nullptr) {
+                if (payload != nullptr && payload->IsDelivery()) {
 
                     ImGuiID* pAssetField = (ImGuiID*)payload->Data;
 
@@ -242,16 +244,14 @@ namespace  Engine {
                     for (auto& item : *items) {
                         if (item.ID == *pAssetField) {
                             LogManager::GetInstance().Log(INFO, "%s", (*items)[item.ID].AssetName.c_str());
-                            m_parent->AddChild(*(*items)[item.ID].GetNode());
+                            Node* nodeToAdd = (*items)[item.ID].GetNode();
+                            if (nodeToAdd)
+                                AddChild(*nodeToAdd);
                         }
                     }
                 }
                 ImGui::EndDragDropTarget();
             }
-
-
-            bool node_open = ImGui::TreeNodeEx("", tree_flags, "%s", m_name.c_str());
-
 
 
 
@@ -268,10 +268,11 @@ namespace  Engine {
         }
     }
 
+
+
     void Node::AddChild(Node& node) {
         node.m_Id = ++m_Id;
         node.SetParent(this);
-        node.m_dataFilePath = m_dataFilePath;
         m_childrenToAdd.push_back(&node);
         node.Init();
     }
@@ -302,6 +303,18 @@ namespace  Engine {
         return m_children;
     }
 
+    Node * Node::GetChild(std::string name) {
+        for (Node* child : m_children) {
+            if (child->m_name == name)
+                return child;
+        }
+        for (Node* child : m_childrenToAdd) {
+            if (child->m_name == name)
+                return child;
+        }
+        return nullptr;
+    }
+
 
     void Node::ApplyLocalTransform() {
         // position
@@ -320,8 +333,104 @@ namespace  Engine {
         m_globalTransform.SetWidth(m_parent->m_globalTransform.GetWidth() + m_transform.GetWidth());
     }
 
+    // only loads the configuration data from the provided file into the parser
+    void Node::LoadConfigurationFile(std::string path) {
+        m_UId = GenerateUID();
+        m_iniParser = new IniParser();
+        m_iniParser->LoadIniFile(path);
+    }
+
+    // returns all child configurations
+    NodeConfiguration Node::GetChildConfiguration() {
+        assert(m_iniParser);
+        return m_iniParser->m_data;
+    }
+
+    // returns wether a specified child node is a custom node or not
+    bool Node::IsChildCustomNodeWithId(const std::string& section) {
+        assert(m_iniParser);
+        return m_iniParser->GetValueAsString(section, "nodeType") == NodeTypeStrings[NT_Custom];
+    }
+
+    std::string Node::GetNameOfChildWithId(const std::string& section) {
+        assert(m_iniParser);
+        return m_iniParser->GetValueAsString(section, "name");
+    }
+
+    std::string Node::GetTypeOfChildWithId(std::string sectionId) {
+        return m_iniParser->GetValueAsString(sectionId, "nodeType");
+    }
+
+    void Node::Setup(IniParser* parser, std::string sectionId) {
+        m_UId = sectionId;
+        m_globalTransformationFlag = static_cast<InheritanceFlag>(
+                IniParser::GetIndexOf(
+                        InheritanceFlagStrings, parser->GetValueAsString(sectionId, "inheritanceFlag").c_str(), INHERITANCE_FLAG_STRINGS_COUNT
+                    )
+            );
+        m_globalTransform.rotation = parser->GetValueAsFloat(sectionId, "rotation");
+        m_globalTransform.scale = parser->GetValueAsFloat(sectionId, "scale");
+        m_globalTransform.baseSize.y = parser->GetValueAsFloat(sectionId, "baseSizeY");
+        m_globalTransform.baseSize.x = parser->GetValueAsFloat(sectionId, "baseSizeX");
+        m_transform.position.y = parser->GetValueAsFloat(sectionId, "localPosY");
+        m_transform.position.x = parser->GetValueAsFloat(sectionId, "localPosX");
+        m_globalTransform.position.y = parser->GetValueAsFloat(sectionId, "globalPosY");
+        m_globalTransform.position.x = parser->GetValueAsFloat(sectionId, "globalPosX");
+        m_name =  parser->GetValueAsString(sectionId, "name");
+    }
+
+
     std::string Node::GetUId() {
         return m_UId;
+    }
+
+    IniParser * Node::GetIniParser() const{
+        return m_iniParser;
+    }
+
+    // ################### Setter ######################
+
+    void Node::SetValue(const std::string &key, std::string& value) {
+        WriteGenericProperties();
+        if (m_parent != nullptr) {
+            m_parent->m_iniParser->SetValue(m_UId, key, value);
+        }
+    }
+
+    void Node::SetValue(const std::string &key, const char* value) {
+        WriteGenericProperties();
+        if (m_parent != nullptr) {
+            m_parent->m_iniParser->SetValue(m_UId, key, value);
+        }
+    }
+
+    void Node::SetValue(const std::string &key, int value) {
+        WriteGenericProperties();
+        if (m_parent != nullptr) {
+            m_parent->m_iniParser->SetValue(m_UId, key, value);
+        }
+    }
+
+    void Node::SetValue(const std::string &key, float value) {
+        WriteGenericProperties();
+        if (m_parent != nullptr) {
+            m_parent->m_iniParser->SetValue(m_UId, key, value);
+        }
+    }
+
+    void Node::SetValue(const std::string &key, bool value) {
+        WriteGenericProperties();
+        if (m_parent != nullptr) {
+            m_parent->m_iniParser->SetValue(m_UId, key, value);
+        }
+    }
+
+    void Node::WriteGenericProperties() {
+        if (m_parent != nullptr) {
+            m_iniParser->m_data[m_UId]["nodeType"] = NodeTypeStrings[m_nodeType];
+            m_iniParser->m_data[m_UId]["name"] = m_name;
+        }
+
     }
 }
 

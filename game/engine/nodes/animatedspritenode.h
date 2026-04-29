@@ -16,9 +16,9 @@ namespace Engine {
         // Member methods:
     public:
         AnimatedSpriteNode();
-        AnimatedSpriteNode(IniParser* parser);
 
         void Init() override;
+        void Setup(IniParser *, std::string) override;
         void Process(float deltaTime) override;
         void Draw(Renderer &renderer) override;
         void SetupSpriteRendering(Renderer& renderer) override;

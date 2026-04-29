@@ -30,7 +30,7 @@ namespace Engine {
                 "SpritePath", [](Node &n) {
                     if (auto *s = dynamic_cast<SpriteNode *>(&n)) {
                         if (ImGui::InputText("##Editor", &s->m_spritePath)) { // only works by including "misc/cpp/imgui_stdlib.cpp"
-                            s->m_iniParser->SetValue(s->GetUId(), "spritePath", s->m_spritePath, s);
+                            s->SetValue("spritePath", s->m_spritePath);
                         }
                     }
                 }
@@ -43,7 +43,7 @@ namespace Engine {
                         ImGui::SetNextItemWidth(-FLT_MIN);
                         if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_redTint, 1, 0.5f, &v_min,
                                                &v_max)) {
-                            s->m_iniParser->SetValue(s->GetUId(), "redTint", s->m_redTint, s);
+                            s->SetValue("redTint", s->m_redTint);
                         }
                     }
                 }
@@ -56,7 +56,7 @@ namespace Engine {
                         ImGui::SetNextItemWidth(-FLT_MIN);
                         if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_greenTint, 1, 0.5f, &v_min,
                                                &v_max)) {
-                            s->m_iniParser->SetValue(s->GetUId(), "greenTint", s->m_greenTint, s);
+                            s->SetValue("greenTint", s->m_greenTint);
                         }
                     }
                 }
@@ -69,7 +69,7 @@ namespace Engine {
                         ImGui::SetNextItemWidth(-FLT_MIN);
                         if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_blueTint, 1, 0.5f, &v_min,
                                                &v_max)) {
-                            s->m_iniParser->SetValue(s->GetUId(), "blueTint", s->m_blueTint, s);
+                            s->SetValue("blueTint", s->m_blueTint);
                         }
                     }
                 }
@@ -81,7 +81,7 @@ namespace Engine {
                         int v_min = 0, v_max = 1;
                         ImGui::SetNextItemWidth(-FLT_MIN);
                         if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_alpha, 1, 0.5f, &v_min, &v_max)) {
-                            s->m_iniParser->SetValue(s->GetUId(), "alpha", s->m_alpha, s);
+                            s->SetValue("alpha", s->m_alpha);
                         }
                     }
                 }
@@ -92,7 +92,7 @@ namespace Engine {
                     if (auto *s = dynamic_cast<SpriteNode *>(&n)) {
                         if (s->m_pSprite == nullptr) return;
                         if (ImGui::DragInt("Layer", &s->m_pSprite->m_iLayer, 1, 0, 10)) {
-                            s->m_iniParser->SetValue(s->GetUId(), "layer", s->m_pSprite->m_iLayer, s);
+                            s->SetValue("layer", s->m_pSprite->m_iLayer);
                         }
                     }
                 }
@@ -107,8 +107,7 @@ namespace Engine {
                                 bool is_selected = s->m_spriteDisplayMode == static_cast<SpriteDisplayFlag>(i);
                                 if (ImGui::Selectable(SpriteDisplayFlagStrings[i], is_selected)) {
                                     s->m_spriteDisplayMode = static_cast<SpriteDisplayFlag>(i);
-                                    s->m_iniParser->SetValue(s->GetUId(), "spriteDisplayMode",
-                                                             SpriteDisplayFlagStrings[i], s);
+                                    s->SetValue("spriteDisplayMode",SpriteDisplayFlagStrings[i]);
                                 }
                             }
                             ImGui::EndCombo();
@@ -117,15 +116,6 @@ namespace Engine {
                 }
             });
     }
-
-    /**
-     * This node uses the sprites dimensions by default. If you specify a custom height and width, please disable m_bUseSpriteSize.
-     * @param iniParser path to the data file the data should be written to
-     */
-    SpriteNode::SpriteNode(IniParser* iniParser) : SpriteNode() {
-        m_iniParser = iniParser;
-    }
-
 
     void SpriteNode::Init() {
         Node::Init();
@@ -210,6 +200,20 @@ namespace Engine {
 
     void SpriteNode::SetSpritePath(std::string path) {
         m_spritePath = std::move(path);
+    }
+
+    void SpriteNode::Setup(IniParser *parser, std::string section) {
+        Node::Setup(parser, section);
+        m_spriteDisplayMode = static_cast<SpriteDisplayFlag>(IniParser::GetIndexOf(
+         SpriteDisplayFlagStrings, parser->GetValueAsString(section, "spriteDisplayMode").c_str(), SPRITE_DISPLAY_FLAG_STRING_COUNT));
+        m_iLayer = parser->GetValueAsInt(section, "layer");
+        SetRGBA(
+            parser->GetValueAsFloat(section, "redTint"),
+            parser->GetValueAsFloat(section, "blueTint"),
+            parser->GetValueAsFloat(section, "greenTint"),
+            parser->GetValueAsFloat(section, "alpha")
+        );
+        SetSpritePath(parser->GetValueAsString(section, "spritePath"));
     }
 
 

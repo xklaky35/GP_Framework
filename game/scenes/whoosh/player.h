@@ -1,6 +1,7 @@
 #ifndef GP_FRAMEWORK_PLAYER_H
 #define GP_FRAMEWORK_PLAYER_H
 #include "../../engine/nodes/node.h"
+#include "../../engine/nodes/nodefactory.h"
 #include "../../engine/nodes/rigidbodynode.h"
 #include "../../engine/nodes/spritenode.h"
 
@@ -15,6 +16,7 @@ public:
     void Process(float deltaTime) override;
     void HandleMovement(float deltaTime);
     void OnLandOnGround();
+    void Setup(IniParser *parser, std::string section) override;
 
 public:
     RigidbodyNode* m_rigidBody;
@@ -35,6 +37,6 @@ public:
     Vector2d m_moveDirection;
 
 };
-
+REGISTER_CLASS(Player);
 
 #endif //GP_FRAMEWORK_PLAYER_H

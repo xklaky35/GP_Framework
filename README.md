@@ -21,11 +21,11 @@ To make a new entity work there are two steps to follow:
     These function don't have to be implemented but are needed if you want the entity to have custom behavior.
 
 
-2. Each entity needs a configuration file.
+2. Each entity can be configured using a configuration file.
     It is loaded by creating a IniParser instance and specifying the files location.
     ```c++
     m_iniParser = new IniParser();
-    m_iniParser->LoadIniFile("../game/scenes/whoosh/player.ini");
+    m_iniParser->LoadIniFile("../game/scenes/whoosh/Player.ini");
     ```
     You can use the parser to get/set configurations and parameter from/to the file.
     

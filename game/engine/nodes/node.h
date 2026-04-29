@@ -15,9 +15,10 @@ namespace Engine {
         NT_SpriteNode,
         NT_AnimatedSpriteNode,
         NT_RigidBody,
-        NT_ColliderNode
+        NT_ColliderNode,
+        NT_Custom
     };
-    static const char* NodeTypeStrings[] = {"Node", "SpriteNode", "AnimatedSpriteNode", "RigidBody", "ColliderNode"};
+    static const char* NodeTypeStrings[] = {"Node", "SpriteNode", "AnimatedSpriteNode", "RigidBody", "ColliderNode", "Custom"};
 
 
 
@@ -41,21 +42,36 @@ namespace Engine {
         virtual void SystemProcess();
         virtual void Draw(Renderer &);
         virtual void DrawDebug();
+        virtual void Setup(IniParser *parser, std::string sectionId);
         const std::vector<Node *>& GetChildren() const;
+        Node* GetChild(std::string name);
         void AddChild(Node &);
         void AddChildren(const std::vector<Node *> &);
         void RemoveChild(Node *);
         void RemoveChildren();
         void SetParent(Node *);
         void ApplyLocalTransform();
+        void LoadConfigurationFile(std::string path);
+        NodeConfiguration GetChildConfiguration();
+        bool IsChildCustomNodeWithId(const std::string& section);
+        std::string GetNameOfChildWithId(const std::string& section);
+        std::string GetTypeOfChildWithId(std::string sectionId);
         std::string GetUId();
+
+        IniParser* GetIniParser() const;
+
+        void SetValue(const std::string &key, std::string &value);
+        void SetValue(const std::string &key, const char *value);
+        void SetValue(const std::string &key, int value);
+        void SetValue(const std::string &key, float value);
+        void SetValue(const std::string &key, bool value);
+        void WriteGenericProperties();
 
     public:
         std::string m_UId;
         std::vector<NodeInfo> m_nodeInfo;
-        std::string m_dataFilePath;
 
-        int m_Id;
+        int m_Id; // id for ImGui::PushID(m_Id);
         std::string m_name;
         bool m_bIsVisible;;
         Node* m_parent;
@@ -68,12 +84,13 @@ namespace Engine {
         Transform m_transform;
         //Global transformation using world coordinates
         Transform m_globalTransform;
-        IniParser* m_iniParser;
+
 
     protected:
         std::vector<Node*> m_children;
         std::vector<Node*> m_childrenToAdd;
         std::vector<Node*> m_childrenToDelete;
+        IniParser* m_iniParser;
     };
 
     struct NodeInfo

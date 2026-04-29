@@ -30,7 +30,6 @@ namespace Engine {
         void Restart();
         void SetFrameDuration(float seconds);
 
-    protected:
     private:
         AnimatedSprite(const AnimatedSprite &animatedsprite);
         AnimatedSprite &operator=(const AnimatedSprite &animatedsprite);

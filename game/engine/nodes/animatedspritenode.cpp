@@ -14,12 +14,12 @@ namespace Engine {
                 auto *animNode = dynamic_cast<AnimatedSpriteNode *>(&n);
                 if (animNode) {
                     auto *animSprite = dynamic_cast<AnimatedSprite *>(animNode->m_pSprite);
+                    if (animSprite == nullptr) return;
                     int v_min = 0, v_max = animSprite->m_iTotalFrames;
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &animSprite->m_frameDuration, 1, 0.5f,
                                            &v_min, &v_max)) {
-                        animNode->m_iniParser->SetValue(animNode->GetUId(), "frameDuration",
-                                                        animSprite->m_frameDuration, animNode);
+                        animNode->SetValue("frameDuration",animSprite->m_frameDuration);
                     }
                 }
             }
@@ -28,13 +28,11 @@ namespace Engine {
             "Frame Width", [](Node &n) {
                 auto *animNode = dynamic_cast<AnimatedSpriteNode *>(&n);
                 if (animNode) {
-                    auto *animSprite = dynamic_cast<AnimatedSprite *>(animNode->m_pSprite);
                     int v_min = 0, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &animNode->m_frameWidth, 1, 0.5f,
                                            &v_min, &v_max)) {
-                        animNode->m_iniParser->SetValue(animNode->GetUId(), "frameWidth",
-                                                        animNode->m_frameWidth, animNode);
+                        animNode->SetValue("frameWidth",animNode->m_frameWidth);
                         animNode->SetupFrames();
                     }
                 }
@@ -44,13 +42,11 @@ namespace Engine {
             "Frame Height", [](Node &n) {
                 auto *animNode = dynamic_cast<AnimatedSpriteNode *>(&n);
                 if (animNode) {
-                    auto *animSprite = dynamic_cast<AnimatedSprite *>(animNode->m_pSprite);
                     int v_min = 0, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &animNode->m_frameHeight, 1, 0.5f,
                                            &v_min, &v_max)) {
-                        animNode->m_iniParser->SetValue(animNode->GetUId(), "frameHeight",
-                                                        animNode->m_frameHeight, animNode);
+                        animNode->SetValue("frameHeight",animNode->m_frameHeight);
                         animNode->SetupFrames();
                     }
                 }
@@ -61,8 +57,9 @@ namespace Engine {
                 auto *animNode = dynamic_cast<AnimatedSpriteNode *>(&n);
                 if (animNode) {
                     auto *animSprite = dynamic_cast<AnimatedSprite *>(animNode->m_pSprite);
+                    if (animSprite == nullptr) return;
                     if (ImGui::Checkbox("##Editor", &animSprite->m_bLooping)) {
-                        animNode->m_iniParser->SetValue(animNode->GetUId(), "isLooping", animSprite->m_bLooping, animNode);
+                        animNode->SetValue("isLooping", animSprite->m_bLooping);
                     }
                 }
             }
@@ -72,8 +69,9 @@ namespace Engine {
                 auto *animNode = dynamic_cast<AnimatedSpriteNode *>(&n);
                 if (animNode) {
                     auto *animSprite = dynamic_cast<AnimatedSprite *>(animNode->m_pSprite);
+                    if (animSprite == nullptr) return;
                     if (ImGui::Checkbox("##Editor", &animSprite->m_bAnimating)) {
-                        animNode->m_iniParser->SetValue(animNode->GetUId(), "isAnimating", animSprite->m_bAnimating, animNode);
+                        animNode->SetValue("isAnimating", animSprite->m_bAnimating);
                     }
                 }
             }
@@ -83,8 +81,9 @@ namespace Engine {
                 auto *animNode = dynamic_cast<AnimatedSpriteNode *>(&n);
                 if (animNode) {
                     auto *animSprite = dynamic_cast<AnimatedSprite *>(animNode->m_pSprite);
+                    if (animSprite == nullptr) return;
                     if (ImGui::Checkbox("##Editor", &animSprite->m_bIsFlipped)) {
-                        animNode->m_iniParser->SetValue(animNode->GetUId(), "isFlipped", animSprite->m_bIsFlipped, animNode);
+                        animNode->SetValue("isFlipped", animSprite->m_bIsFlipped);
                         animNode->SetupFrames();
                     }
                 }
@@ -92,17 +91,18 @@ namespace Engine {
         });
     }
 
-    /**
-     * This node uses the sprites dimensions by default. If you specify a custom height and width, please disable m_bUseSpriteSize.
-     * @param iniParser path to the data file the data should be written to
-     */
-    AnimatedSpriteNode::AnimatedSpriteNode(IniParser* iniParser) : AnimatedSpriteNode() {
-        m_iniParser = iniParser;
-    }
-
     void AnimatedSpriteNode::Init() {
         SpriteNode::Init();
 
+    }
+
+    void AnimatedSpriteNode::Setup(IniParser *parser, std::string section) {
+        SpriteNode::Setup(parser, section);
+        m_bIsLooping = parser->GetValueAsBoolean(section, "isLooping");
+        m_bIsAnimating = parser->GetValueAsBoolean(section, "isAnimating");
+        m_fFrameDuration = parser->GetValueAsFloat(section, "frameDuration");
+        m_frameWidth = parser->GetValueAsInt(section, "frameWidth");
+        m_frameHeight = parser->GetValueAsInt(section, "frameHeight");
     }
 
     void AnimatedSpriteNode::Process(float deltaTime) {

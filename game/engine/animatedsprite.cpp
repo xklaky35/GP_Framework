@@ -1,6 +1,4 @@
 
-// COMP710 GP Framework 2021
-// This include:
 #include "animatedsprite.h"
 // Local includes:
 #include "renderer.h"
@@ -12,7 +10,7 @@
 namespace Engine {
 
     AnimatedSprite::AnimatedSprite()
-        : m_pVertexData(0)
+        : m_pVertexData(nullptr)
           , m_iFrameWidth(0)
           , m_iFrameHeight(0)
           , m_iCurrentFrame(0)
