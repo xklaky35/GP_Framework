@@ -1,13 +1,11 @@
 #ifndef GP_FRAMEWORK_INIPARSER_H
 #define GP_FRAMEWORK_INIPARSER_H
-#include <cstring>
 #include <string>
 #include <unordered_map>
 
 typedef  std::unordered_map<std::string, std::unordered_map<std::string, std::string>> NodeConfiguration;
 
 namespace Engine {
-    class Node;
     class IniParser {
     public:
 
@@ -28,8 +26,6 @@ namespace Engine {
         void SetValue(const std::string &iniSection, const std::string &key, int value);
         void SetValue(const std::string &iniSection, const std::string &key, float value);
         void SetValue(const std::string &iniSection, const std::string &key, bool value);
-        static int GetIndexOf(const char *arr[] , const char * str, const int length);
-
 
         NodeConfiguration m_data;
     private:

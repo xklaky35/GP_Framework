@@ -12,12 +12,21 @@ namespace Engine {
     public:
 
         static SceneManager& GetInstance();
+
+        void LoadAllScenes();
+
+        bool Initialise();
+
         static void DestroyInstance();
         void RegisterScene(const std::string&, Node*);
-        void LoadScene(const std::string&);
+        void SetSceneActive(std::string);
         Node* GetCurrentScene();
         const std::pmr::map<std::string, Node*>& GetScenes();
-        void ResetCurrentScene();
+        void ReloadCurrentScene();
+
+        void ResetWorldState();
+
+        void DeleteScenes();
 
     public:
         Node* m_visibleNodeDebug;

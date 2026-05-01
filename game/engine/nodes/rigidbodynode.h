@@ -6,7 +6,13 @@
 
 
 namespace Engine {
-    class RigidbodyNode : public Engine::Node {
+
+
+    static const char* bodyTypes[] = {"Static", "Kinematic", "Dynamic"};
+    static constexpr int BODY_TYPE_COUNT = 3;
+
+    class RigidbodyNode : public Node {
+
     public:
         RigidbodyNode();
         RigidbodyNode(b2BodyType, float mass, float friction);
@@ -14,27 +20,38 @@ namespace Engine {
         void Init() override;
         void Process(float deltaTime) override;
 
-        Vector2d GetBodyPosition();
-
-        b2Rot GetBodyRotation();
-
-        Vector2d GetBodyVelocity();
-
         void ApplyForceToCenter(Vector2d vec) const;
+        void ApplyImpluseToCenter(Vector2d vec) const;
+        void ResetBodyVelocity() const;
+        void CreateBoxShape(float halveWidth, float halfHeight);
 
-        void ApplyImpluseToCenter(Vector2d vec);
+        // getter
+        float GetDensity() const;
 
-        void ResetBody();
+        void ToggleRotation() const;
 
-        void SetMassData(float mass, Vector2d massCenter, float rotationalInertia);
+        void ToggleHorizontalMovementLock() const;
 
-        b2MassData GetMassData();
+        void ToggleVerticalMovementLock() const;
 
-        void SetVelocity(Vector2d velocity);
+        b2MotionLocks GetMotionLocks() const;
 
-        void SetFriction(float friction);
+        float GetFriction() const;
+        b2Rot GetBodyRotation() const;
+        b2MassData GetMassData() const;
+        b2BodyType GetBodyType() const;
+        Vector2d GetBodyPosition() const;
+        Vector2d GetBodyVelocity() const;
 
-        float GetFriction();
+        // setter
+        void SetDensity(float density) const;
+        void SetFriction(float friction) const;
+        void SetBodyType(b2BodyType type) const;
+        void SetVelocity(Vector2d velocity) const;
+        void SetPositionInMeters(Vector2d pos) const;
+        void SetupParameter(IniParser *parser, const std::string &sectionId) override;
+        void SetMassData(float mass, Vector2d massCenter, float rotationalInertia) const;
+
 
     private:
         b2BodyId m_bodyId;
@@ -47,6 +64,10 @@ namespace Engine {
 
         b2ShapeId m_shapeId;
         float m_fFriction;
+        float m_fDensity;
+        bool m_bAngularRotation;
+        bool m_bLinearMovementX;
+        bool m_bLinearMovementY;
 
         b2Polygon m_bodyPolygon{};
         bool m_bIsStatic;

@@ -63,10 +63,11 @@ namespace Engine {
 
 
         // load all assets of type "Node"
-        assetBrowser->AddItem(AssetField(AT_Node, new Node()));
-        assetBrowser->AddItem(AssetField(AT_Node, new RigidbodyNode()));
-        assetBrowser->AddItem(AssetField(AT_Node, new SpriteNode()));
-        assetBrowser->AddItem(AssetField(AT_Node, new AnimatedSpriteNode()));
+        assetBrowser->AddItem(AssetField(AT_Node, NT_Node));
+        assetBrowser->AddItem(AssetField(AT_Node, NT_RigidBodyNode));
+        assetBrowser->AddItem(AssetField(AT_Node, NT_SpriteNode));
+        assetBrowser->AddItem(AssetField(AT_Node, NT_AnimatedSpriteNode));
+        assetBrowser->AddItem(AssetField(AT_Node, NT_CameraNode));
 
         assets = &assetBrowser->Items;
         return true;

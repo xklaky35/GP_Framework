@@ -1,10 +1,14 @@
 #include "scenemanager.h"
 #include "imgui.h"
-#include "../imgui/imguimanager.h"
+#include "../../scenes/mainmenu/mainmenu.h"
+#include "../../scenes/slashscreen/splashscreen.h"
+#include "../../scenes/whoosh/scenewhoosh.h"
+#include "../physics/physicsmanager.h"
 
 namespace Engine {
-    SceneManager::SceneManager() : m_visibleNodeDebug(nullptr) {}
 
+    SceneManager* SceneManager::m_pInstance = nullptr;
+    SceneManager::SceneManager() : m_visibleNodeDebug(nullptr) {}
     SceneManager::~SceneManager() {
         for (auto pair : m_loadedScenes) {
             delete pair.second;
@@ -13,7 +17,13 @@ namespace Engine {
         m_loadedScenes.clear();
     }
 
-    SceneManager* SceneManager::m_pInstance = nullptr;
+    void SceneManager::LoadAllScenes() {
+        RegisterScene("Splash", new Splashscreen());
+        RegisterScene("MainMenu", new MainMenu());
+        RegisterScene("Whoosh", new SceneWhoosh());
+    }
+
+
 
     SceneManager & SceneManager::GetInstance() {
         if (m_pInstance == nullptr) {
@@ -22,33 +32,56 @@ namespace Engine {
         return *m_pInstance;
     }
 
-    void SceneManager::DestroyInstance() {
 
+    void SceneManager::DestroyInstance() {
         delete m_pInstance;
         m_pInstance = nullptr;
     }
 
-    void SceneManager::RegisterScene(const std::string& sceneName, Node * scene) {
-        m_loadedScenes[sceneName] = scene;
+
+
+    bool SceneManager::Initialise() {
+        LoadAllScenes();
+        SetSceneActive("Splash");
+        return true;
     }
 
-    void SceneManager::LoadScene(const std::string& sceneName) {
+    void SceneManager::SetSceneActive(std::string sceneName) {
+        ResetWorldState();
         m_currentScene = sceneName;
         assert(m_loadedScenes[m_currentScene]);
         m_loadedScenes[m_currentScene]->Init();
     }
 
-    void SceneManager::ResetCurrentScene() {
-        if (!m_currentScene.empty()) {
-            m_loadedScenes[m_currentScene]->Init();
+    void SceneManager::ReloadCurrentScene() {
+        SetSceneActive(m_currentScene);
+    }
+
+
+
+
+    void SceneManager::RegisterScene(const std::string& sceneName, Node * scene) {
+        m_loadedScenes[sceneName] = scene;
+    }
+
+
+    void SceneManager::ResetWorldState() {
+        DeleteScenes();
+        PhysicsManager::GetInstance().ResetGameWorld();
+        LoadAllScenes();
+    }
+
+    void SceneManager::DeleteScenes() {
+        for (auto [sceneName, scene]: m_loadedScenes) {
+            delete m_loadedScenes[sceneName];
+            m_loadedScenes[sceneName] = nullptr;
         }
+        m_loadedScenes.clear();
     }
 
     Node* SceneManager::GetCurrentScene() {
         return m_loadedScenes[m_currentScene];
     }
-
-
 
 
 

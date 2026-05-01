@@ -1,10 +1,18 @@
 #include "physicsmanager.h"
 
+#include "debugdraw.h"
+#include "../../config/config.h"
+#include "../logmanager/logmanager.h"
 #include "../structs/vector2d.h"
 #include "box2d/box2d.h"
 #include "box2d/types.h"
+#include "GL/glew.h"
 
 namespace Engine {
+    class Renderer;
+
+    static constexpr float kPixelsToMeters = 0.02f;  // 50px per meter
+    static constexpr float kMetersToPixels = 50.0f;
 
     PhysicsManager* PhysicsManager::m_pInstance = nullptr;
 
@@ -25,34 +33,63 @@ namespace Engine {
         b2WorldDef worldDef = b2DefaultWorldDef();
         worldDef.gravity = (b2Vec2){0.0f, 9.8f};
         m_gameWorldId = b2CreateWorld(&worldDef);
+
+        m_debugDraw.Initialise(0, Config::GetInstance().windowsWidth * kPixelsToMeters,Config::GetInstance().windowsHeight * kPixelsToMeters, 0);
+        //m_debugDraw.Initialise(-25, 25,25, -25);
+        m_b2DebugDraw = m_debugDraw.BuildDebugDraw();
+
         return true;
     }
 
     void PhysicsManager::Process(float deltaTime) {
+
         b2World_Step(m_gameWorldId, deltaTime, 4);
+    }
+
+    void PhysicsManager::DrawDebug() {
+        glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        b2World_Draw( m_gameWorldId, &m_b2DebugDraw );
     }
 
     b2WorldId PhysicsManager::GetWorld() {
         return m_gameWorldId;
     }
 
+    void PhysicsManager::ResetGameWorld() {
+        b2DestroyWorld(m_gameWorldId);
+        Initialise();
+    }
 
     // 50 pixels per meter
     float PhysicsManager::PixelsToMeter(float pixels) {
-        return 0.02f * pixels;
-    }
-    Vector2d PhysicsManager::PixelsToMeterVector(Vector2d pixels) {
-        return {0.02f * pixels.x, 0.02f * pixels.y};
+        return kPixelsToMeters * pixels;
     }
 
     float PhysicsManager::MeterToPixels(float meter) {
-        return 50.0f * meter;
-    }
-    Vector2d PhysicsManager::MeterToPixelsVector(Vector2d meter) {
-        return {50.0f * meter.x, 50.0f * meter.y};
+        return kMetersToPixels * meter;
     }
 
-    PhysicsManager::PhysicsManager() = default;
+    Vector2d PhysicsManager::PixelsToMeterVector(Vector2d pixels) {
+        return {
+            pixels.x * kPixelsToMeters,
+            pixels.y * kPixelsToMeters
+        };
+    }
+
+    Vector2d PhysicsManager::MeterToPixelsVector(Vector2d meters) {
+        return {
+            meters.x * kMetersToPixels,
+            meters.y * kMetersToPixels
+        };
+    }
+
+
+
+
+    PhysicsManager::PhysicsManager() : m_gameWorldId() {
+
+    } ;
     PhysicsManager::~PhysicsManager() {
         b2DestroyWorld(m_gameWorldId);
     }

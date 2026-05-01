@@ -148,10 +148,5 @@ namespace Engine {
         return s.substr(begin, end - begin + 1);
     }
 
-    int IniParser::GetIndexOf(const char *arr[] , const char * str, const int length) {
-        for (int i = 0; i < length; i++) {
-            if (strcmp(arr[i], str) == 0) return i;
-        }
-        return 0;
-    }
+
 }

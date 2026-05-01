@@ -9,16 +9,28 @@
 
 
 // Helper macro to register classes
+// This macro takes the class name as input and saved it in the nodefactory instance
 #define REGISTER_CLASS(ClassName) \
 static bool _registered_##ClassName = []() { \
-NodeFactory::GetInstance().RegisterClass(#ClassName, \
-[]() { return std::make_unique<ClassName>(); }); \
-return true; \
+    NodeFactory::GetInstance().RegisterClass(#ClassName, []() { \
+        return std::make_unique<ClassName>();\
+    }); \
+    return true; \
 }();
 
 namespace Engine {
 
-
+    enum NodeType: int {
+        NT_Node,
+        NT_SpriteNode,
+        NT_AnimatedSpriteNode,
+        NT_RigidBodyNode,
+        NT_ColliderNode,
+        NT_CameraNode,
+        NT_Custom
+    };
+    static const char* NodeTypeStrings[] = {"Node", "SpriteNode", "AnimatedSpriteNode", "RigidBody", "ColliderNode", "CameraNode", "Custom"};
+    static constexpr int NODE_TYPE_COUNT = std::size(NodeTypeStrings);
 
     class NodeFactory {
     public:
@@ -28,12 +40,11 @@ namespace Engine {
         static NodeFactory &GetInstance();
         static void DestroyInstance();
         void InitWithConfiguration(Node*, const std::string&);
-
         void ConfigureIniNodesOf(Node* n);
-
         void ConfigureBaseNodesOf(Node *n);
-
+        Node *CreateBaseNode(NodeType nodeType);
         Node *CreateCustomNode(const std::string &name, const std::string &path);
+
 
         void RegisterClass(const std::string& name, Creator creator) {
             registry[name] = std::move(creator);
@@ -44,16 +55,6 @@ namespace Engine {
             if (it == registry.end()) return nullptr;
             return it->second();
         }
-
-
-    private:
-        static void SetupNodeParameter(Node *n, IniParser*, const std::string& sectionName);
-        static void SetupSpriteParameter(SpriteNode *spriteNode, IniParser*, const std::string& section);
-
-        void SetupAnimatedSpriteParameter(AnimatedSpriteNode *n, IniParser *parser, const std::string &section);
-
-        static int GetIndexOf(const char*[], const char*, int length);
-
 
     private:
         NodeFactory();

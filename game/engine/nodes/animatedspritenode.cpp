@@ -1,14 +1,15 @@
 #include "animatedspritenode.h"
 
 #include "imgui.h"
+#include "nodefactory.h"
 #include "../animatedsprite.h"
+#include "../logmanager/logmanager.h"
 
 namespace Engine {
     AnimatedSpriteNode::AnimatedSpriteNode() : m_bIsLooping(false), m_bIsAnimating(false), m_fFrameDuration(0),
                                                m_frameHeight(0),
                                                m_frameWidth(0) {
-        m_name = "AnimatedSpriteNode";
-        m_nodeType = NT_AnimatedSpriteNode;
+        SetupNode("AnimatedSpriteNode", NT_AnimatedSpriteNode);
         m_nodeInfo.push_back({
             "Frame Duration", [](Node &n) {
                 auto *animNode = dynamic_cast<AnimatedSpriteNode *>(&n);
@@ -30,7 +31,7 @@ namespace Engine {
                 if (animNode) {
                     int v_min = 0, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
-                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &animNode->m_frameWidth, 1, 0.5f,
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_S32, &animNode->m_frameWidth, 1, 0.5f,
                                            &v_min, &v_max)) {
                         animNode->SetValue("frameWidth",animNode->m_frameWidth);
                         animNode->SetupFrames();
@@ -44,9 +45,11 @@ namespace Engine {
                 if (animNode) {
                     int v_min = 0, v_max = 10000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
-                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &animNode->m_frameHeight, 1, 0.5f,
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_S32, &animNode->m_frameHeight, 1, 0.5f,
                                            &v_min, &v_max)) {
+                        LogManager::GetInstance().Log(INFO, "Before %d", animNode->m_frameHeight);
                         animNode->SetValue("frameHeight",animNode->m_frameHeight);
+                        LogManager::GetInstance().Log(INFO, "After %d", animNode->m_frameHeight);
                         animNode->SetupFrames();
                     }
                 }
@@ -96,8 +99,8 @@ namespace Engine {
 
     }
 
-    void AnimatedSpriteNode::Setup(IniParser *parser, std::string section) {
-        SpriteNode::Setup(parser, section);
+    void AnimatedSpriteNode::SetupParameter(IniParser *parser, const std::string &section) {
+        SpriteNode::SetupParameter(parser, section);
         m_bIsLooping = parser->GetValueAsBoolean(section, "isLooping");
         m_bIsAnimating = parser->GetValueAsBoolean(section, "isAnimating");
         m_fFrameDuration = parser->GetValueAsFloat(section, "frameDuration");
@@ -176,5 +179,12 @@ namespace Engine {
             animSprite->m_bIsFlipped = !animSprite->m_bIsFlipped;
             SetupFrames();
         }
+    }
+
+    bool AnimatedSpriteNode::IsFlipped() {
+        if (auto* animSprite = dynamic_cast<AnimatedSprite *>(m_pSprite)) {
+            return animSprite->m_bIsFlipped;
+        }
+        return false;
     }
 }

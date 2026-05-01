@@ -254,9 +254,9 @@ namespace Engine {
                             ImVec2 box_min(pos.x - 1, pos.y - 1);
                             ImVec2 box_max(box_min.x + LayoutItemSize.x + 2, box_min.y + LayoutItemSize.y + 2); // Dubious
                             draw_list->AddRectFilled(box_min, box_max, icon_bg_color); // Background color
-                            if (ShowTypeOverlay && item_data->Type != 0)
+                            if (ShowTypeOverlay && item_data->assetType != 0)
                             {
-                                ImU32 type_col = icon_type_overlay_colors[item_data->Type % IM_COUNTOF(icon_type_overlay_colors)];
+                                ImU32 type_col = icon_type_overlay_colors[item_data->assetType % IM_COUNTOF(icon_type_overlay_colors)];
                                 draw_list->AddRectFilled(ImVec2(box_max.x - 2 - icon_type_overlay_size.x, box_min.y + 2), ImVec2(box_max.x - 2, box_min.y + 2 + icon_type_overlay_size.y), type_col);
                             }
                             if (display_label)

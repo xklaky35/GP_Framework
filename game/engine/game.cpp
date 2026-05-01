@@ -77,6 +77,8 @@ namespace Engine {
         int bbWidth = Config::GetInstance().windowsWidth;
         int bbHeight = Config::GetInstance().windowsHeight;
 
+        //################ INIT STUFF HERE ####################
+
         m_pRenderer = new Renderer();
         if (!m_pRenderer->Initialise(true, bbWidth, bbHeight)) {
             LogManager::GetInstance().Log(ERROR, "Renderer failed to initialise!");
@@ -97,24 +99,15 @@ namespace Engine {
         if (!AssetManager::GetInstance().Initialise()) {
             return false;
         }
+        if (!SceneManager::GetInstance().Initialise()) {
+            return false;
+        }
+
 
         //################ INIT STUFF HERE ####################
 
-
-        SceneManager::GetInstance().RegisterScene("Splash", new Splashscreen());
-        SceneManager::GetInstance().RegisterScene("MainMenu", new MainMenu());
-        SceneManager::GetInstance().RegisterScene("SpaceInvaders", new SceneSpaceinvader());
-        SceneManager::GetInstance().RegisterScene("Whoosh", new SceneWhoosh());
-        SceneManager::GetInstance().LoadScene("Splash");
-
-        //################ INIT STUFF HERE ####################
-
-        bbWidth = m_pRenderer->GetWidth();
-        bbHeight = m_pRenderer->GetHeight();
         m_iLastTime = SDL_GetPerformanceCounter();
         m_pRenderer->SetClearColour(0, 255, 255);
-
-
 
         return true;
     }
@@ -179,6 +172,7 @@ namespace Engine {
         if (m_bIsDebugView) {
             DrawDebug(&m_bIsDebugView);
             AssetManager::GetInstance().DrawDebug();
+            PhysicsManager::GetInstance().DrawDebug();
 
         }
 #endif
@@ -199,7 +193,7 @@ namespace Engine {
         }
 
         if (ImGui::ColorButton("Reset", ImVec4(0,255,255,1))) {
-            SceneManager::GetInstance().ResetCurrentScene();
+            SceneManager::GetInstance().ReloadCurrentScene();
         }
 
         ImGui::EndMainMenuBar();

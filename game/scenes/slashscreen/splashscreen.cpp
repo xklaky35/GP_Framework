@@ -39,7 +39,7 @@ void Splashscreen::Process(float deltaTime) {
         return;
 
     if (m_iCurrentScreen >= m_screens.size()) {
-        SceneManager::GetInstance().LoadScene("MainMenu");
+        SceneManager::GetInstance().SetSceneActive("MainMenu");
         return;
     }
 

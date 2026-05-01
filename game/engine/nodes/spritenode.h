@@ -19,7 +19,7 @@ namespace Engine {
         SpriteNode();
 
         void Init() override;
-        void Setup(IniParser *parser, std::string section) override;
+        void SetupParameter(IniParser *parser, const std::string &section) override;
         void SystemProcess() override;
         void Draw(Renderer &) override;
         void DrawDebug() override;

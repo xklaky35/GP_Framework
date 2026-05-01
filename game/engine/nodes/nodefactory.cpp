@@ -1,6 +1,9 @@
 #include "nodefactory.h"
 #include "animatedspritenode.h"
+#include "cameranode.h"
+#include "rigidbodynode.h"
 #include "spritenode.h"
+#include "../../helper/inlinehelper.h"
 
 namespace Engine {
 
@@ -40,7 +43,7 @@ namespace Engine {
             if (childToConfigure != nullptr) { // if the name is found in the registry
 
                 // setup custom node with data stored in parents iniparser
-                childToConfigure->Setup(n->GetIniParser(), childNodeId);
+                childToConfigure->SetupParameter(n->GetIniParser(), childNodeId);
                 n->AddChild(*childToConfigure.release());
             }
         }
@@ -51,25 +54,38 @@ namespace Engine {
         for (const auto& [childNodeId, childData] : n->GetChildConfiguration()) {
 
             std::string nodeType = n->GetTypeOfChildWithId(childNodeId);
-            Node* nodeToConfigure = nullptr;
 
-            // create child nodes
-            if (nodeType == NodeTypeStrings[NT_Node]) {
-                nodeToConfigure = new Node();
-                nodeToConfigure->Setup(n->GetIniParser(), childNodeId);
-                n->AddChild(*nodeToConfigure);
-            }
-            if (nodeType == NodeTypeStrings[NT_SpriteNode]) {
-                nodeToConfigure = new SpriteNode();
-                nodeToConfigure->Setup(n->GetIniParser(), childNodeId);
-                n->AddChild(*nodeToConfigure);
-            }
-            if (nodeType == NodeTypeStrings[NT_AnimatedSpriteNode]) {
-                nodeToConfigure = new AnimatedSpriteNode();
-                nodeToConfigure->Setup(n->GetIniParser(), childNodeId);
+            int index = GetIndexOf(NodeTypeStrings, nodeType.c_str(), NODE_TYPE_COUNT);
+
+            Node* nodeToConfigure = CreateBaseNode(static_cast<NodeType>(index));
+
+
+            if (nodeToConfigure != nullptr) {
+                nodeToConfigure->SetupParameter(n->GetIniParser(), childNodeId);
                 n->AddChild(*nodeToConfigure);
             }
         }
+    }
+
+    Node* NodeFactory::CreateBaseNode(NodeType nodeType) {
+
+        // create child nodes
+        if (nodeType == NT_Node) {
+            return new Node();
+        }
+        if (nodeType == NT_SpriteNode) {
+            return dynamic_cast<Node*>(new SpriteNode());
+        }
+        if (nodeType == NT_AnimatedSpriteNode) {
+            return dynamic_cast<Node*>(new AnimatedSpriteNode());
+        }
+        if (nodeType == NT_RigidBodyNode) {
+            return dynamic_cast<Node*>(new RigidbodyNode());
+        }
+        if (nodeType == NT_CameraNode) {
+            return dynamic_cast<Node*>(new CameraNode());
+        }
+        return nullptr;
     }
 
     Node* NodeFactory::CreateCustomNode(const std::string& name, const std::string& path) {

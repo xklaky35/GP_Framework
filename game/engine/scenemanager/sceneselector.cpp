@@ -21,9 +21,11 @@ namespace Engine {
         ImGui::Begin(name.c_str(), &p_open, ImGuiWindowFlags_MenuBar);
         ImGui::BeginMultiSelect(ImGuiMultiSelectFlags_NoSelectAll, sceneManager.m_loadedScenes.size()-1, sceneManager.m_loadedScenes.size()-1);
 
-        for (const auto&[sceneName, scene] : sceneManager.m_loadedScenes) {
+
+        for (const auto&[sceneName, scene] : sceneManager.GetScenes()) {
             if (ImGui::Selectable(sceneName.c_str())) {
-                sceneManager.LoadScene(sceneName);
+                sceneManager.SetSceneActive(sceneName);
+                break;
             }
         }
 

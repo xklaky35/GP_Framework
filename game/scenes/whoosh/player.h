@@ -3,8 +3,6 @@
 #include "../../engine/nodes/node.h"
 #include "../../engine/nodes/nodefactory.h"
 #include "../../engine/nodes/rigidbodynode.h"
-#include "../../engine/nodes/spritenode.h"
-
 
 using namespace Engine;
 class Player : public Node {
@@ -13,10 +11,18 @@ public:
     Player();
 
     void Init() override;
+
+    void HandleAnimations();
+
+    void HandleFlip();
+
     void Process(float deltaTime) override;
     void HandleMovement(float deltaTime);
     void OnLandOnGround();
-    void Setup(IniParser *parser, std::string section) override;
+
+    void ChangeAnimation(AnimatedSpriteNode *animation);
+
+    void SetupParameter(IniParser *parser, const std::string &section) override;
 
 public:
     RigidbodyNode* m_rigidBody;
@@ -29,6 +35,7 @@ public:
     float m_fGroundDeceleration;
     float m_fGroundMinSpeed;
     float m_fGroundMaxSpeed;
+    float m_fJumpForce;
 
     int m_jumpsMade;
     int m_maxJumps;
@@ -36,7 +43,14 @@ public:
     Vector2d m_velocity;
     Vector2d m_moveDirection;
 
+private:
+
+    AnimatedSpriteNode* m_currentAnimation;
+    AnimatedSpriteNode* m_runningAnimation;
+    AnimatedSpriteNode* m_idleAnimation;
+    AnimatedSpriteNode* m_jumpAnimation;
+    AnimatedSpriteNode* m_walkingAnimation;
+
 };
-REGISTER_CLASS(Player);
 
 #endif //GP_FRAMEWORK_PLAYER_H

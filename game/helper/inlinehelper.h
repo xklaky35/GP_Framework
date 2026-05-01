@@ -1,5 +1,14 @@
-#include <random>
+#pragma once
 
+#include <random>
+#include <cstring>
+
+inline int GetIndexOf(const char *arr[] , const char * str, const int length) {
+    for (int i = 0; i < length; i++) {
+        if (strcmp(arr[i], str) == 0) return i;
+    }
+    return 0;
+}
 
 
 inline int GetRandomInt(const int min, const int max) {
@@ -44,6 +53,11 @@ inline std::string GenerateUID() {
         res += v[GetRandomInt(0,15)];
     }
     return res;
+}
+
+
+inline float toDegrees(float rad) {
+    return rad * (180.0 / M_PI);
 }
 
 

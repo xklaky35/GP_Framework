@@ -135,10 +135,11 @@ namespace Engine {
 
     void AnimatedSprite::Draw(Renderer& renderer)
     {
-        assert(m_pVertexData);
-        m_pTexture->SetActive();
-        m_pVertexData->SetActive();
-        renderer.DrawAnimatedSprite(*this, m_iCurrentFrame, m_iFrameWidth, m_iFrameHeight);
+        if (m_pVertexData != nullptr) {
+            m_pTexture->SetActive();
+            m_pVertexData->SetActive();
+            renderer.DrawAnimatedSprite(*this, m_iCurrentFrame, m_iFrameWidth, m_iFrameHeight);
+        }
     }
 
     void AnimatedSprite::DrawDebug() {

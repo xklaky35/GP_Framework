@@ -1,36 +1,74 @@
 # GP-Framework - A little custom game engine
 
+# Overall structure
+
+![GPFrameworkOverview](docs/GPFrameworkOverview.pdf)
+
+
 
 # Nodes
-## Creating New Entities
+This engine uses small node tree structures that form scenes.
+
+![UMLNodeStructure.pdf](docs/UMLNodeStructure.pdf)
+
+
+## Creating New Custom Entities
+
 
 A entity is a class that inherits from any base node and has additional logic attached to it.
-If for example a player class inherits from the node class and implements own login, it is 
+If for example a player class inherits from the node class and implements its own login, it is 
 a entity.
 
 To make a new entity work there are two steps to follow:
 
-1. You need to inherit from a base node and implement the virtual methos from the Node baseclass:
+1. You need to inherit from a base node and implement the virtual methods from the Node baseclass:
     ```c++
     virtual void Init();
     virtual void Process(float deltaTime);
     virtual void SystemProcess();
     virtual void Draw(Renderer &);
     virtual void DrawDebug();
+    virtual void SetupParameter(IniParser* parser, string sectionId);
     ```
     These function don't have to be implemented but are needed if you want the entity to have custom behavior.
 
 
-2. Each entity can be configured using a configuration file.
-    It is loaded by creating a IniParser instance and specifying the files location.
+
+2. Now you have to register the node in the system. To do that, you first need to register the class using the [NodeFactory](#nodefactory).
     ```c++
-    m_iniParser = new IniParser();
-    m_iniParser->LoadIniFile("../game/scenes/whoosh/Player.ini");
-    ```
-    You can use the parser to get/set configurations and parameter from/to the file.
+
     
-    Any child node you attach takes the parser as a parameter so that the configuraton of child nodes is saved
-    for this entity.
+    Player::Player() {
+        
+        // helper class from the NodeFactory class:
+        // stores the class initializer for later access to the class
+        REGISTER_CLASS(Player);
+        
+        // the name has to be the exact same as the classname
+        // this is necessary for mapping the component loaded from a configuration file to a class
+        SetupNode("Player", NT_Custom);
+    }
+    ```
+    
+3. Load the configuration file for this component. This is done in the SetupParameter(...) function. 
+    
+   ```c++
+   void Player::SetupParameter(IniParser *parser, const std::string &section) {
+   
+       // IMORTANT!!
+       // the parent node configures the inherited properties for you
+       Node::SetupParameter(parser, section);
+   
+       // you only need to load the properties for this component
+       m_maxJumps = parser->GetValueAsInt(section, "maxJumps");
+       ...
+   
+       // if this component has child components attached, specify the path to the configuration file of this component
+       NodeFactory::GetInstance().InitWithConfiguration(this, "../game/scenes/whoosh/Player.ini");
+   }
+   ```
+After this setup, the component will be shown in the asset browser.
+All configuration made to the component and its children will be saved on disk and are loaded once the engine starts.
 
 
 
@@ -62,8 +100,8 @@ The function has to contains the ImGui elements that should be rendered:
             "SpritePath",   // name
             [](Node &n) {   // function
                     if (auto* s = dynamic_cast<SpriteNode*>(&n)) {
-                        if (ImGui::InputText("##Editor",  const_cast<char*>(s->m_pSpritePath), 28)) {
-                            s->m_iniParser.SetValue("SpriteNode", "spritePath", s->m_pSpritePath);
+                        if (ImGui::InputText("##Editor",  spritePath, 28)) {
+                            s->m_iniParser.SetValue(nodeId, "spritePath");
                         }
                     }
                 }
@@ -73,5 +111,11 @@ The function has to contains the ImGui elements that should be rendered:
 The parameter represents the current selected node in the node tree, so if you want to show information for a specific node,
 you have to cast it.
 
-As soon as the value is changed on the UI, the new value is saved in the iniFileParser, that will save the changed value to disk,
-if a .ini file was specified in the node.
+As soon as the value is changed on the UI, the new value is saved in the IniFileParser, that will save the changed value to disk,
+if a .ini file for this node was found.
+
+# Singletons
+Singletons are classes that implement a API for easy access to specific logic.
+## PhysicsManager
+## AudioManager
+## Nodefactory

@@ -18,7 +18,7 @@ namespace Engine {
         AnimatedSpriteNode();
 
         void Init() override;
-        void Setup(IniParser *, std::string) override;
+        void SetupParameter(IniParser *, const std::string &) override;
         void Process(float deltaTime) override;
         void Draw(Renderer &renderer) override;
         void SetupSpriteRendering(Renderer& renderer) override;
@@ -31,6 +31,8 @@ namespace Engine {
         void Restart();
         void SetFrameDuration(float seconds);
         void Flip();
+
+        bool IsFlipped();
 
     private:
         AnimatedSpriteNode(const AnimatedSpriteNode &animatedsprite);

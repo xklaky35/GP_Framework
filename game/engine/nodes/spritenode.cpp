@@ -4,6 +4,8 @@
 #include <utility>
 
 #include "imgui.h"
+#include "nodefactory.h"
+#include "../../helper/inlinehelper.h"
 #include "misc/cpp/imgui_stdlib.h"
 
 namespace Engine {
@@ -16,8 +18,7 @@ namespace Engine {
                                m_redTint(1),
                                m_greenTint(1), m_blueTint(1), m_alpha(1), m_scaleFactor(0) {
 
-        m_name = "SpriteNode";
-        m_nodeType = NT_SpriteNode;
+        SetupNode("SpriteNode", NT_SpriteNode);
         m_spritePath = {};
         m_nodeInfo.push_back(
             {
@@ -202,10 +203,10 @@ namespace Engine {
         m_spritePath = std::move(path);
     }
 
-    void SpriteNode::Setup(IniParser *parser, std::string section) {
-        Node::Setup(parser, section);
-        m_spriteDisplayMode = static_cast<SpriteDisplayFlag>(IniParser::GetIndexOf(
-         SpriteDisplayFlagStrings, parser->GetValueAsString(section, "spriteDisplayMode").c_str(), SPRITE_DISPLAY_FLAG_STRING_COUNT));
+    void SpriteNode::SetupParameter(IniParser *parser, const std::string &section) {
+        Node::SetupParameter(parser, section);
+        m_spriteDisplayMode = static_cast<SpriteDisplayFlag>(GetIndexOf(
+        SpriteDisplayFlagStrings, parser->GetValueAsString(section, "spriteDisplayMode").c_str(), SPRITE_DISPLAY_FLAG_STRING_COUNT));
         m_iLayer = parser->GetValueAsInt(section, "layer");
         SetRGBA(
             parser->GetValueAsFloat(section, "redTint"),

@@ -22,15 +22,14 @@ namespace Engine {
 
     struct AssetField {
         ImGuiID ID;
-        AssetType Type;
+        AssetType assetType;
+        NodeType nodeType;
         bool IsSelected;
         std::string AssetName;
         std::string AssetPath;
 
-        Node *node;
-
-        AssetField(const AssetType type, std::string assetPath) : ID(0), Type(type), IsSelected(false),
-                                                                  AssetPath(std::move(assetPath)), node(nullptr) {
+        AssetField(const AssetType type, std::string assetPath) : ID(0), assetType(type), IsSelected(false),
+                                                                  AssetPath(std::move(assetPath)) {
             std::string pathCpy = AssetPath;
             int pos = 0;
             std::string token;
@@ -46,15 +45,17 @@ namespace Engine {
             }
         }
 
-        AssetField(const AssetType type, Node *node) : ID(0), Type(type), IsSelected(false),
-                                                       AssetName(node->m_name), node(node) {
+        AssetField(const AssetType type, NodeType nodeType) : ID(0), assetType(type), IsSelected(false),
+                                                        nodeType(nodeType) {
+            AssetName = NodeTypeStrings[nodeType];
         }
 
         Node *GetNode() {
             if (!AssetPath.empty())
-                node = NodeFactory::GetInstance().CreateCustomNode(AssetName, AssetPath);
+                return NodeFactory::GetInstance().CreateCustomNode(AssetName, AssetPath);
 
-            return node;
+
+            return NodeFactory::GetInstance().CreateBaseNode(nodeType);
         }
 
         static const ImGuiTableSortSpecs *s_current_sort_specs;
@@ -76,7 +77,7 @@ namespace Engine {
                 if (sort_spec->ColumnIndex == 0)
                     delta = ((int) a->ID - (int) b->ID);
                 else if (sort_spec->ColumnIndex == 1)
-                    delta = (a->Type - b->Type);
+                    delta = (a->assetType - b->assetType);
                 if (delta > 0)
                     return (sort_spec->SortDirection == ImGuiSortDirection_Ascending) ? +1 : -1;
                 if (delta < 0)
