@@ -78,8 +78,6 @@ set(ENGINE_SOURCES
         ${ENGINE_DIR}/assetmanager/assetmanager.h
         ${ENGINE_DIR}/assetmanager/assetbrowser.cpp
         ${ENGINE_DIR}/assetmanager/assetbrowser.h
-        ${ENGINE_DIR}/assetmanager/sceneeditor.cpp
-        ${ENGINE_DIR}/assetmanager/sceneeditor.h
         ${ENGINE_DIR}/imgui/imguiwindowbaseclass.h
         ${ENGINE_DIR}/iniparser/iniparser.cpp
         ${ENGINE_DIR}/iniparser/iniparser.h

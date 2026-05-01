@@ -52,5 +52,6 @@ private:
     AnimatedSpriteNode* m_walkingAnimation;
 
 };
+REGISTER_CLASS(Player);
 
 #endif //GP_FRAMEWORK_PLAYER_H

@@ -11,7 +11,6 @@ Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false
                    m_fGroundMaxSpeed(0), m_jumpsMade(0), m_maxJumps(1), m_fJumpForce(0), m_currentAnimation(nullptr) {
 
 
-    REGISTER_CLASS(Player);
     SetupNode("Player", NT_Custom);
 
     m_nodeInfo.push_back(
@@ -130,8 +129,6 @@ void Player::Process(float deltaTime) {
 
     HandleAnimations();
     HandleFlip();
-
-
 }
 
 void Player::HandleMovement(float deltaTime) {

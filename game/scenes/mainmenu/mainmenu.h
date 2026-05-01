@@ -24,8 +24,6 @@ public:
     HContainer* h4;
     TextControl* t1;
     TextControl* t2;
-    TextControl* t3;
-    TextControl* t4;
     Control* spacer1;
     Control* spacer2;
     Control* spacer3;

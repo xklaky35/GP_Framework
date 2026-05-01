@@ -6,7 +6,7 @@
 #include "../../engine/sound/soundmanager.h"
 
 MainMenu::MainMenu() : m_bSelectionLocked(false), m_currentSelection(0), m_selectionParents{},
-                       m_sceneOptions{"Astroids", "SpaceInvaders", "Robotron", "Quit"} {
+                       m_sceneOptions{"Whoosh", "Quit"} {
     vcontainer1 = new VContainer();
     h1 = new HContainer();
     h2 = new HContainer();
@@ -14,8 +14,6 @@ MainMenu::MainMenu() : m_bSelectionLocked(false), m_currentSelection(0), m_selec
     h4 = new HContainer();
     t1 = new TextControl();
     t2 = new TextControl();
-    t3 = new TextControl();
-    t4 = new TextControl();
     spacer1 = new Control();
     spacer2 = new Control();
     spacer3 = new Control();
@@ -79,24 +77,15 @@ void MainMenu::Init() {
     t1->m_containerSizing.m_bExpandVertical = true;
     t2->m_containerSizing.m_bExpandHorizontal = true;
     t2->m_containerSizing.m_bExpandVertical = true;
-    t3->m_containerSizing.m_bExpandHorizontal = true;
-    t3->m_containerSizing.m_bExpandVertical = true;
-    t4->m_containerSizing.m_bExpandHorizontal = true;
-    t4->m_containerSizing.m_bExpandVertical = true;
+
 
     t1->m_containerSizing.m_verticalBehavior = v_Center;
     t2->m_containerSizing.m_verticalBehavior = v_Center;
-    t3->m_containerSizing.m_verticalBehavior = v_Center;
-    t4->m_containerSizing.m_verticalBehavior = v_Center;
     t1->m_containerSizing.m_horizontalBehavior = h_Center;
     t2->m_containerSizing.m_horizontalBehavior = h_Center;
-    t3->m_containerSizing.m_horizontalBehavior = h_Center;
-    t4->m_containerSizing.m_horizontalBehavior = h_Center;
 
-    t1->SetText("Play Astroids");
-    t2->SetText("Play Space Invaders");
-    t3->SetText("Play Robotron");
-    t4->SetText("Quit");
+    t1->SetText("Play");
+    t2->SetText("Quit");
 
 
     cursor->m_containerSizing.m_bExpandVertical = true;
@@ -110,10 +99,7 @@ void MainMenu::Init() {
     h1->AddChild(*t1);
     m_selectionParents[1] = h2;
     h2->AddChild(*t2);
-    m_selectionParents[2] = h3;
-    h3->AddChild(*t3);
-    m_selectionParents[3] = h4;
-    h4->AddChild(*t4);
+
 
 
     // Add rows to center column
@@ -155,7 +141,9 @@ void MainMenu::Process(float deltaTime) {
     }
     else if (InputManager::GetInstance().GetButtonState(SDLK_RETURN)) {
         if (!m_bSelectionLocked) {
-            Game::GetInstance().Quit();
+
+            SceneManager::GetInstance().SetSceneActive("Whoosh");
+            //Game::GetInstance().Quit();
             return;
         }
     }
