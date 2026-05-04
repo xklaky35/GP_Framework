@@ -13,6 +13,9 @@
 #include <cassert>
 #include <cmath>
 
+#include "../config/config.h"
+#include "physics/physicsmanager.h"
+
 
 namespace Engine {
     Renderer::Renderer()
@@ -26,6 +29,7 @@ namespace Engine {
           , m_fClearGreen(0.0f)
           , m_fClearBlue(0.0f)
           , m_pWindow(nullptr) {
+
     }
 
     Renderer::~Renderer() {
@@ -74,13 +78,15 @@ namespace Engine {
             assert(m_pTextureManager);
             initialised = m_pTextureManager->Initialise();
         }
+
+        CreateOrthoProjection(m_orthoProjection, static_cast<float>(width), static_cast<float>(height));
         return initialised;
     }
 
     bool Renderer::InitialiseOpenGL(const int screenWidth, const int screenHeight) {
         m_iWidth = screenWidth;
         m_iHeight = screenHeight;
-        m_pWindow = SDL_CreateWindow("COMP710 GP Framework 2025", SDL_WINDOWPOS_UNDEFINED,
+        m_pWindow = SDL_CreateWindow("My own little game engine", SDL_WINDOWPOS_UNDEFINED,
                                      SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_OPENGL);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -218,13 +224,11 @@ namespace Engine {
                     world.m[3][0] = static_cast<float>(sprite->GetX());
                     world.m[3][1] = static_cast<float>(sprite->GetY());
                     m_pSpriteShader->SetMatrixUniform("uWorldTransform", world);
-                    Matrix4 orthoViewProj;
-                    CreateOrthoProjection(orthoViewProj, static_cast<float>(m_iWidth), static_cast<float>(m_iHeight));
                     m_pSpriteShader->SetVector4Uniform("colour", sprite->GetRedTint(),
                                                        sprite->GetGreenTint(),
                                                        sprite->GetBlueTint(),
                                                        sprite->GetAlpha());
-                    m_pSpriteShader->SetMatrixUniform("uViewProj", orthoViewProj);
+                    m_pSpriteShader->SetMatrixUniform("uViewProj", m_orthoProjection);
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
                     glEnable(GL_BLEND);
@@ -258,18 +262,17 @@ namespace Engine {
 
         m_pSpriteShader->SetMatrixUniform("uWorldTransform", world);
 
-        Matrix4 orthoViewProj;
-        CreateOrthoProjection(orthoViewProj, static_cast<float>(m_iWidth), static_cast<float>(m_iHeight));
         m_pSpriteShader->SetVector4Uniform("colour", sprite.GetRedTint(),
                                            sprite.GetGreenTint(),
                                            sprite.GetBlueTint(),
                                            sprite.GetAlpha());
-        m_pSpriteShader->SetMatrixUniform("uViewProj", orthoViewProj);
+        m_pSpriteShader->SetMatrixUniform("uViewProj", m_orthoProjection);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)((frame * 6) * sizeof(GLuint)));
     }
+
 
     SDL_Window* Renderer::GetSDLWindow() {
         return m_pWindow;
@@ -283,5 +286,20 @@ namespace Engine {
         Texture *pTexture = new Texture();
         pTexture->LoadTextTexture(pText, "../assets/Fonts/Romantic Mermaid.otf", pointsize, color);
         m_pTextureManager->AddTexture(pText, pTexture);
+    }
+
+    void Renderer::SetOrthoViewport(int width, int height) {
+        m_orthoProjection.m[0][0] = 2.0f / (width);
+        m_orthoProjection.m[1][1] = 2.0f / (-height);
+    }
+
+    void Renderer::SetOrthoOffset(float x, float y) {
+        float offsetX =  m_orthoProjection.m[0][0] * x ;
+        float offsetY = -m_orthoProjection.m[1][1] * y ;
+
+        m_orthoProjection.m[3][0] = -1.f - offsetX + (float)(abs((int)x) > 0);
+        m_orthoProjection.m[3][1] =  1.f + offsetY - (float)(abs((int)y) > 0);
+
+        PhysicsManager::GetInstance().ChangeDebugOrthoPos(x, y);
     }
 }

@@ -1,5 +1,7 @@
 #include "matrix4.h"
 
+#include <cmath>
+
 namespace Engine {
     void SetZero(Matrix4& mat)
     {
@@ -33,12 +35,16 @@ namespace Engine {
     void CreateOrthoProjection(Matrix4& mat, float width, float height)
     {
         SetZero(mat);
-        mat.m[0][0] = 2.0f / width;
-        mat.m[1][1] = 2.0f / -height;
+        mat.m[0][0] = 2.0f / (width);
+        mat.m[1][1] = 2.0f / (-height);
         mat.m[2][2] = -2.0f / (1.0f - -1.0f);
         mat.m[3][0] = -1.0f;
-        mat.m[3][1] = 1.0f;
-        mat.m[3][2] = 0.0f;
-        mat.m[3][3] = 1.0f;
+        mat.m[3][1] =  1.0f;
+        mat.m[3][2] =  0.0f;
+        mat.m[3][3] =  1.0f; // ZOOM???!!??!?!?!?!?
     }
+
+
+
+
 }

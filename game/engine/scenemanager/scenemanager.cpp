@@ -1,5 +1,6 @@
 #include "scenemanager.h"
 #include "imgui.h"
+#include "../event.h"
 #include "../../scenes/mainmenu/mainmenu.h"
 #include "../../scenes/slashscreen/splashscreen.h"
 #include "../../scenes/whoosh/scenewhoosh.h"
@@ -7,8 +8,11 @@
 
 namespace Engine {
 
+
     SceneManager* SceneManager::m_pInstance = nullptr;
-    SceneManager::SceneManager() : m_visibleNodeDebug(nullptr) {}
+    SceneManager::SceneManager() : m_visibleNodeDebug(nullptr) {
+        onSceneSwitch = Event<SceneManager>();
+    }
     SceneManager::~SceneManager() {
         for (auto pair : m_loadedScenes) {
             delete pair.second;

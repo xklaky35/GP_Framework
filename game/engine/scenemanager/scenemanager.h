@@ -3,6 +3,8 @@
 
 #include <map>
 #include <string>
+
+#include "../event.h"
 #include "../imgui/imguiwindowbaseclass.h"
 
 #include "../nodes/node.h"
@@ -32,6 +34,8 @@ namespace Engine {
         Node* m_visibleNodeDebug;
         std::string m_currentScene;
         std::pmr::map<std::string, Node*> m_loadedScenes;
+
+        Event<SceneManager> onSceneSwitch;
 
     private:
         SceneManager();

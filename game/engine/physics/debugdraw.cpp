@@ -1,10 +1,11 @@
 #include "debugdraw.h"
-
-#include <box2d/box2d.h>
 #include <cmath>
 #include <cstring>
 #include <cstdio>
 #include <cassert>
+
+#include "physicsmanager.h"
+#include "../../config/config.h"
 
 namespace Engine {
     // ─────────────────────────────────────────────────────────────────────────────
@@ -124,7 +125,8 @@ void main()
         glBindVertexArray(0);
 
         // ── Build ortho projection ────────────────────────────────────────────────
-        MakeOrtho(m_proj, left, right, bottom, top);
+        MakeOrtho(m_proj, left, right, bottom, top, 0,0);
+
 
         return true;
     }
@@ -372,13 +374,14 @@ void main()
         return ok != 0;
     }
 
-    void DebugDraw::MakeOrtho(float *m, float l, float r, float b, float t) {
+    void DebugDraw::MakeOrtho(float *m, float l, float r, float b, float t, float x, float y) {
+
         memset(m, 0, 16 * sizeof(float));
         m[0] = 2.0f / (r - l);
         m[5] = 2.0f / (t - b);
         m[10] = -1.0f;
-        m[12] = -(r + l) / (r - l);
-        m[13] = -(t + b) / (t - b);
+        m[12] = (-(r + l) / (r - l)) - ((2.f/Config::GetInstance().windowsWidth) * x) + (abs(x) > 0);
+        m[13] = (-(t + b) / (t - b)) + ((2.f/Config::GetInstance().windowsHeight) * y) - (abs(y) > 0);
         m[15] = 1.0f;
     }
 

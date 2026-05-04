@@ -1,14 +1,19 @@
 #include "player.h"
 
 #include "imgui.h"
+#include "../../../lib/BOX2D/src/sensor.h"
 #include "../../engine/input/input.h"
+#include "../../engine/logmanager/logmanager.h"
 #include "../../engine/nodes/nodefactory.h"
+#include "../../engine/physics/physicsmanager.h"
+#include "box2d/box2d.h"
 
 using namespace Engine;
 
 Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false),
                    m_fGroundAcceleration(0), m_fGroundDeceleration(0), m_fGroundMinSpeed(0),
                    m_fGroundMaxSpeed(0), m_jumpsMade(0), m_maxJumps(1), m_fJumpForce(0), m_currentAnimation(nullptr) {
+    m_bHasFiredHook = false;
 
 
     SetupNode("Player", NT_Custom);
@@ -116,6 +121,7 @@ void Player::Init() {
     if (m_walkingAnimation != nullptr) {
         m_walkingAnimation->SetRGBA(0,0,0,0);
     }
+
 }
 
 
@@ -126,6 +132,7 @@ void Player::Process(float deltaTime) {
 
 
     HandleMovement(deltaTime);
+    HandleMouseClick();
 
     HandleAnimations();
     HandleFlip();
@@ -196,6 +203,171 @@ void Player::HandleFlip() {
     }
     if (!m_currentAnimation->IsFlipped() && m_bIsFlipped) {
         m_currentAnimation->Flip();
+    }
+}
+
+b2RayResult Player::CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId world) {
+
+    Vector2d shootingDirection = target - origin;
+
+    float angle = atan2(shootingDirection.y, shootingDirection.x); //* (180/std::numbers::pi);
+
+    // Calculate ray points
+    const float rayLength = 10000;
+    const b2Vec2 b2origin = b2Vec2(origin.x, origin.y);
+    const b2Vec2 translation = b2Vec2(
+        rayLength * sin(angle),
+        rayLength * cos(angle)
+    );
+
+    // Set up query filter
+    const b2QueryFilter filter = b2DefaultQueryFilter();
+
+    // Cast ray and get closest hit
+    const b2RayResult result = b2World_CastRayClosest(world, b2origin, translation, filter);
+
+    LogManager::GetInstance().Log(INFO, "Mouse position: [ %f : %f ]", target.x, target.y);
+    LogManager::GetInstance().Log(INFO, "Player pos: [ %f : %f ]", m_globalTransform.position.x, m_globalTransform.position.y);
+    LogManager::GetInstance().Log(INFO, "Target vector: [ %f : %f ]", shootingDirection.x, shootingDirection.y);
+    LogManager::GetInstance().Log(INFO, "%f", angle * (180/std::numbers::pi));
+
+    return result;
+}
+
+void Player::CreateChainBetween(b2Vec2 origin, b2Vec2 target, b2BodyId targetBody, b2WorldId world) {
+
+    // local point of raycast source
+    b2Transform localTransformPlayer;
+    localTransformPlayer.p = b2Body_GetLocalPoint(m_rigidBody->GetBodyId(), origin);
+    localTransformPlayer.q = b2MakeRot(0);
+
+    // transform of point hit
+    b2Transform localTransformTarget;
+    localTransformTarget.p = b2Body_GetLocalPoint(targetBody,target);
+    localTransformTarget.q = b2MakeRot(0);
+
+
+
+    // chain part def
+    b2BodyDef bodyDef = b2DefaultBodyDef();
+    bodyDef.type = b2_dynamicBody;
+    bodyDef.position = origin;
+
+    // chain part shape def
+    b2ShapeDef shapeDef = b2DefaultShapeDef();
+    shapeDef.density = 1;
+
+    // polygon def
+    b2Polygon boxShape = b2MakeBox(0.4, 0.05);
+
+    // create initial link
+    b2BodyId link = b2CreateBody(world, &bodyDef);
+    b2ShapeId shape = b2CreatePolygonShape(link, &shapeDef, &boxShape);
+
+    m_hookFoot = link;
+
+
+
+    // Set up the common properties of the joint before entering the loop
+
+    // local point of chain piece A
+    b2Transform chainJointTransform;
+    chainJointTransform.p = b2Vec2(0.6, 0);
+    chainJointTransform.q = b2MakeRot(0);
+
+
+    // chain joint def
+    b2JointDef def = b2JointDef();
+    def.localFrameA = chainJointTransform;
+    def.localFrameB = chainJointTransform;
+
+
+    b2RevoluteJointDef revoluteJointDef = b2DefaultRevoluteJointDef();
+    revoluteJointDef.base = def;
+
+    // uses same definitions to create multiple chain pieces
+    for (int i = 0; i < 10; i++) {
+        b2BodyId newLink = b2CreateBody(world, &bodyDef);
+        b2ShapeId newShape = b2CreatePolygonShape(newLink, &shapeDef, &boxShape);
+
+        def.bodyIdA = link;
+        def.bodyIdB = newLink;
+        def.localFrameA.p.x *= -1;
+        def.localFrameB.p.x *= -1;
+        revoluteJointDef.base = def;
+        b2CreateRevoluteJoint(world, &revoluteJointDef);
+
+        // update chain pieces
+        link = newLink;
+    }
+    m_hookHead = link;
+
+
+    // chain foot to player
+    b2JointDef chainPlayerJointDef = b2JointDef();
+    chainPlayerJointDef.bodyIdA = m_rigidBody->GetBodyId();
+    chainPlayerJointDef.bodyIdB = m_hookFoot;
+    chainPlayerJointDef.localFrameA = localTransformPlayer;
+    chainPlayerJointDef.localFrameB = chainJointTransform;
+
+    // chain head to target
+    b2JointDef chainTargetJointDef = b2JointDef();
+    chainTargetJointDef.bodyIdA = targetBody;
+    chainTargetJointDef.bodyIdB = m_hookHead;
+    chainTargetJointDef.localFrameA = localTransformTarget;
+    chainTargetJointDef.localFrameB = chainJointTransform;
+
+    revoluteJointDef.base = chainPlayerJointDef;
+    b2CreateRevoluteJoint(world, &revoluteJointDef);
+
+    revoluteJointDef.base = chainTargetJointDef;
+    b2CreateRevoluteJoint(world, &revoluteJointDef);
+
+    //b2Body_ApplyLinearImpulse(link, b2Vec2{shootingVector.x, shootingVector.y} * 3, b2Vec2{0, 0}, true);
+}
+
+void Player::ShootHook(Vector2d posInPixel) {
+
+    b2WorldId world = PhysicsManager::GetInstance().GetWorld();
+    Vector2d playerPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(GetGlobalPosition());
+    Vector2d targetPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(posInPixel);
+
+    b2RayResult rayCastResult = CastRayFromTo(playerPositionInBox2DWorld, targetPositionInBox2DWorld, world);
+    if (rayCastResult.hit == false) return;
+
+    // body that got hit
+    b2BodyId targetBodyId = b2Shape_GetBody(rayCastResult.shapeId);
+
+
+    CreateChainBetween(playerPositionInBox2DWorld,rayCastResult.point, targetBodyId, world);
+
+    /*
+    b2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
+    jointDef.base = def;
+    jointDef.enableSpring = true;
+    jointDef.enableLimit = true;
+    jointDef.hertz = 0.2f;
+    //jointDef.dampingRatio = 1.0f;
+
+    jointDef.minLength = 0;
+    jointDef.maxLength = 10;
+
+    b2JointId myJointId = b2CreateDistanceJoint(PhysicsManager::GetInstance().GetWorld(), &jointDef);
+    */
+
+
+
+}
+
+
+void Player::HandleMouseClick() {
+    if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONDOWN && m_bHasFiredHook == false) {
+        Vector2d mousePosition = InputManager::GetInstance().GetMousePosition();
+        ShootHook(mousePosition);
+        m_bHasFiredHook = true;
+    }
+    if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONUP) {
+        m_bHasFiredHook = false;
     }
 }
 

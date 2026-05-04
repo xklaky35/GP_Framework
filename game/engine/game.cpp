@@ -103,6 +103,8 @@ namespace Engine {
             return false;
         }
 
+        //SceneManager::GetInstance().onSceneSwitch.Register<Game>(&Game::ResetOrtho, *this);
+
 
         //################ INIT STUFF HERE ####################
 
@@ -161,12 +163,14 @@ namespace Engine {
         ++m_iFrameCount;
         renderer.Clear();
 
+        // reset to default
+        // allows to be overwritten by e.g camera nodes
         // ####### RENDER STUFF HERE #############
 
         SceneManager::GetInstance().GetCurrentScene()->Draw(renderer);
-        renderer.Draw();
 
         // #######################################
+        renderer.Draw();
 
 #ifdef DEBUG
         if (m_bIsDebugView) {
@@ -243,5 +247,10 @@ namespace Engine {
 
     void Game::TogglePause() {
         m_bIsPaused = !m_bIsPaused;
+    }
+
+    void Game::ResetOrtho() {
+        m_pRenderer->SetOrthoViewport(Config::GetInstance().windowsWidth, Config::GetInstance().windowsHeight);
+        m_pRenderer->SetOrthoOffset(0,0);
     }
 }

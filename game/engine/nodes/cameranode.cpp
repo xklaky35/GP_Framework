@@ -1,6 +1,8 @@
 #include "cameranode.h"
 
+#include "../../config/config.h"
 #include "../../helper/inlinehelper.h"
+#include "../physics/physicsmanager.h"
 
 
 namespace Engine {
@@ -19,5 +21,7 @@ namespace Engine {
     void CameraNode::Draw(Renderer &renderer) {
         Node::Draw(renderer);
 
+        renderer.SetOrthoViewport(Config::GetInstance().windowsWidth, Config::GetInstance().windowsHeight);
+        renderer.SetOrthoOffset(m_globalTransform.position.x, m_globalTransform.position.y);
     }
 }

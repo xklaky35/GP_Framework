@@ -27,6 +27,8 @@ namespace Engine {
 
         void TogglePause();
 
+        void ResetOrtho();
+
     protected:
         void Process(float deltaTime);
         void Draw(Renderer &renderer);

@@ -35,7 +35,6 @@ namespace Engine {
         m_gameWorldId = b2CreateWorld(&worldDef);
 
         m_debugDraw.Initialise(0, Config::GetInstance().windowsWidth * kPixelsToMeters,Config::GetInstance().windowsHeight * kPixelsToMeters, 0);
-        //m_debugDraw.Initialise(-25, 25,25, -25);
         m_b2DebugDraw = m_debugDraw.BuildDebugDraw();
 
         return true;
@@ -59,6 +58,10 @@ namespace Engine {
     void PhysicsManager::ResetGameWorld() {
         b2DestroyWorld(m_gameWorldId);
         Initialise();
+    }
+
+    void PhysicsManager::ChangeDebugOrthoPos(float x, float y) {
+        DebugDraw::MakeOrtho(m_debugDraw.m_proj, 0, Config::GetInstance().windowsWidth * kPixelsToMeters,Config::GetInstance().windowsHeight * kPixelsToMeters, 0, x,y);
     }
 
     // 50 pixels per meter

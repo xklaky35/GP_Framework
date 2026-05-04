@@ -1,6 +1,7 @@
 #ifndef GP_FRAMEWORK_CAMERANODE_H
 #define GP_FRAMEWORK_CAMERANODE_H
 #include "nodefactory.h"
+#include "../structs/vector3d.h"
 
 namespace Engine {
     class CameraNode : public Node {
@@ -10,7 +11,12 @@ namespace Engine {
         void Process(float deltaTime) override;
         void Draw(Renderer &) override;
 
-        void lookAt(float eyex, float eyey, float eyez, float centerx, float centery, float centerz);
+
+    private:
+        Vector3d m_pos;
+        Vector3d m_direction;
+        Vector3d m_rightAxis;
+        Vector3d m_upAxis;
 
     };
 

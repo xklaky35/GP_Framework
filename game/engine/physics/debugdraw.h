@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <box2d/box2d.h>
 
+#include "../structs/matrix4.h"
+
 namespace Engine {
     // ─────────────────────────────────────────────────────────────────────────────
     //  DebugDraw
@@ -27,22 +29,20 @@ namespace Engine {
 
         // ── Callbacks (public so free functions can forward to them) ─────────────
         void OnDrawPolygon(const b2Vec2 *verts, int count, b2HexColor color);
-
         void OnDrawSolidPolygon(b2Transform xf, const b2Vec2 *verts, int count, float radius, b2HexColor color);
-
         void OnDrawCircle(b2Vec2 center, float radius, b2HexColor color);
-
         void OnDrawSolidCircle(b2Transform xf, float radius, b2HexColor color);
-
         void OnDrawSolidCapsule(b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color);
-
         void OnDrawLine(b2Vec2 p1, b2Vec2 p2, b2HexColor color);
-
         void OnDrawTransform(b2Transform xf);
-
         void OnDrawPoint(b2Vec2 p, float size, b2HexColor color);
-
         void OnDrawString(b2Vec2 p, const char *s, b2HexColor color);
+
+        static void MakeOrtho(float *m16,
+                              float l, float r, float b, float t, float x, float y);
+
+        // ── Cached ortho matrix (column-major) ───────────────────────────────────
+        float m_proj[16] = {};
 
     private:
         // ── GL resources ─────────────────────────────────────────────────────────
@@ -54,8 +54,6 @@ namespace Engine {
         GLint m_locColour = -1; // vec4  uColour
         GLint m_locProj = -1; // mat4  uProj
 
-        // ── Cached ortho matrix (column-major) ───────────────────────────────────
-        float m_proj[16] = {};
 
         // ── Helpers ──────────────────────────────────────────────────────────────
         void FlushLines(const float *xy, int count, float r, float g, float b, float a);
@@ -72,8 +70,6 @@ namespace Engine {
 
         static bool CompileShader(GLuint id, const char *src);
 
-        static void MakeOrtho(float *m16,
-                              float l, float r, float b, float t);
 
         static void UnpackColor(b2HexColor hex, float &r, float &g, float &b);
 

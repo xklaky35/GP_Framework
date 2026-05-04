@@ -21,10 +21,13 @@ namespace Engine {
 
         void ResetGameWorld();
 
+        void ChangeDebugOrthoPos(float x, float y);
+
         static float PixelsToMeter(float pixels);
         static float MeterToPixels(float meter);
         static Vector2d PixelsToMeterVector(Vector2d pixels);
         static Vector2d MeterToPixelsVector(Vector2d meter);
+
 
     protected:
         static PhysicsManager* m_pInstance;

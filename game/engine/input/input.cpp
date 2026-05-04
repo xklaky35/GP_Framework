@@ -38,11 +38,37 @@ namespace Engine {
             m_isInInstableState.push(KeyState{event.key.keysym.sym, BS_RELEASED});
             m_previousKey = event.key.keysym.sym;
         }
+
+
+        // mouse events
+        if (event.type == SDL_MOUSEBUTTONUP) {
+            m_currentMouseEvent = event.button;
+        }
+        else if (event.type == SDL_MOUSEBUTTONDOWN) {
+            m_currentMouseEvent = event.button;
+        }
+        else {
+            m_currentMouseEvent = SDL_MouseButtonEvent();
+        }
+
+        if (event.type == SDL_MOUSEMOTION) {
+            m_mousePosition.x = static_cast<float>(event.motion.x);
+            m_mousePosition.y = static_cast<float>(event.motion.y);
+        }
     }
 
 
     ButtonState InputManager::GetButtonState(SDL_Keycode keyCode) {
         return m_pressedKeys[keyCode];
+    }
+
+
+    Vector2d InputManager::GetMousePosition() const {
+        return m_mousePosition;
+    }
+
+    SDL_MouseButtonEvent InputManager::GetCurrentMouseEvent() const {
+        return m_currentMouseEvent;
     }
 
     void InputManager::Process(float delta_time) {

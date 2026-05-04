@@ -51,7 +51,7 @@ namespace Engine {
         void SetPositionInMeters(Vector2d pos) const;
         void SetupParameter(IniParser *parser, const std::string &sectionId) override;
         void SetMassData(float mass, Vector2d massCenter, float rotationalInertia) const;
-
+        b2BodyId GetBodyId();
 
     private:
         b2BodyId m_bodyId;

@@ -16,6 +16,14 @@ public:
 
     void HandleFlip();
 
+    b2RayResult CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId worldId);
+
+    void CreateChainBetween(b2Vec2 vector2d, b2Vec2 point, b2BodyId targetBody, b2WorldId worldId);
+
+    void ShootHook(Vector2d pos);
+
+    void HandleMouseClick();
+
     void Process(float deltaTime) override;
     void HandleMovement(float deltaTime);
     void OnLandOnGround();
@@ -42,6 +50,11 @@ public:
 
     Vector2d m_velocity;
     Vector2d m_moveDirection;
+
+
+    bool m_bHasFiredHook;
+    b2BodyId m_hookHead;
+    b2BodyId m_hookFoot;
 
 private:
 

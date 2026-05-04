@@ -8,12 +8,16 @@ namespace Engine {
     Vector2d::Vector2d(const float x, const float y) : x(x), y(y) {
     }
 
-    float Vector2d::Distance(const Vector2d &vec) const {
-        return static_cast<float>(sqrt(pow(vec.x - x, 2) + pow(vec.y - y, 2)));
+    float Vector2d::Distance(const Vector2d &) const {
+        return 0;
     }
 
     Vector2d Vector2d::Zero() {
         return Vector2d(0,0);
+    }
+
+    Vector2d::operator b2Vec2() const {
+        return b2Vec2{x,y};
     }
 
     Vector2d Vector2d::operator-(const Vector2d &vector) const {

@@ -12,7 +12,6 @@
 #include <SDL.h>
 
 
-
 namespace Engine {
     class Renderer {
         // Member methods:
@@ -40,6 +39,9 @@ namespace Engine {
 
         void CreateStaticText(const char *pText, int pointsize, SDL_Color);
 
+        void SetOrthoViewport(int windows_width, int windows_height);
+        void SetOrthoOffset(float x, float y);
+
     protected:
         bool InitialiseOpenGL(int screenWidth, int screenHeight);
         void SetFullscreen(bool fullscreen);
@@ -53,6 +55,7 @@ namespace Engine {
         // Member data:
     public:
     protected:
+        Matrix4 m_orthoProjection;
         std::map<int, std::vector<Sprite*>> m_renderList;
         TextureManager *m_pTextureManager;
         SDL_Window *m_pWindow;

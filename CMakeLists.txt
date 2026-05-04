@@ -141,6 +141,8 @@ set(IMGUI_SOURCES
         game/engine/physics/debugdraw.h
         game/engine/nodes/cameranode.cpp
         game/engine/nodes/cameranode.h
+        game/engine/structs/vector3d.cpp
+        game/engine/structs/vector3d.h
 
 
 )

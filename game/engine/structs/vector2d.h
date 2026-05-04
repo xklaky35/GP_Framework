@@ -1,5 +1,6 @@
 #ifndef GP_FRAMEWORK_VECTOR2D_H
 #define GP_FRAMEWORK_VECTOR2D_H
+#include "box2d/math_functions.h"
 
 namespace Engine {
     struct Vector2d {
@@ -11,6 +12,7 @@ namespace Engine {
 
         float Distance(const Vector2d&) const;
         Vector2d Zero();
+        operator b2Vec2() const;
         Vector2d operator-(const Vector2d&) const;
         Vector2d operator+(const Vector2d&) const;
         Vector2d operator+(float vector) const;

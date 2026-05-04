@@ -215,6 +215,11 @@ namespace Engine {
         newMassData.rotationalInertia = rotationalInertia;
         b2Body_SetMassData(m_bodyId, newMassData);
     }
+
+    b2BodyId RigidbodyNode::GetBodyId() {
+        return m_bodyId;
+    }
+
     void RigidbodyNode::SetVelocity(Vector2d velocity) const {
         b2Body_SetLinearVelocity(m_bodyId, b2Vec2(velocity.x, b2Body_GetLinearVelocity(m_bodyId).y));
     }

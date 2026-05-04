@@ -31,6 +31,10 @@ namespace Engine {
         void RegisterEvent(SDL_Event&);
         ButtonState GetButtonState(SDL_Keycode);
 
+        Vector2d GetMousePosition() const;
+
+        SDL_MouseButtonEvent GetCurrentMouseEvent() const;
+
         void Process(float delta_time);
 
     protected:
@@ -50,6 +54,10 @@ namespace Engine {
         SDL_Keycode m_previousKey;
         std::map<SDL_Keycode, ButtonState> m_pressedKeys;
         std::queue<KeyState> m_isInInstableState;
+
+
+        SDL_MouseButtonEvent m_currentMouseEvent;
+
     };
 
 }
