@@ -33,8 +33,8 @@ void Spaceship::Init() {
     AddChild(*m_spriteNode);
 
     // setup collider
-    m_colliderNode = new ColliderNode(ft_CIRCLE);
-    m_colliderNode->OnCollision.Register<Spaceship>(&Spaceship::OnCollision, *this);
+    m_colliderNode = new ColliderNode();
+    //m_colliderNode->OnCollision.Register<Spaceship>(&Spaceship::OnCollision, *this);
     AddChild(*m_colliderNode);
 
     m_bulletSpawner = new BulletSpawner();

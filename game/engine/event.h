@@ -39,7 +39,7 @@ namespace Engine {
 
     public:
         std::vector<std::function<void()>> m_actionContainer;
-        std::vector<std::function<void(Node *)>> m_paramEventContainer;
+        std::vector<std::function<void(X *)>> m_paramEventContainer;
     };
 }
 

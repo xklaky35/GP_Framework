@@ -1,9 +1,11 @@
 #include "nodefactory.h"
 #include "animatedspritenode.h"
 #include "cameranode.h"
+#include "collidernode.h"
 #include "rigidbodynode.h"
 #include "spritenode.h"
 #include "../../helper/inlinehelper.h"
+#include "../logmanager/logmanager.h"
 
 namespace Engine {
 
@@ -31,15 +33,34 @@ namespace Engine {
         ConfigureBaseNodesOf(n);
     }
 
+
+
     // custom child nodes setup
     void NodeFactory::ConfigureIniNodesOf(Node* n) {
         for (const auto& [childNodeId, childData] : n->GetChildConfiguration()) {
+            // checks of current config is for custom or a base node
 
-            if (!n->IsChildCustomNodeWithId(childNodeId)) {
+            // query node type
+            auto nodeType = childData.find("nodeType");
+            if (nodeType == childData.end()) {
+                LogManager::GetInstance().Log(WARNING ,"No node type found on object: [ %s ]", childNodeId.c_str());
+                continue;
+            }
+            if (nodeType->second != NodeTypeStrings[NT_Custom]) {
+                // if it is not a custom node confinue
                 continue;
             }
 
-            std::unique_ptr<Node> childToConfigure = Create(n->GetNameOfChildWithId(childNodeId));
+
+            // query node type name
+            auto nodeTypeName = childData.find("typeName");
+            if (nodeType == childData.end()) {
+                LogManager::GetInstance().Log(WARNING ,"No type name found on object: [ %s ]", childNodeId.c_str());
+                continue;
+            }
+
+
+            std::unique_ptr<Node> childToConfigure = Create(nodeTypeName->second);
             if (childToConfigure != nullptr) { // if the name is found in the registry
 
                 // setup custom node with data stored in parents iniparser
@@ -51,21 +72,64 @@ namespace Engine {
 
     // base child nodes setup
     void NodeFactory::ConfigureBaseNodesOf(Node* n) {
-        for (const auto& [childNodeId, childData] : n->GetChildConfiguration()) {
+        NodeConfiguration childConfiguration = n->GetChildConfiguration();
+        for (const auto& [childNodeId, childData] : childConfiguration) {
 
-            std::string nodeType = n->GetTypeOfChildWithId(childNodeId);
-
-            int index = GetIndexOf(NodeTypeStrings, nodeType.c_str(), NODE_TYPE_COUNT);
-
-            Node* nodeToConfigure = CreateBaseNode(static_cast<NodeType>(index));
-
+            auto* nodeToConfigure = GetBaseNode(childData);
 
             if (nodeToConfigure != nullptr) {
                 nodeToConfigure->SetupParameter(n->GetIniParser(), childNodeId);
+
+                // this indicates it is a child node of a other node in this configuration file
+                // this is not handled here (see CheckForNestedNodes())
+                if (!nodeToConfigure->GetParentUId().empty()) {
+                    continue;
+                }
+
                 n->AddChild(*nodeToConfigure);
+                CheckForNestedNodes(*nodeToConfigure, childConfiguration, *n);
             }
         }
     }
+
+    // this method checks the configuration file for any nested node on the currently added node
+    void NodeFactory::CheckForNestedNodes(Node& newParentNode, NodeConfiguration& config, const Node& rootNode) {
+        for (const auto& [childNodeId, childData] : config) {
+
+            // get parent id
+            auto parentId = childData.find("parentUId");
+            if (parentId == childData.end()) {
+                continue;
+            }
+
+            if (parentId->second != newParentNode.m_UId) {
+                continue;
+            }
+
+            Node* nodeToConfigure = GetBaseNode(childData);
+
+            if (nodeToConfigure != nullptr) {
+                nodeToConfigure->SetupParameter(rootNode.GetIniParser(), childNodeId);
+                newParentNode.AddChild(*nodeToConfigure);
+                CheckForNestedNodes(*nodeToConfigure, config, rootNode);
+            }
+        }
+
+    }
+
+    Node* NodeFactory::GetBaseNode(const std::unordered_map<std::string, std::string>& childData) {
+
+        // query node type
+        auto nodeType = childData.find("nodeType");
+        if (nodeType == childData.end()) {
+            return nullptr;
+        }
+
+        int index = GetIndexOf(NodeTypeStrings, nodeType->second.c_str(), NODE_TYPE_COUNT);
+        auto* newNode = CreateBaseNode(static_cast<NodeType>(index));
+        return newNode;
+    }
+
 
     Node* NodeFactory::CreateBaseNode(NodeType nodeType) {
 
@@ -84,6 +148,9 @@ namespace Engine {
         }
         if (nodeType == NT_CameraNode) {
             return dynamic_cast<Node*>(new CameraNode());
+        }
+        if (nodeType == NT_ColliderNode) {
+            return dynamic_cast<Node*>(new ColliderNode());
         }
         return nullptr;
     }

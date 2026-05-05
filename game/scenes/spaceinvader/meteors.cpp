@@ -17,8 +17,8 @@ void Meteors::Init() {
     m_globalTransform.SetSize(100,100);
 
     // setup collider
-    m_collider = new ColliderNode(ft_CIRCLE);
-    m_collider->OnCollision.Register<Meteors>(&Meteors::OnImpact, *this);
+    m_collider = new ColliderNode();
+    //m_collider->OnCollision.Register<Meteors>(&Meteors::OnImpact, *this);
 
     m_collider->m_transform.position.x += m_globalTransform.GetWidth() / 2;
     m_collider->m_transform.position.y += m_globalTransform.GetHeight() / 2;

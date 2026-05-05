@@ -68,6 +68,7 @@ namespace Engine {
         assetBrowser->AddItem(AssetField(AT_Node, NT_SpriteNode));
         assetBrowser->AddItem(AssetField(AT_Node, NT_AnimatedSpriteNode));
         assetBrowser->AddItem(AssetField(AT_Node, NT_CameraNode));
+        assetBrowser->AddItem(AssetField(AT_Node, NT_ColliderNode));
 
         assets = &assetBrowser->Items;
         return true;

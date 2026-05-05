@@ -22,6 +22,7 @@ namespace Engine {
         static void DestroyInstance();
         void RegisterScene(const std::string&, Node*);
         void SetSceneActive(std::string);
+        Node& GetCurrentVisibleNode();
         Node* GetCurrentScene();
         const std::pmr::map<std::string, Node*>& GetScenes();
         void ReloadCurrentScene();

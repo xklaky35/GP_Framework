@@ -11,7 +11,7 @@ namespace Engine {
         Vector2d(float x, float y);
 
         float Distance(const Vector2d&) const;
-        Vector2d Zero();
+        static Vector2d Zero();
         operator b2Vec2() const;
         Vector2d operator-(const Vector2d&) const;
         Vector2d operator+(const Vector2d&) const;

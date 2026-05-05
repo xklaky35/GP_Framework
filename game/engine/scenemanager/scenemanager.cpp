@@ -54,7 +54,12 @@ namespace Engine {
         ResetWorldState();
         m_currentScene = sceneName;
         assert(m_loadedScenes[m_currentScene]);
+        m_visibleNodeDebug = GetCurrentScene();
         m_loadedScenes[m_currentScene]->Init();
+    }
+
+    Node& SceneManager::GetCurrentVisibleNode() {
+        return *m_visibleNodeDebug;
     }
 
     void SceneManager::ReloadCurrentScene() {

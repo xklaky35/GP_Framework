@@ -16,17 +16,21 @@ public:
 
     void HandleFlip();
 
-    b2RayResult CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId worldId);
+    b2RayResult CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId worldId) const;
 
     void CreateChainBetween(b2Vec2 vector2d, b2Vec2 point, b2BodyId targetBody, b2WorldId worldId);
 
+    void OnJump(const b2ShapeId *target);
+
     void ShootHook(Vector2d pos);
 
-    void HandleMouseClick();
+    void HandleHookControls();
+
+    void HandleHookVelocity();
 
     void Process(float deltaTime) override;
     void HandleMovement(float deltaTime);
-    void OnLandOnGround();
+    void OnLandOnGround(const b2ShapeId* target);
 
     void ChangeAnimation(AnimatedSpriteNode *animation);
 
@@ -53,8 +57,7 @@ public:
 
 
     bool m_bHasFiredHook;
-    b2BodyId m_hookHead;
-    b2BodyId m_hookFoot;
+    b2JointId m_b2Hook;
 
 private:
 
@@ -63,6 +66,7 @@ private:
     AnimatedSpriteNode* m_idleAnimation;
     AnimatedSpriteNode* m_jumpAnimation;
     AnimatedSpriteNode* m_walkingAnimation;
+    ColliderNode* m_groundSensor;
 
 };
 REGISTER_CLASS(Player);

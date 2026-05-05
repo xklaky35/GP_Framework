@@ -12,7 +12,7 @@ using namespace Engine;
 
 Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false),
                    m_fGroundAcceleration(0), m_fGroundDeceleration(0), m_fGroundMinSpeed(0),
-                   m_fGroundMaxSpeed(0), m_jumpsMade(0), m_maxJumps(1), m_fJumpForce(0), m_currentAnimation(nullptr) {
+                   m_fGroundMaxSpeed(0), m_jumpsMade(0), m_maxJumps(1), m_fJumpForce(0), m_currentAnimation(nullptr), m_groundSensor(nullptr) {
     m_bHasFiredHook = false;
 
 
@@ -121,6 +121,11 @@ void Player::Init() {
     if (m_walkingAnimation != nullptr) {
         m_walkingAnimation->SetRGBA(0,0,0,0);
     }
+    m_groundSensor = dynamic_cast<ColliderNode *>(GetChild("GroundSensor"));
+    if (m_groundSensor != nullptr) {
+        m_groundSensor->OnEntry.Register<Player>(&Player::OnLandOnGround, *this);
+        m_groundSensor->OnExit.Register<Player>(&Player::OnJump, *this);
+    }
 
 }
 
@@ -130,10 +135,9 @@ void Player::Process(float deltaTime) {
     if (m_rigidBody == nullptr)
         return;
 
-
     HandleMovement(deltaTime);
-    HandleMouseClick();
-
+    HandleHookControls();
+    HandleHookVelocity();
     HandleAnimations();
     HandleFlip();
 }
@@ -180,7 +184,9 @@ void Player::HandleMovement(float deltaTime) {
         }
     }
 
-    m_rigidBody->SetVelocity(m_velocity);
+    if (m_bIsGrounded) {
+        m_rigidBody->SetHorizontalVelocity(m_velocity);
+    }
 }
 
 
@@ -206,14 +212,50 @@ void Player::HandleFlip() {
     }
 }
 
-b2RayResult Player::CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId world) {
+
+void Player::HandleHookControls() {
+    if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONDOWN && m_bHasFiredHook == false) {
+        Vector2d mousePosition = InputManager::GetInstance().GetMousePosition();
+        ShootHook(mousePosition);
+        m_bHasFiredHook = true;
+    }
+    if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONUP) {
+        m_bHasFiredHook = false;
+    }
+}
+
+void Player::HandleHookVelocity() {
+
+
+
+}
+
+
+void Player::ShootHook(Vector2d posInPixel) {
+
+    b2WorldId world = PhysicsManager::GetInstance().GetWorld();
+    Vector2d playerPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(GetGlobalPosition());
+    Vector2d targetPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(posInPixel);
+
+    b2RayResult rayCastResult = CastRayFromTo(playerPositionInBox2DWorld, targetPositionInBox2DWorld, world);
+    if (rayCastResult.hit == false) return;
+
+    // body that got hit
+    b2BodyId targetBodyId = b2Shape_GetBody(rayCastResult.shapeId);
+
+
+    CreateChainBetween(playerPositionInBox2DWorld,rayCastResult.point, targetBodyId, world);
+
+}
+
+b2RayResult Player::CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId world) const {
 
     Vector2d shootingDirection = target - origin;
 
-    float angle = atan2(shootingDirection.y, shootingDirection.x); //* (180/std::numbers::pi);
+    float angle = atan2(shootingDirection.y, shootingDirection.x) * (180/std::numbers::pi);
 
     // Calculate ray points
-    const float rayLength = 10000;
+    constexpr float rayLength = 100;
     const b2Vec2 b2origin = b2Vec2(origin.x, origin.y);
     const b2Vec2 translation = b2Vec2(
         rayLength * sin(angle),
@@ -229,7 +271,7 @@ b2RayResult Player::CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId wo
     LogManager::GetInstance().Log(INFO, "Mouse position: [ %f : %f ]", target.x, target.y);
     LogManager::GetInstance().Log(INFO, "Player pos: [ %f : %f ]", m_globalTransform.position.x, m_globalTransform.position.y);
     LogManager::GetInstance().Log(INFO, "Target vector: [ %f : %f ]", shootingDirection.x, shootingDirection.y);
-    LogManager::GetInstance().Log(INFO, "%f", angle * (180/std::numbers::pi));
+    LogManager::GetInstance().Log(INFO, "%f", angle );
 
     return result;
 }
@@ -247,131 +289,32 @@ void Player::CreateChainBetween(b2Vec2 origin, b2Vec2 target, b2BodyId targetBod
     localTransformTarget.q = b2MakeRot(0);
 
 
+    b2JointDef playerJointDef = b2JointDef();
+    playerJointDef.bodyIdA = m_rigidBody->GetBodyId();
+    playerJointDef.bodyIdB = targetBody;
+    playerJointDef.localFrameA = localTransformPlayer;
+    playerJointDef.localFrameB = localTransformTarget;
 
-    // chain part def
-    b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
-    bodyDef.position = origin;
+    b2DistanceJointDef distanceJointDef = b2DefaultDistanceJointDef();
+    distanceJointDef.base = playerJointDef;
+    distanceJointDef.enableSpring = true;
+    distanceJointDef.enableLimit = true;
+    distanceJointDef.hertz = 0.4f;
+    distanceJointDef.dampingRatio = 20.f;
 
-    // chain part shape def
-    b2ShapeDef shapeDef = b2DefaultShapeDef();
-    shapeDef.density = 1;
+    distanceJointDef.minLength = 0;
+    distanceJointDef.maxLength = 10;
 
-    // polygon def
-    b2Polygon boxShape = b2MakeBox(0.4, 0.05);
-
-    // create initial link
-    b2BodyId link = b2CreateBody(world, &bodyDef);
-    b2ShapeId shape = b2CreatePolygonShape(link, &shapeDef, &boxShape);
-
-    m_hookFoot = link;
-
-
-
-    // Set up the common properties of the joint before entering the loop
-
-    // local point of chain piece A
-    b2Transform chainJointTransform;
-    chainJointTransform.p = b2Vec2(0.6, 0);
-    chainJointTransform.q = b2MakeRot(0);
-
-
-    // chain joint def
-    b2JointDef def = b2JointDef();
-    def.localFrameA = chainJointTransform;
-    def.localFrameB = chainJointTransform;
-
-
-    b2RevoluteJointDef revoluteJointDef = b2DefaultRevoluteJointDef();
-    revoluteJointDef.base = def;
-
-    // uses same definitions to create multiple chain pieces
-    for (int i = 0; i < 10; i++) {
-        b2BodyId newLink = b2CreateBody(world, &bodyDef);
-        b2ShapeId newShape = b2CreatePolygonShape(newLink, &shapeDef, &boxShape);
-
-        def.bodyIdA = link;
-        def.bodyIdB = newLink;
-        def.localFrameA.p.x *= -1;
-        def.localFrameB.p.x *= -1;
-        revoluteJointDef.base = def;
-        b2CreateRevoluteJoint(world, &revoluteJointDef);
-
-        // update chain pieces
-        link = newLink;
-    }
-    m_hookHead = link;
-
-
-    // chain foot to player
-    b2JointDef chainPlayerJointDef = b2JointDef();
-    chainPlayerJointDef.bodyIdA = m_rigidBody->GetBodyId();
-    chainPlayerJointDef.bodyIdB = m_hookFoot;
-    chainPlayerJointDef.localFrameA = localTransformPlayer;
-    chainPlayerJointDef.localFrameB = chainJointTransform;
-
-    // chain head to target
-    b2JointDef chainTargetJointDef = b2JointDef();
-    chainTargetJointDef.bodyIdA = targetBody;
-    chainTargetJointDef.bodyIdB = m_hookHead;
-    chainTargetJointDef.localFrameA = localTransformTarget;
-    chainTargetJointDef.localFrameB = chainJointTransform;
-
-    revoluteJointDef.base = chainPlayerJointDef;
-    b2CreateRevoluteJoint(world, &revoluteJointDef);
-
-    revoluteJointDef.base = chainTargetJointDef;
-    b2CreateRevoluteJoint(world, &revoluteJointDef);
-
-    //b2Body_ApplyLinearImpulse(link, b2Vec2{shootingVector.x, shootingVector.y} * 3, b2Vec2{0, 0}, true);
+    m_b2Hook = b2CreateDistanceJoint(PhysicsManager::GetInstance().GetWorld(), &distanceJointDef);
 }
 
-void Player::ShootHook(Vector2d posInPixel) {
-
-    b2WorldId world = PhysicsManager::GetInstance().GetWorld();
-    Vector2d playerPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(GetGlobalPosition());
-    Vector2d targetPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(posInPixel);
-
-    b2RayResult rayCastResult = CastRayFromTo(playerPositionInBox2DWorld, targetPositionInBox2DWorld, world);
-    if (rayCastResult.hit == false) return;
-
-    // body that got hit
-    b2BodyId targetBodyId = b2Shape_GetBody(rayCastResult.shapeId);
-
-
-    CreateChainBetween(playerPositionInBox2DWorld,rayCastResult.point, targetBodyId, world);
-
-    /*
-    b2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
-    jointDef.base = def;
-    jointDef.enableSpring = true;
-    jointDef.enableLimit = true;
-    jointDef.hertz = 0.2f;
-    //jointDef.dampingRatio = 1.0f;
-
-    jointDef.minLength = 0;
-    jointDef.maxLength = 10;
-
-    b2JointId myJointId = b2CreateDistanceJoint(PhysicsManager::GetInstance().GetWorld(), &jointDef);
-    */
-
-
-
+void Player::OnJump(const b2ShapeId* target) {
+    LogManager::GetInstance().Log(INFO, "Left ground");
+    m_bIsGrounded = false;
 }
 
-
-void Player::HandleMouseClick() {
-    if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONDOWN && m_bHasFiredHook == false) {
-        Vector2d mousePosition = InputManager::GetInstance().GetMousePosition();
-        ShootHook(mousePosition);
-        m_bHasFiredHook = true;
-    }
-    if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONUP) {
-        m_bHasFiredHook = false;
-    }
-}
-
-void Player::OnLandOnGround() {
+void Player::OnLandOnGround(const b2ShapeId* target) {
+    LogManager::GetInstance().Log(INFO, "HIT GROUND");
     m_bIsGrounded = true;
     m_jumpsMade = 0;
 }

@@ -4,16 +4,17 @@
 #include "imgui.h"
 #include "nodefactory.h"
 #include "../../helper/inlinehelper.h"
+#include "../logmanager/logmanager.h"
 #include "../physics/physicsmanager.h"
 #include "box2d/box2d.h"
 #include "box2d/types.h"
 
 namespace Engine {
-    RigidbodyNode::RigidbodyNode(const b2BodyType type, const float mass, const float friction) : m_bodyId(), m_bodyType(type), m_fMass(mass), m_bIsActive(false),
+    RigidbodyNode::RigidbodyNode(const b2BodyType type, const float mass, const float friction) : m_bodyId(), m_fMass(mass), m_bIsActive(false),
                                                     m_bIsSleeping(false),
                                                     m_bHasFixedRotation(false),
-                                                    m_bIsBullet(false), m_shapeId(), m_fFriction(friction),
-                                                    m_bIsStatic(true) {
+                                                    m_bIsBullet(false), m_fFriction(friction), m_collider(nullptr)
+                                                     {
         SetupNode("RigidBody", NT_RigidBodyNode);
         m_nodeInfo.push_back(
             {
@@ -83,31 +84,13 @@ namespace Engine {
                 }
             }
         );
-        m_nodeInfo.push_back(
-            {
-                "Bodytype", [](Node &n) {
-                    if (auto *s = dynamic_cast<RigidbodyNode *>(&n)) {
-                        if (ImGui::BeginCombo("", "Select bodytype")) {
-                            for (int i = 0; i < 3; i++) {
-                                bool is_selected = s->GetBodyType() == static_cast<b2BodyType>(i);
-                                if (ImGui::Selectable(bodyTypes[i], is_selected)) {
-                                    s->SetBodyType(static_cast<b2BodyType>(i));
-                                    s->SetValue("bodyType",bodyTypes[s->GetBodyType()]);
-                                }
-                            }
-                            ImGui::EndCombo();
-                        }
-                    }
-                }
-            });
         m_nodeInfo.push_back({
                 "BodyPosition", [](Node &n) {
                     if (auto *s = dynamic_cast<RigidbodyNode *>(&n)) {
                         Vector2d tmpPos = s->GetBodyPosition();
-                        int v_min = 0; int v_max = 99999;
 
                         ImGui::BeginDisabled();
-                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &tmpPos, 2, 0.5f, &v_min, &v_max);
+                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &tmpPos, 2, 0.5f, nullptr, nullptr);
                         ImGui::EndDisabled();
                     }
                 }
@@ -118,49 +101,26 @@ namespace Engine {
 
     void RigidbodyNode::Init() {
         Node::Init();
-
-        // definition
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.position = (b2Vec2){PhysicsManager::PixelsToMeter(m_parent->m_globalTransform.position.x), PhysicsManager::PixelsToMeter(m_parent->m_globalTransform.position.y)};
-        bodyDef.userData = m_parent;
-
-        // create body with definition
-        m_bodyId = b2CreateBody(PhysicsManager::GetInstance().GetWorld(), &bodyDef);
-        SetMassData(m_fMass, Vector2d(0,0), 0);
-
-
-        // create default shape
-        float width = PhysicsManager::PixelsToMeter(GetBaseSize().x > 0 ? GetBaseSize().x : 1);
-        float height = PhysicsManager::PixelsToMeter(GetBaseSize().y > 0 ? GetBaseSize().y : 1);
-        CreateBoxShape(width, height);
-
-        SetFriction(m_fFriction);
-        SetMassData(m_fMass, Vector2d(GetMassData().center.x,GetMassData().center.y), GetMassData().rotationalInertia);
-        SetDensity(m_fDensity);
-        b2Body_SetMotionLocks(m_bodyId, b2MotionLocks(m_bLinearMovementX, m_bLinearMovementY, m_bAngularRotation));
+        TrySetupWithCollider();
         SetPositionInMeters(PhysicsManager::PixelsToMeterVector(m_parent->GetGlobalPosition()));
-        SetBodyType(m_bodyType);
     }
 
     void RigidbodyNode::Process(float deltaTime) {
         Node::Process(deltaTime);
-        m_globalTransform.position = GetBodyPosition();
 
+        TrySetupWithCollider();
+
+        // set parent position
         assert(m_parent);
         auto* parent = static_cast<Node *>(b2Body_GetUserData(m_bodyId));
         if (parent != nullptr) {
-
             parent->m_globalTransform.position = GetBodyPosition();
         }
     }
 
     void RigidbodyNode::SetupParameter(IniParser *parser, const std::string &sectionId) {
         Node::SetupParameter(parser, sectionId);
-        m_bodyType = static_cast<b2BodyType>(
-                GetIndexOf(
-                        bodyTypes, parser->GetValueAsString(sectionId, "bodyType").c_str(), BODY_TYPE_COUNT
-                    )
-            );
+
         m_fFriction = parser->GetValueAsFloat(sectionId, "friction");
         m_fMass = parser->GetValueAsFloat(sectionId, "mass");
         m_fDensity = parser->GetValueAsFloat(sectionId, "density");
@@ -170,10 +130,12 @@ namespace Engine {
     }
 
 
+    // ############# GETTER ################
 
     // get position in pixels
     Vector2d RigidbodyNode::GetBodyPosition() const {
-        return PhysicsManager::MeterToPixelsVector({b2Body_GetPosition(m_bodyId).x, b2Body_GetPosition(m_bodyId).y});
+        if (m_collider == nullptr) return Vector2d{0,0};
+        return m_collider->GetBodyPositionInPixel();
     }
 
     b2Rot RigidbodyNode::GetBodyRotation() const {
@@ -189,88 +151,94 @@ namespace Engine {
     }
 
     float RigidbodyNode::GetFriction() const {
-        return b2Shape_GetFriction(m_shapeId);
-    }
-    b2BodyType RigidbodyNode::GetBodyType() const {
-        return b2Body_GetType(m_bodyId);
+        if (m_collider == nullptr) return 0.f;
+        return b2Shape_GetFriction(m_collider->GetShapeId());
     }
 
     float RigidbodyNode::GetDensity() const {
-        return b2Shape_GetDensity(m_shapeId);
+        if (m_collider == nullptr) return 0.f;
+        return b2Shape_GetDensity(m_collider->GetShapeId());
     }
 
     b2MotionLocks RigidbodyNode::GetMotionLocks() const {
         return b2Body_GetMotionLocks(m_bodyId);
     }
 
-    void RigidbodyNode::SetDensity(float density) const {
-        b2Shape_SetDensity(m_shapeId, density, true);
+    b2BodyId RigidbodyNode::GetBodyId() {
+        return m_bodyId;
     }
 
 
-    void RigidbodyNode::SetMassData(float mass, Vector2d massCenter, float rotationalInertia) const {
+    // ############# SETTER ################
+
+    void RigidbodyNode::SetDensity(float density) {
+        if (m_collider == nullptr) return;
+        m_fDensity = density;
+        b2Shape_SetDensity(m_collider->GetShapeId(), density, true);
+    }
+
+
+    void RigidbodyNode::SetMassData(float mass, Vector2d massCenter, float rotationalInertia) {
         auto newMassData = b2MassData();
+        m_fMass = mass;
         newMassData.mass = mass;
         newMassData.center = b2Vec2(massCenter.x, massCenter.y);
         newMassData.rotationalInertia = rotationalInertia;
         b2Body_SetMassData(m_bodyId, newMassData);
     }
 
-    b2BodyId RigidbodyNode::GetBodyId() {
-        return m_bodyId;
-    }
-
-    void RigidbodyNode::SetVelocity(Vector2d velocity) const {
+    void RigidbodyNode::SetHorizontalVelocity(Vector2d velocity) const {
         b2Body_SetLinearVelocity(m_bodyId, b2Vec2(velocity.x, b2Body_GetLinearVelocity(m_bodyId).y));
     }
 
-    void RigidbodyNode::SetFriction(float friction) const {
-        b2Shape_SetFriction(m_shapeId, friction);
+    void RigidbodyNode::SetVerticalVelocity(Vector2d velocity) const {
+        b2Body_SetLinearVelocity(m_bodyId, b2Vec2(b2Body_GetLinearVelocity(m_bodyId).x, velocity.y));
     }
 
-
-    void RigidbodyNode::SetBodyType(b2BodyType type) const {
-        b2Body_SetType(m_bodyId, type);
+    void RigidbodyNode::SetFriction(float friction) {
+        if (m_collider == nullptr) return;
+        m_fFriction = friction;
+        b2Shape_SetFriction(m_collider->GetShapeId(), friction);
     }
+
 
 
     void RigidbodyNode::SetPositionInMeters(Vector2d pos) const {
-        b2Body_SetTransform(m_bodyId, b2Vec2(pos.x, pos.y), b2MakeRot(0.f));
+        //SetGlobalPosition(PhysicsManager::MeterToPixelsVector(pos));
+        if (m_collider != nullptr) {
+            m_collider->SetPositionInMeters(pos);
+        }
     }
 
-
-    void RigidbodyNode::CreateBoxShape(float width, float height) {
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
-        // convert pixel dimensions to meters, fix the swapped args
-        m_bodyPolygon = b2MakeOffsetBox(width/2, height/2, b2Vec2(width/2,height/2), b2MakeRot(0));
-        m_shapeId = b2CreatePolygonShape(m_bodyId, &shapeDef, &m_bodyPolygon);
-    }
-
-
-
-    void RigidbodyNode::ToggleRotation() const {
+    void RigidbodyNode::ToggleRotation() {
         b2MotionLocks lock = b2MotionLocks();
         lock.angularZ = !b2Body_GetMotionLocks(m_bodyId).angularZ ;
         lock.linearX = b2Body_GetMotionLocks(m_bodyId).linearX ;
         lock.linearY = b2Body_GetMotionLocks(m_bodyId).linearY ;
 
+        m_bAngularRotation = !m_bAngularRotation;
+
         b2Body_SetMotionLocks(m_bodyId, lock);
     }
 
-    void RigidbodyNode::ToggleHorizontalMovementLock() const {
+    void RigidbodyNode::ToggleHorizontalMovementLock() {
         b2MotionLocks lock = b2MotionLocks();
         lock.angularZ = b2Body_GetMotionLocks(m_bodyId).angularZ ;
         lock.linearX = !b2Body_GetMotionLocks(m_bodyId).linearX ;
         lock.linearY = b2Body_GetMotionLocks(m_bodyId).linearY ;
 
+        m_bLinearMovementX = !m_bLinearMovementX;
+
         b2Body_SetMotionLocks(m_bodyId, lock);
     }
 
-    void RigidbodyNode::ToggleVerticalMovementLock() const {
+    void RigidbodyNode::ToggleVerticalMovementLock() {
         b2MotionLocks lock = b2MotionLocks();
         lock.angularZ = b2Body_GetMotionLocks(m_bodyId).angularZ ;
         lock.linearX = b2Body_GetMotionLocks(m_bodyId).linearX ;
         lock.linearY = !b2Body_GetMotionLocks(m_bodyId).linearY ;
+
+        m_bLinearMovementY = !m_bLinearMovementY;
 
         b2Body_SetMotionLocks(m_bodyId, lock);
     }
@@ -287,6 +255,31 @@ namespace Engine {
 
     void RigidbodyNode::ResetBodyVelocity() const {
         b2Body_SetLinearVelocity(m_bodyId, b2Vec2(0,0));
+    }
+
+    void RigidbodyNode::TrySetupWithCollider() {
+
+        if (m_collider == nullptr) {
+            m_collider = dynamic_cast<ColliderNode *>(GetChild("Collider"));
+
+            if (m_collider != nullptr) {
+                // create body with definition
+                m_bodyId = m_collider->GetBodyId();
+                b2Body_SetUserData(m_bodyId, m_parent);
+            }
+            else {
+                // definition
+                b2BodyDef bodyDef = b2DefaultBodyDef();
+                m_bodyId = b2CreateBody(PhysicsManager::GetInstance().GetWorld(), &bodyDef);
+                LogManager::GetInstance().Log(WARNING, "No collider attached to rigid body");
+                return;
+            }
+        }
+
+        SetFriction(m_fFriction);
+        SetDensity(m_fDensity);
+        SetMassData(m_fMass, Vector2d(GetMassData().center.x,GetMassData().center.y), GetMassData().rotationalInertia);
+        b2Body_SetMotionLocks(m_bodyId, b2MotionLocks(m_bLinearMovementX, m_bLinearMovementY, m_bAngularRotation));
     }
 }
 

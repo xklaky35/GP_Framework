@@ -19,7 +19,7 @@ void Bullet::Init() {
     m_globalTransform.SetWidth(10);
     m_globalTransform.position = m_pos + m_dir;
 
-    m_colliderNode = new ColliderNode(ft_CIRCLE);
+    m_colliderNode = new ColliderNode();
     m_colliderNode->m_globalTransform.SetHeight(m_globalTransform.GetHeight());
     m_colliderNode->m_globalTransform.SetWidth(m_globalTransform.GetHeight());
 

@@ -39,6 +39,7 @@ namespace Engine {
 
         // getter
         std::string GetUId() const;
+        std::string GetParentUId() const;
         bool IsVisible() const;
         Vector2d GetLocalPos() const;
         Vector2d GetBaseSize() const;
@@ -61,6 +62,9 @@ namespace Engine {
         void SetValue(const std::string &key, bool value);
         void SetValue(const std::string &key, float value);
         void SetValue(const std::string &key, const char *value);
+
+        IniParser* GetNextParentIniParser();
+
         void SetValue(const std::string &key, std::string &value);
 
         // misc
@@ -70,9 +74,9 @@ namespace Engine {
         Node *CheckForRigidbodyNode() const;
         void WriteGenericProperties();
 
-
     public:
         std::string m_UId;
+        std::string m_parentUId;
         std::vector<NodeInfo> m_nodeInfo;
 
         int m_Id; // id for ImGui::PushID(m_Id);

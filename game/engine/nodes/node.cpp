@@ -41,6 +41,14 @@ namespace  Engine {
                 }
             },
             {
+                "", [](const Node &n) {
+                    ImGui::Separator();
+                    ImGui::Text("ParentUId");
+                    ImGui::Text(n.GetParentUId().c_str());
+                    ImGui::Separator();
+                }
+            },
+            {
                 "Name", [](Node &n) {
                     if (ImGui::InputText("##Editor", &n.m_name)) {
                         // only works by including "misc/cpp/imgui_stdlib.cpp"
@@ -145,6 +153,16 @@ namespace  Engine {
     }
 
     void Node::Init() {
+        // if a parent exists and he does not have a iniparser, this means this node is a nested node.
+        // only nested nodes need a parent UID
+        if (m_parent != nullptr && m_parent->m_iniParser == nullptr) {
+
+            m_parentUId = m_parent->GetUId();
+            auto* iniParserToWrite = GetNextParentIniParser();
+            if (iniParserToWrite != nullptr) {
+                iniParserToWrite->SetValue(m_UId, "parentUId", m_parentUId);
+            }
+        }
     }
 
     void Node::Process(const float deltaTime) {
@@ -238,6 +256,7 @@ namespace  Engine {
 
     void Node::SetupParameter(IniParser* parser, const std::string& sectionId) {
         m_UId = sectionId;
+        m_parentUId = parser->GetValueAsString(sectionId, "parentUId");
         m_globalTransformationFlag = static_cast<InheritanceFlag>(
             GetIndexOf(
                 InheritanceFlagStrings, parser->GetValueAsString(sectionId, "inheritanceFlag").c_str(), INHERITANCE_FLAG_STRINGS_COUNT
@@ -279,7 +298,6 @@ namespace  Engine {
     }
 
 
-
     void Node::SetLocalPosition(const Vector2d pos) {
         m_transform.position = pos;
     }
@@ -316,9 +334,9 @@ namespace  Engine {
     void Node::AddChild(Node& node) {
         node.m_Id = ++m_Id;
         node.SetParent(this);
+        node.Init();
         m_childrenToAdd.push_back(&node);
         WriteGenericProperties();
-        node.Init();
     }
 
     void Node::AddChildren(const std::vector<Node *>& nodes) {
@@ -379,24 +397,12 @@ namespace  Engine {
         return m_iniParser->m_data;
     }
 
-    // returns wether a specified child node is a custom node or not
-    bool Node::IsChildCustomNodeWithId(const std::string& section) const {
-        assert(m_iniParser);
-        return m_iniParser->GetValueAsString(section, "nodeType") == NodeTypeStrings[NT_Custom];
-    }
-
-    std::string Node::GetNameOfChildWithId(const std::string& section) const {
-        assert(m_iniParser);
-        return m_iniParser->GetValueAsString(section, "typeName");
-    }
-
-    std::string Node::GetTypeOfChildWithId(const std::string& sectionId) const {
-        return m_iniParser->GetValueAsString(sectionId, "nodeType");
-    }
-
-
     std::string Node::GetUId() const {
         return m_UId;
+    }
+
+    std::string Node::GetParentUId() const {
+        return m_parentUId;
     }
 
     IniParser * Node::GetIniParser() const{
@@ -406,48 +412,82 @@ namespace  Engine {
     // ################### Setter ######################
 
     void Node::SetValue(const std::string &key, std::string& value) {
-        if (m_parent != nullptr && m_parent->m_iniParser != nullptr) {
-            m_parent->m_iniParser->SetValue(m_UId, key, value);
+
+        if (m_parent == nullptr) return;
+
+        auto *iniParserToWrite = GetNextParentIniParser();
+        if (iniParserToWrite != nullptr) {
+            iniParserToWrite->SetValue(m_UId, key, value);
         }
         WriteGenericProperties();
     }
 
     void Node::SetValue(const std::string &key, const char* value) {
-        if (m_parent != nullptr && m_parent->m_iniParser != nullptr) {
-            m_parent->m_iniParser->SetValue(m_UId, key, value);
+
+        if (m_parent == nullptr) return;
+
+        auto *iniParserToWrite = GetNextParentIniParser();
+        if (iniParserToWrite != nullptr) {
+            iniParserToWrite->SetValue(m_UId, key, value);
         }
         WriteGenericProperties();
     }
 
+
     void Node::SetValue(const std::string &key, const int value) {
-        if (m_parent != nullptr && m_parent->m_iniParser != nullptr) {
-            m_parent->m_iniParser->SetValue(m_UId, key, value);
+
+        if (m_parent == nullptr) return;
+
+        auto *iniParserToWrite = GetNextParentIniParser();
+        if (iniParserToWrite != nullptr) {
+            iniParserToWrite->SetValue(m_UId, key, value);
         }
         WriteGenericProperties();
     }
 
     void Node::SetValue(const std::string &key, const float value) {
-        if (m_parent != nullptr && m_parent->m_iniParser != nullptr) {
-            m_parent->m_iniParser->SetValue(m_UId, key, value);
+        if (m_parent == nullptr) return;
+
+        auto *iniParserToWrite = GetNextParentIniParser();
+        if (iniParserToWrite != nullptr) {
+            iniParserToWrite->SetValue(m_UId, key, value);
         }
         WriteGenericProperties();
     }
 
     void Node::SetValue(const std::string &key, const bool value) {
-        if (m_parent != nullptr && m_parent->m_iniParser != nullptr) {
-            m_parent->m_iniParser->SetValue(m_UId, key, value);
+        if (m_parent == nullptr) return;
+
+        auto *iniParserToWrite = GetNextParentIniParser();
+        if (iniParserToWrite != nullptr) {
+            iniParserToWrite->SetValue(m_UId, key, value);
         }
         WriteGenericProperties();
     }
 
     void Node::WriteGenericProperties() {
-        if (m_parent != nullptr && m_parent->m_iniParser != nullptr) {
-            m_parent->m_iniParser->SetValue(m_UId, "nodeType", NodeTypeStrings[m_nodeType]);
-            m_parent->m_iniParser->SetValue(m_UId, "typeName", m_typeName);
-            m_parent->m_iniParser->SetValue(m_UId, "name", m_name);
+        auto* iniParserToWrite = GetNextParentIniParser();
+
+        if (iniParserToWrite == nullptr) return;
+
+        iniParserToWrite->SetValue(m_UId, "nodeType", NodeTypeStrings[m_nodeType]);
+        iniParserToWrite->SetValue(m_UId, "typeName", m_typeName);
+        iniParserToWrite->SetValue(m_UId, "name", m_name);
+    }
+
+    IniParser * Node::GetNextParentIniParser() {
+        if (m_parent == nullptr) {
+            return nullptr;
         }
 
+        // check for parent ini parser
+        if (m_parent->m_iniParser != nullptr) {
+            return m_parent->m_iniParser;
+        }
+
+        return m_parent->GetNextParentIniParser();
     }
+
 
     Vector2d Node::GetLocalPos() const {
         return m_transform.position;

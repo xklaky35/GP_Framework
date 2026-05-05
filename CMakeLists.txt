@@ -90,14 +90,6 @@ set(ENGINE_SOURCES
         ${ENGINE_NODES}/spritenode.h
         ${ENGINE_NODES}/collidernode.cpp
         ${ENGINE_NODES}/collidernode.h
-        ${ENGINE_NODES}/forms/form.h
-        ${ENGINE_NODES}/collisionmanager.cpp
-        ${ENGINE_NODES}/collisionmanager.h
-        ${ENGINE_NODES}/forms/circle.cpp
-        ${ENGINE_NODES}/forms/circle.h
-        ${ENGINE_NODES}/forms/rectangle.cpp
-        ${ENGINE_NODES}/forms/rectangle.h
-        ${ENGINE_NODES}/forms/form.cpp
         ${ENGINE_NODES}/animatedspritenode.cpp
         ${ENGINE_NODES}/animatedspritenode.h
         ${ENGINE_NODES}/ui/control.cpp

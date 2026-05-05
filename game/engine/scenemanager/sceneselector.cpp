@@ -52,15 +52,15 @@ namespace Engine {
         //ImGui::SameLine();
         ImGui::BeginGroup(); // Lock X position
         if (sceneManager.m_visibleNodeDebug) {
-            ImGui::Text("%s", sceneManager.m_visibleNodeDebug->m_name.c_str());
-            ImGui::TextDisabled("UID: 0x%08X", sceneManager.m_visibleNodeDebug->m_Id);
+            ImGui::Text("%s", sceneManager.GetCurrentVisibleNode().m_name.c_str());
+            ImGui::TextDisabled("UID: 0x%08X", sceneManager.GetCurrentVisibleNode().m_Id);
             ImGui::Separator();
             if (ImGui::BeginTable("##properties", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY)) {
                 // Push object ID after we entered the table, so table is shared for all objects
                 ImGui::PushID((int) sceneManager.m_visibleNodeDebug->m_Id);
                 ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 2.0f); // Default twice larger
-                for (const NodeInfo &field_desc: sceneManager.m_visibleNodeDebug->m_nodeInfo) {
+                for (const NodeInfo &field_desc: sceneManager.GetCurrentVisibleNode().m_nodeInfo) {
                     /*
                     if (sceneManager.m_visibleNodeDebug->m_iniParser == nullptr) {
                         continue;
@@ -73,7 +73,7 @@ namespace Engine {
                     ImGui::TextUnformatted(field_desc.Name);
                     ImGui::TableNextColumn();
 
-                    field_desc.Draw(*sceneManager.m_visibleNodeDebug);
+                    field_desc.Draw(sceneManager.GetCurrentVisibleNode());
                     ImGui::PopID();
                 }
                 ImGui::PopID();

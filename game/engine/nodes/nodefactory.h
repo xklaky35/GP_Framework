@@ -40,8 +40,14 @@ namespace Engine {
         static NodeFactory &GetInstance();
         static void DestroyInstance();
         void InitWithConfiguration(Node*, const std::string&);
+
+        void CheckForNestedNodes(Node& newParentNode, NodeConfiguration& config, const Node& rootNode);
+
         void ConfigureIniNodesOf(Node* n);
         void ConfigureBaseNodesOf(Node *n);
+
+        Node *GetBaseNode(const std::unordered_map<std::string, std::string>& childData);
+
         Node *CreateBaseNode(NodeType nodeType);
         Node *CreateCustomNode(const std::string &name, const std::string &path);
 
