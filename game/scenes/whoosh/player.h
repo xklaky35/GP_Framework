@@ -22,14 +22,19 @@ public:
 
     void OnJump(const b2ShapeId *target);
 
-    void ShootHook(Vector2d pos);
+    bool ShootHookSwing(Vector2d pos);
+
+    bool ShootHookPull(Vector2d vector2d) const;
 
     void HandleHookControls();
 
     void HandleHookVelocity();
 
     void Process(float deltaTime) override;
+    void HandleMovementCheat(float deltaTime);
+
     void HandleMovement(float deltaTime);
+
     void OnLandOnGround(const b2ShapeId* target);
 
     void ChangeAnimation(AnimatedSpriteNode *animation);
@@ -49,6 +54,12 @@ public:
     float m_fGroundMaxSpeed;
     float m_fJumpForce;
 
+
+    // air
+    float m_fMaxSwingSpeed;
+    float m_fSwingAcceleration;
+    float m_fSwingDeceleration;
+
     int m_jumpsMade;
     int m_maxJumps;
 
@@ -58,6 +69,8 @@ public:
 
     bool m_bHasFiredHook;
     b2JointId m_b2Hook;
+    bool m_bIsShooting;
+    bool m_bCheatsEnabled;
 
 private:
 

@@ -102,7 +102,7 @@ namespace Engine {
     void RigidbodyNode::Init() {
         Node::Init();
         TrySetupWithCollider();
-        SetPositionInMeters(PhysicsManager::PixelsToMeterVector(m_parent->GetGlobalPosition()));
+        m_globalTransform.position = m_parent->m_globalTransform.position;
     }
 
     void RigidbodyNode::Process(float deltaTime) {
@@ -143,7 +143,10 @@ namespace Engine {
     }
 
     Vector2d RigidbodyNode::GetBodyVelocity() const {
-        return {b2Body_GetLinearVelocity(m_bodyId).x, b2Body_GetLinearVelocity(m_bodyId).y};
+        if (m_collider != nullptr) {
+            return m_collider->GetCurrentVelocity();
+        }
+        return Vector2d(0,0);
     }
 
     b2MassData RigidbodyNode::GetMassData() const {
@@ -203,7 +206,7 @@ namespace Engine {
 
 
 
-    void RigidbodyNode::SetPositionInMeters(Vector2d pos) const {
+    void RigidbodyNode::SetPositionInMeters(Vector2d pos) {
         //SetGlobalPosition(PhysicsManager::MeterToPixelsVector(pos));
         if (m_collider != nullptr) {
             m_collider->SetPositionInMeters(pos);

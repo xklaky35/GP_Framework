@@ -1,7 +1,9 @@
 #include "player.h"
 
 #include "imgui.h"
+#include "../../../lib/BOX2D/src/body.h"
 #include "../../../lib/BOX2D/src/sensor.h"
+#include "../../config/config.h"
 #include "../../engine/input/input.h"
 #include "../../engine/logmanager/logmanager.h"
 #include "../../engine/nodes/nodefactory.h"
@@ -14,6 +16,8 @@ Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false
                    m_fGroundAcceleration(0), m_fGroundDeceleration(0), m_fGroundMinSpeed(0),
                    m_fGroundMaxSpeed(0), m_jumpsMade(0), m_maxJumps(1), m_fJumpForce(0), m_currentAnimation(nullptr), m_groundSensor(nullptr) {
     m_bHasFiredHook = false;
+    m_bIsShooting = false;
+    m_bCheatsEnabled = false;
 
 
     SetupNode("Player", NT_Custom);
@@ -88,6 +92,14 @@ Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false
         }
     );
     m_nodeInfo.push_back({
+            "MovementCheats", [](Node &n) {
+                if (auto *s = dynamic_cast<Player *>(&n)) {
+                    ImGui::Checkbox("##Editor", &s->m_bCheatsEnabled);
+                }
+            }
+        }
+    );
+    m_nodeInfo.push_back({
             "Velocity X - Y", [](Node &n) {
                 if (auto *s = dynamic_cast<Player *>(&n)) {
                     ImGui::SetNextItemWidth(-FLT_MIN);
@@ -135,11 +147,42 @@ void Player::Process(float deltaTime) {
     if (m_rigidBody == nullptr)
         return;
 
-    HandleMovement(deltaTime);
-    HandleHookControls();
-    HandleHookVelocity();
-    HandleAnimations();
-    HandleFlip();
+    if (m_bCheatsEnabled) {
+        HandleMovementCheat(deltaTime);
+    }
+    else {
+        HandleMovement(deltaTime);
+        HandleHookControls();
+        HandleHookVelocity();
+        HandleAnimations();
+        HandleFlip();
+    }
+
+}
+
+void Player::HandleMovementCheat(float deltaTime) {
+
+    auto pos = m_rigidBody->GetBodyPosition();
+    float flySpeed = 500 * deltaTime;
+    if (InputManager::GetInstance().GetButtonState(SDLK_d) == BS_HELD) {
+        pos.x += flySpeed;
+        m_rigidBody->SetPositionInMeters(PhysicsManager::PixelsToMeterVector(pos));
+    }
+
+    if (InputManager::GetInstance().GetButtonState(SDLK_a) == BS_HELD) {
+        pos.x -= flySpeed;
+        m_rigidBody->SetPositionInMeters(PhysicsManager::PixelsToMeterVector(pos));
+    }
+
+    if (InputManager::GetInstance().GetButtonState(SDLK_w) == BS_HELD) {
+        pos.y -= flySpeed;
+        m_rigidBody->SetPositionInMeters(PhysicsManager::PixelsToMeterVector(pos));
+    }
+
+    if (InputManager::GetInstance().GetButtonState(SDLK_s) == BS_HELD) {
+        pos.y += flySpeed;
+        m_rigidBody->SetPositionInMeters(PhysicsManager::PixelsToMeterVector(pos));
+    }
 }
 
 void Player::HandleMovement(float deltaTime) {
@@ -214,67 +257,150 @@ void Player::HandleFlip() {
 
 
 void Player::HandleHookControls() {
-    if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONDOWN && m_bHasFiredHook == false) {
-        Vector2d mousePosition = InputManager::GetInstance().GetMousePosition();
-        ShootHook(mousePosition);
-        m_bHasFiredHook = true;
+    if (!m_bHasFiredHook) {
+        Vector2d mousePosition = InputManager::GetInstance().GetMousePosition()  + m_globalTransform.position;
+
+        // temp solution!!!!!!!!!!!!! (assumes the player is always in the center of the camera)
+        // Problem: the mouse click position is not transformed when the ortho matrix is transformed that sets the offset for the camera
+        auto mouseOffset = Vector2d(Config::GetInstance().windowsWidth/2, Config::GetInstance().windowsHeight/2);
+        mousePosition -= mouseOffset;
+
+        // check button pressed
+        if (InputManager::GetInstance().GetCurrentMouseEvent().button == 1) {
+            if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONDOWN && m_bIsShooting == false) {
+                m_bIsShooting = true;
+
+                if (!ShootHookSwing(mousePosition)) {
+                    m_bIsShooting = false;
+                    return;
+                }
+            }
+            if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONUP && m_bIsShooting == true) {
+                m_bIsShooting = false;
+                m_bHasFiredHook = true;
+            }
+        }
+        if (InputManager::GetInstance().GetCurrentMouseEvent().button == 3 && InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONUP) {
+            ShootHookPull(mousePosition);
+        }
+
     }
-    if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONUP) {
-        m_bHasFiredHook = false;
+    else {
+        if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONDOWN && m_bIsShooting == false) {
+            m_bIsShooting = true;
+            if (b2Joint_IsValid(m_b2Hook)) {
+                b2DestroyJoint(m_b2Hook, false);
+            }
+        }
+        if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONUP && m_bIsShooting == true) {
+            m_bIsShooting = false;
+            m_bHasFiredHook = false;
+        }
     }
 }
 
 void Player::HandleHookVelocity() {
+    if (!m_bHasFiredHook) return;
+    if (!b2Joint_IsValid(m_b2Hook)) return;
 
+    auto currentVelocity = m_rigidBody->GetBodyVelocity();
+
+    // accelerate while falling (y velocity > 0) and direction is pressed
+    if (m_rigidBody->GetBodyVelocity().y > 0) {
+        if (m_rigidBody->GetBodyVelocity().x > 0 && InputManager::GetInstance().GetButtonState(SDLK_d) == BS_HELD) {
+            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x + 0.01, currentVelocity.y ));
+
+        }
+        else if (m_rigidBody->GetBodyVelocity().x > 0) {
+            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * 0.999, currentVelocity.y ));
+
+        }
+        if (m_rigidBody->GetBodyVelocity().x < 0 && InputManager::GetInstance().GetButtonState(SDLK_a) == BS_HELD) {
+            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x - 0.01, currentVelocity.y ));
+        }
+        else if (m_rigidBody->GetBodyVelocity().x < 0) {
+            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * 0.999, currentVelocity.y ));
+        }
+    }
+
+
+    // decelerate by factor while rising (y velocity < 0) and nothing is pressed
 
 
 }
 
 
-void Player::ShootHook(Vector2d posInPixel) {
+bool Player::ShootHookSwing(Vector2d posInPixel) {
 
     b2WorldId world = PhysicsManager::GetInstance().GetWorld();
-    Vector2d playerPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(GetGlobalPosition());
+    Vector2d playerPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(GetGlobalPosition() + 80);
     Vector2d targetPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(posInPixel);
 
-    b2RayResult rayCastResult = CastRayFromTo(playerPositionInBox2DWorld, targetPositionInBox2DWorld, world);
-    if (rayCastResult.hit == false) return;
+    b2RayResult rayResult = CastRayFromTo(playerPositionInBox2DWorld, targetPositionInBox2DWorld, world);
+    if (!rayResult.hit) return false;
 
     // body that got hit
-    b2BodyId targetBodyId = b2Shape_GetBody(rayCastResult.shapeId);
+    b2BodyId targetBodyId = b2Shape_GetBody(rayResult.shapeId);
+
+    CreateChainBetween(playerPositionInBox2DWorld,rayResult.point, targetBodyId, world);
+    return true;
+}
+
+bool Player::ShootHookPull(Vector2d posInPixel) const {
+    b2WorldId world = PhysicsManager::GetInstance().GetWorld();
+    Vector2d playerPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(GetGlobalPosition() + 80);
+    Vector2d targetPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(posInPixel);
+
+    b2RayResult rayResult = CastRayFromTo(playerPositionInBox2DWorld, targetPositionInBox2DWorld, world);
+    if (!rayResult.hit) return false;
 
 
-    CreateChainBetween(playerPositionInBox2DWorld,rayCastResult.point, targetBodyId, world);
+    m_rigidBody->ResetBodyVelocity();
+    m_rigidBody->ApplyImpluseToCenter((playerPositionInBox2DWorld - targetPositionInBox2DWorld) * 5);
+    return true;
+}
 
+
+float RayCastCallback(b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, void *context) {
+
+    auto attachedBody = b2Shape_GetBody(shapeId);
+    auto rayResult = static_cast<b2RayResult*>(context);
+    if (rayResult == nullptr) return -1;
+
+    if (b2Body_GetType(attachedBody) != b2_staticBody) {
+        rayResult->hit = false;
+        return -1;
+    }
+    if (b2Shape_IsSensor(shapeId) == true) {
+        rayResult->hit = false;
+        return -1;
+    }
+
+    rayResult->shapeId = shapeId;
+    rayResult->point = point;
+    rayResult->fraction = fraction;
+    rayResult->normal = normal;
+    rayResult->hit = true;
+    return 0;
 }
 
 b2RayResult Player::CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId world) const {
 
-    Vector2d shootingDirection = target - origin;
-
-    float angle = atan2(shootingDirection.y, shootingDirection.x) * (180/std::numbers::pi);
-
     // Calculate ray points
-    constexpr float rayLength = 100;
-    const b2Vec2 b2origin = b2Vec2(origin.x, origin.y);
-    const b2Vec2 translation = b2Vec2(
-        rayLength * sin(angle),
-        rayLength * cos(angle)
-    );
+    const b2Vec2 translation = origin - target;
 
     // Set up query filter
     const b2QueryFilter filter = b2DefaultQueryFilter();
 
+
+    auto* rayResult = new b2RayResult();
+
     // Cast ray and get closest hit
-    const b2RayResult result = b2World_CastRayClosest(world, b2origin, translation, filter);
+    b2World_CastRay(world, origin, translation, filter, RayCastCallback, rayResult);
 
-    LogManager::GetInstance().Log(INFO, "Mouse position: [ %f : %f ]", target.x, target.y);
-    LogManager::GetInstance().Log(INFO, "Player pos: [ %f : %f ]", m_globalTransform.position.x, m_globalTransform.position.y);
-    LogManager::GetInstance().Log(INFO, "Target vector: [ %f : %f ]", shootingDirection.x, shootingDirection.y);
-    LogManager::GetInstance().Log(INFO, "%f", angle );
-
-    return result;
+    return *rayResult;
 }
+
 
 void Player::CreateChainBetween(b2Vec2 origin, b2Vec2 target, b2BodyId targetBody, b2WorldId world) {
 
@@ -294,27 +420,26 @@ void Player::CreateChainBetween(b2Vec2 origin, b2Vec2 target, b2BodyId targetBod
     playerJointDef.bodyIdB = targetBody;
     playerJointDef.localFrameA = localTransformPlayer;
     playerJointDef.localFrameB = localTransformTarget;
+    playerJointDef.collideConnected = true;
 
     b2DistanceJointDef distanceJointDef = b2DefaultDistanceJointDef();
     distanceJointDef.base = playerJointDef;
     distanceJointDef.enableSpring = true;
     distanceJointDef.enableLimit = true;
-    distanceJointDef.hertz = 0.4f;
-    distanceJointDef.dampingRatio = 20.f;
-
+    distanceJointDef.hertz = 0.3f;
+    distanceJointDef.dampingRatio = 5.f;
     distanceJointDef.minLength = 0;
     distanceJointDef.maxLength = 10;
 
-    m_b2Hook = b2CreateDistanceJoint(PhysicsManager::GetInstance().GetWorld(), &distanceJointDef);
+    auto distanceJoint = b2CreateDistanceJoint(PhysicsManager::GetInstance().GetWorld(), &distanceJointDef);
+    m_b2Hook = distanceJoint;
 }
 
 void Player::OnJump(const b2ShapeId* target) {
-    LogManager::GetInstance().Log(INFO, "Left ground");
     m_bIsGrounded = false;
 }
 
 void Player::OnLandOnGround(const b2ShapeId* target) {
-    LogManager::GetInstance().Log(INFO, "HIT GROUND");
     m_bIsGrounded = true;
     m_jumpsMade = 0;
 }

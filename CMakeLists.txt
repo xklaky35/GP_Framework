@@ -127,14 +127,20 @@ set(IMGUI_SOURCES
         ${IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
         game/engine/scenemanager/sceneselector.cpp
         game/engine/scenemanager/sceneselector.h
-        game/scenes/whoosh/surface.cpp
-        game/scenes/whoosh/surface.h
         game/engine/physics/debugdraw.cpp
         game/engine/physics/debugdraw.h
         game/engine/nodes/cameranode.cpp
         game/engine/nodes/cameranode.h
         game/engine/structs/vector3d.cpp
         game/engine/structs/vector3d.h
+        game/engine/physics/DebugFormsCreator.cpp
+        game/engine/physics/DebugFormsCreator.h
+        game/scenes/whoosh/Level1/Level1.cpp
+        game/scenes/whoosh/Level1/Level1.h
+        game/scenes/whoosh/Level1/ColliderLayerLevel1.cpp
+        game/scenes/whoosh/Level1/ColliderLayerLevel1.h
+        game/scenes/whoosh/Level1/SpriteLayerLevel1.cpp
+        game/scenes/whoosh/Level1/SpriteLayerLevel1.h
 
 
 )

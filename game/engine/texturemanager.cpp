@@ -29,7 +29,6 @@ namespace Engine {
             pTexture = new Texture();
             if (!pTexture->Initialise(pcFilename)) {
                 LogManager::GetInstance().Log(ERROR, "Texture failed to initialise!");
-                assert(0);
             }
             m_pLoadedTextures[pcFilename] = pTexture;
         } else {

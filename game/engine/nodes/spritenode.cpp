@@ -7,7 +7,7 @@
 #include "nodefactory.h"
 #include "../../helper/inlinehelper.h"
 #include "misc/cpp/imgui_stdlib.h"
-
+//../assets/Sprites/Shinobi/rect.png
 namespace Engine {
     /**
      * This node uses the sprites dimensions by default.

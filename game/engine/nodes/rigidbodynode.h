@@ -41,7 +41,7 @@ namespace Engine {
         void SetFriction(float friction);
         void ToggleVerticalMovementLock();
         void ToggleHorizontalMovementLock();
-        void SetPositionInMeters(Vector2d pos) const;
+        void SetPositionInMeters(Vector2d pos);
         void SetVerticalVelocity(Vector2d velocity) const;
         void SetHorizontalVelocity(Vector2d velocity) const;
         void SetMassData(float mass, Vector2d massCenter, float rotationalInertia);

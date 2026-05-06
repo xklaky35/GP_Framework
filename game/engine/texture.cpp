@@ -52,12 +52,10 @@ namespace Engine {
     }
 
     int Texture::GetWidth() const {
-        assert(m_iWidth);
         return (m_iWidth);
     }
 
     int Texture::GetHeight() const {
-        assert(m_iHeight);
         return (m_iHeight);
     }
     void Texture::LoadTextTexture(const char *text, const char *fontname, int pointsize, SDL_Color color) {

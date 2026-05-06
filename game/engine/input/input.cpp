@@ -64,7 +64,7 @@ namespace Engine {
 
 
     Vector2d InputManager::GetMousePosition() const {
-        return m_mousePosition;
+        return m_mousePosition ;
     }
 
     SDL_MouseButtonEvent InputManager::GetCurrentMouseEvent() const {

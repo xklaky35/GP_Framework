@@ -164,11 +164,24 @@ namespace Engine {
                 }
             });
         m_nodeInfo.push_back({
-                "Velocity X - Y", [](Node &n) {
+                "Position X - Y", [](Node &n) {
                     if (auto *s = dynamic_cast<ColliderNode *>(&n)) {
                         ImGui::SetNextItemWidth(-FLT_MIN);
 
                         auto pos = s->GetBodyPositionInPixel();
+                        ImGui::BeginDisabled();
+                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &pos, 2, 0.5f, nullptr);
+                        ImGui::EndDisabled();
+                    }
+                }
+            }
+        );
+        m_nodeInfo.push_back({
+                "Velocity X - Y", [](Node &n) {
+                    if (auto *s = dynamic_cast<ColliderNode *>(&n)) {
+                        ImGui::SetNextItemWidth(-FLT_MIN);
+
+                        auto pos = s->GetCurrentVelocity();
                         ImGui::BeginDisabled();
                         ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &pos, 2, 0.5f, nullptr);
                         ImGui::EndDisabled();
@@ -191,6 +204,8 @@ namespace Engine {
 
         // creates shape
         UpdateCurrentForm();
+
+        SetPositionInMeters(PhysicsManager::PixelsToMeterVector(m_parent->GetGlobalPosition()));
 
         // set initial position
         UpdateCurrentBodyPosition();
@@ -389,6 +404,11 @@ namespace Engine {
         return PhysicsManager::MeterToPixelsVector(m_colliderOriginalPosition);
     }
 
+    Vector2d ColliderNode::GetCurrentVelocity() const {
+        auto currentVelocity = b2Body_GetLinearVelocity(m_colliderBodyId);
+        return Vector2d{currentVelocity.x, currentVelocity.y};
+    }
+
     Vector2d ColliderNode::GetBodyPositionInMeter() const {
         return m_colliderOriginalPosition;
     }
@@ -416,8 +436,8 @@ namespace Engine {
     }
 
     void ColliderNode::SetPositionInMeters(b2Vec2 pos) {
-        m_colliderOriginalPosition = Vector2d{pos.x, pos.y};
-        //b2Body_SetTransform(m_colliderBodyId, pos, b2MakeRot(0.f));
+        b2Vec2 currentOffset = PhysicsManager::PixelsToMeterVector(m_colliderOffset);
+        b2Body_SetTransform(m_colliderBodyId, pos + currentOffset , b2MakeRot(0.f));
     }
 
     void ColliderNode::SetFormType(Formtype formType) {

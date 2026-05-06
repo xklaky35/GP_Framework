@@ -123,7 +123,7 @@ namespace Engine {
             animSprite->Draw(renderer);
         }
     }
-
+//../assets/Sprites/BlueWizardSprites/MossySpritesSingle/Wall.png
     void AnimatedSpriteNode::SetupSpriteRendering(Renderer &renderer) {
         if (m_pRenderer == nullptr) {
             m_pRenderer = &renderer;

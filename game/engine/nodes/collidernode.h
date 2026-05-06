@@ -76,6 +76,9 @@ namespace Engine {
         Formtype GetCurrentFormType() const;
         b2ShapeDef GetShapeDefinition() const;
         Vector2d GetBodyPositionInPixel() const;
+
+        Vector2d GetCurrentVelocity() const;
+
         Vector2d GetBodyPositionInMeter() const;
 
         // setter
