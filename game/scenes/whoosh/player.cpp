@@ -1,6 +1,7 @@
 #include "player.h"
 
 #include "imgui.h"
+#include "levelgoal.h"
 #include "../../../lib/BOX2D/src/body.h"
 #include "../../../lib/BOX2D/src/sensor.h"
 #include "../../config/config.h"
@@ -141,10 +142,9 @@ void Player::Init() {
         m_groundSensor->OnExit.Register<Player>(&Player::OnJump, *this);
     }
 
-
     m_levelGoal = dynamic_cast<ColliderNode*>(GetChild("GoalSensor"));
     if (m_levelGoal != nullptr) {
-        m_levelGoal->OnEntry.Register<Player>(&Player::OnFinishLevel, *this);
+        m_levelGoal->OnEntry.Register<Player>(&Player::HandleCollision, *this);
     }
 
 }
@@ -448,16 +448,26 @@ void Player::OnLandOnGround(const b2ShapeId* target) {
     m_jumpsMade = 0;
 }
 
-void Player::OnFinishLevel(const b2ShapeId* collidedShapes) {
+void Player::HandleCollision(const b2ShapeId* collidedShapes) {
     if (collidedShapes == nullptr) return;
     if (!b2Shape_IsValid(collidedShapes[0])) return;
     if (!b2Shape_IsSensor(collidedShapes[0])) return;
 
-    if (b2Body_GetType(b2Shape_GetBody(collidedShapes[0])) == b2_staticBody) {
+    auto collisionData = b2Body_GetUserData(b2Shape_GetBody(collidedShapes[0]));
+    auto collisionDataNode = static_cast<ColliderNode*>(collisionData);
+
+    if (collisionDataNode != nullptr && collisionDataNode->m_name == "FinishArea") {
         SceneManager::GetInstance().SetSceneActive("MainMenu");
     };
 
+    if (collisionDataNode != nullptr && collisionDataNode->m_name == "HurtArea") {
+        Vector2d pos;
+        pos.x = m_iniParser->GetValueAsFloat(m_UId, "globalPosX");
+        pos.y = m_iniParser->GetValueAsFloat(m_UId, "globalPosY");
+        SetGlobalPosition(pos);
+    };
 }
+
 
 void Player::ChangeAnimation(AnimatedSpriteNode* animation) {
     if (animation == nullptr) return;

@@ -10,6 +10,7 @@ class Player : public Node {
 public:
     Player();
 
+
     void Init() override;
     void Process(float deltaTime) override;
     void SetupParameter(IniParser *parser, const std::string &section) override;
@@ -25,7 +26,7 @@ private:
 
     void OnJump(const b2ShapeId *target);
     void OnLandOnGround(const b2ShapeId* target);
-    void OnFinishLevel(const b2ShapeId*);
+    void HandleCollision(const b2ShapeId*);
 
     void ChangeAnimation(AnimatedSpriteNode *animation);
     bool ShootHookSwing(Vector2d pos);

@@ -16,6 +16,7 @@ namespace Engine {
         m_selectedFormtype = FT_RECTANGLE;
         m_currentFormtype = FT_UNDEFINED;
         m_bIsSensor = true;
+        m_bodyType = b2_staticBody;
 
 
         SetupNode("ColliderNode", NT_ColliderNode);
@@ -207,8 +208,10 @@ namespace Engine {
         UpdateCurrentForm();
 
         SetPositionInMeters(PhysicsManager::PixelsToMeterVector(m_parent->GetGlobalPosition()));
+
         // set initial position
         UpdateCurrentBodyPosition();
+        SetData(this);
 
     }
 
@@ -222,6 +225,7 @@ namespace Engine {
         }
 
         UpdateCurrentForm();
+
         UpdateCurrentBodyPosition();
         CheckForCollision();
         if (!b2Shape_IsValid(m_colliderShapeId)) {
@@ -470,6 +474,25 @@ namespace Engine {
             CreateShapeRectangle(width, height);
         }
     }
+
+     Node* ColliderNode::GetUserData() {
+        if (!b2Body_IsValid(m_colliderBodyId)) return nullptr;
+
+        auto userData = b2Body_GetUserData(m_colliderBodyId);
+        auto userDataNode = static_cast<Node*>(userData);
+
+        if (userDataNode != nullptr) {
+            return userDataNode;
+        }
+        return nullptr;
+    }
+
+    void ColliderNode::SetData(Node * data) {
+        if (b2Body_IsValid(m_colliderBodyId)) {
+            b2Body_SetUserData(m_colliderBodyId, data);
+        }
+    }
+
     void ColliderNode::SetCircleShape(b2Circle newCircle) {
         if (m_currentFormtype == FT_CIRCLE) {
             CreateShapeCircle(newCircle.radius, newCircle.center);

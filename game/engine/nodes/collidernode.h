@@ -92,6 +92,10 @@ namespace Engine {
         void SetCapsuleShape(b2Capsule newCapsule);
         void SetRectShape(float width, float height);
 
+        Node *GetUserData();
+
+        void SetData(Node*);
+
 
     private:
         void UpdateCurrentForm();
