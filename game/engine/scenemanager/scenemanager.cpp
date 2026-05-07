@@ -12,6 +12,7 @@ namespace Engine {
     SceneManager* SceneManager::m_pInstance = nullptr;
     SceneManager::SceneManager() : m_visibleNodeDebug(nullptr) {
         onSceneSwitch = Event<SceneManager>();
+        m_bSceneSwitchOrdered = false;
     }
     SceneManager::~SceneManager() {
         for (auto pair : m_loadedScenes) {
@@ -47,32 +48,57 @@ namespace Engine {
     bool SceneManager::Initialise() {
         LoadAllScenes();
         SetSceneActive("Splash");
+        LoadNextScene();
         return true;
     }
 
+    void SceneManager::CheckForSceneSwitch() {
+        if (m_bSceneSwitchOrdered == false) return;
+        LoadNextScene();
+    }
+
+    void SceneManager::Draw(Renderer &renderer) {
+        m_loadedScenes[m_currentScene]->Draw(renderer);
+        CheckForSceneSwitch();
+    }
+    void SceneManager::Process(float deltaTime) {
+        m_loadedScenes[m_currentScene]->Process(deltaTime);
+        CheckForSceneSwitch();
+
+    }
+    void SceneManager::SystemProcess() {
+        m_loadedScenes[m_currentScene]->SystemProcess();
+        CheckForSceneSwitch();
+    }
+
+
     void SceneManager::SetSceneActive(std::string sceneName) {
+        m_nextSceneName = sceneName;
+        m_bSceneSwitchOrdered = true;
+    }
+
+    void SceneManager::LoadNextScene() {
         ResetWorldState();
-        m_currentScene = sceneName;
+        m_currentScene = m_nextSceneName;
         assert(m_loadedScenes[m_currentScene]);
         m_visibleNodeDebug = GetCurrentScene();
         m_loadedScenes[m_currentScene]->Init();
-    }
-
-    Node& SceneManager::GetCurrentVisibleNode() {
-        return *m_visibleNodeDebug;
+        m_bSceneSwitchOrdered = false;
     }
 
     void SceneManager::ReloadCurrentScene() {
         SetSceneActive(m_currentScene);
     }
 
+    Node& SceneManager::GetCurrentVisibleNode() {
+        return *m_visibleNodeDebug;
+    }
 
 
 
     void SceneManager::RegisterScene(const std::string& sceneName, Node * scene) {
         m_loadedScenes[sceneName] = scene;
     }
-
 
     void SceneManager::ResetWorldState() {
         DeleteScenes();

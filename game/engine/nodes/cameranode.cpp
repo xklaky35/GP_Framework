@@ -7,7 +7,14 @@
 
 namespace Engine {
     CameraNode::CameraNode() {
+        m_renderer = nullptr;
         SetupNode("CameraNode", NT_CameraNode);
+    }
+
+    CameraNode::~CameraNode() {
+        if (m_renderer != nullptr) {
+            m_renderer->SetOrthoOffset(0,0);
+        }
     }
 
     void CameraNode::Init() {
@@ -21,7 +28,11 @@ namespace Engine {
     void CameraNode::Draw(Renderer &renderer) {
         Node::Draw(renderer);
 
-        renderer.SetOrthoViewport(Config::GetInstance().windowsWidth, Config::GetInstance().windowsHeight);
+        if (m_renderer == nullptr) {
+            m_renderer = &renderer;
+        }
+
+        //renderer.SetOrthoViewport(Config::GetInstance().windowsWidth, Config::GetInstance().windowsHeight);
         renderer.SetOrthoOffset(m_globalTransform.position.x, m_globalTransform.position.y);
     }
 }

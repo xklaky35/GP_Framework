@@ -2,6 +2,7 @@
 
 #include "imgui.h"
 #include "nodefactory.h"
+#include "../../../lib/BOX2D/src/shape.h"
 #include "../../helper/inlinehelper.h"
 #include "../logmanager/logmanager.h"
 #include "../physics/physicsmanager.h"
@@ -206,9 +207,9 @@ namespace Engine {
         UpdateCurrentForm();
 
         SetPositionInMeters(PhysicsManager::PixelsToMeterVector(m_parent->GetGlobalPosition()));
-
         // set initial position
         UpdateCurrentBodyPosition();
+
     }
 
 
@@ -223,6 +224,10 @@ namespace Engine {
         UpdateCurrentForm();
         UpdateCurrentBodyPosition();
         CheckForCollision();
+        if (!b2Shape_IsValid(m_colliderShapeId)) {
+            m_currentFormtype = FT_UNDEFINED;
+            //LogManager::GetInstance().Log(INFO, "selected: %d, current %d", m_selectedFormtype, m_currentFormtype);
+        }
     }
 
     // only updates the body in the physical world
@@ -343,7 +348,18 @@ namespace Engine {
 
 
     void ColliderNode::CheckForCollision() const {
-        if (m_bIsSensor) {
+        if (m_bIsSensor && b2Shape_IsValid(m_colliderShapeId)) {
+
+            int capacity = b2Shape_GetSensorCapacity(m_colliderShapeId);
+            b2ShapeId collisionData[capacity];
+            int hitCount = b2Shape_GetSensorData(m_colliderShapeId, collisionData, capacity);
+
+            for (int i = 0; i < hitCount; i++) {
+                if (collisionData[i].index1 != m_colliderShapeId.index1) {
+                    OnEntry.Emit(&collisionData[i]);
+                }
+            }
+            /*
             b2SensorEvents events = b2World_GetSensorEvents(PhysicsManager::GetInstance().GetWorld());
             for (int i = 0; i < events.beginCount; i++) {
                 OnEntry.Emit(&events.beginEvents[i].sensorShapeId);
@@ -351,6 +367,7 @@ namespace Engine {
             for (int i = 0; i < events.endCount; i++) {
                 OnExit.Emit(&events.endEvents[i].sensorShapeId);
             }
+            */
         }
     }
 

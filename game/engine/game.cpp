@@ -22,6 +22,7 @@
 #include "assetmanager/assetmanager.h"
 #include "physics/physicsmanager.h"
 #include "sound/soundmanager.h"
+#include "time/timer.h"
 
 #define DEBUG
 
@@ -139,6 +140,7 @@ namespace Engine {
     void Game::Process(const float deltaTime) {
         ProcessFrameCounting(deltaTime);
         ImguiManager::GetInstance().Process();
+        Timer::GetInstance().Tick();
 
         if (ImGui::IsKeyPressed(ImGuiKey_Tab, false)) {
             ToggleViewDebug();
@@ -147,14 +149,14 @@ namespace Engine {
         if (!m_bIsPaused) {
             // ####### MAKE LOGIC STUFF HERE #############
 
-            SceneManager::GetInstance().GetCurrentScene()->Process(deltaTime);
+            SceneManager::GetInstance().Process(deltaTime);
             PhysicsManager::GetInstance().Process(deltaTime);
             SoundManager::GetInstance().Process(deltaTime);
             InputManager::GetInstance().Process(deltaTime);
 
             // ###########################################
         }
-        SceneManager::GetInstance().GetCurrentScene()->SystemProcess();
+        SceneManager::GetInstance().SystemProcess();
     }
 
 
@@ -167,7 +169,7 @@ namespace Engine {
         // allows to be overwritten by e.g camera nodes
         // ####### RENDER STUFF HERE #############
 
-        SceneManager::GetInstance().GetCurrentScene()->Draw(renderer);
+        SceneManager::GetInstance().Draw(renderer);
 
         // #######################################
         renderer.Draw();

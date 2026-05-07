@@ -1,6 +1,7 @@
 #ifndef GP_FRAMEWORK_MAINMEU_H
 #define GP_FRAMEWORK_MAINMEU_H
 
+#include "../../engine/nodes/nodefactory.h"
 #include "../../engine/nodes/ui/vcontainer.h"
 #include "../../engine/nodes/ui/hcontainer.h"
 #include "../../engine/nodes/ui/control.h"
@@ -15,7 +16,13 @@ public:
 
     void Init() override;
     void Draw(Renderer& renderer) override;
+
+    void HandleMouseInteraction();
+
+    void ExecuteOption();
+
     void Process(float) override;
+    void SetupParameter(IniParser *parser, const std::string &sectionId) override;
 
     VContainer* vcontainer1;
     HContainer* h1;
@@ -34,6 +41,6 @@ public:
     HContainer* m_selectionParents[4];
     std::string m_sceneOptions[4];
 };
-
+REGISTER_CLASS(MainMenu)
 
 #endif //GP_FRAMEWORK_MAINMEU_H

@@ -136,9 +136,7 @@ namespace Engine {
     void AnimatedSprite::Draw(Renderer& renderer)
     {
         if (m_pVertexData != nullptr) {
-            m_pTexture->SetActive();
-            m_pVertexData->SetActive();
-            renderer.DrawAnimatedSprite(*this, m_iCurrentFrame, m_iFrameWidth, m_iFrameHeight);
+            renderer.DrawSprite(*this);
         }
     }
 

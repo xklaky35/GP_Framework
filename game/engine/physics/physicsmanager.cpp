@@ -41,7 +41,6 @@ namespace Engine {
     }
 
     void PhysicsManager::Process(float deltaTime) {
-
         b2World_Step(m_gameWorldId, deltaTime, 4);
     }
 

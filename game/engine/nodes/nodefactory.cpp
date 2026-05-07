@@ -6,6 +6,7 @@
 #include "spritenode.h"
 #include "../../helper/inlinehelper.h"
 #include "../logmanager/logmanager.h"
+#include "ui/textcontrol.h"
 
 namespace Engine {
 
@@ -151,6 +152,9 @@ namespace Engine {
         }
         if (nodeType == NT_ColliderNode) {
             return dynamic_cast<Node*>(new ColliderNode());
+        }
+        if (nodeType == NT_TextControl) {
+            return dynamic_cast<Node*>(new TextControl());
         }
         return nullptr;
     }

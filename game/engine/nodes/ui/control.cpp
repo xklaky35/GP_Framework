@@ -120,7 +120,9 @@ namespace Engine {
     void Control::SystemProcess() {
         Node::SystemProcess();
         if (m_parent != nullptr) {
-            m_globalTransform.position = m_parent->m_globalTransform.position + m_transform.position;
+            if (dynamic_cast<Control*>(m_parent)) {
+                m_globalTransform.position = m_parent->m_globalTransform.position + m_transform.position;
+            }
         }
 
 

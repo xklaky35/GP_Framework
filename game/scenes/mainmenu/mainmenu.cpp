@@ -2,6 +2,8 @@
 #include "../../config/config.h"
 #include "../../engine/game.h"
 #include "../../engine/input/input.h"
+#include "../../engine/logmanager/logmanager.h"
+#include "../../engine/nodes/nodefactory.h"
 #include "../../engine/scenemanager/scenemanager.h"
 #include "../../engine/sound/soundmanager.h"
 
@@ -19,6 +21,7 @@ MainMenu::MainMenu() : m_bSelectionLocked(false), m_currentSelection(0), m_selec
     spacer3 = new Control();
     spacer4 = new Control();
     cursor = new TextControl();
+    SetupNode("MainMenu", NT_Custom);
 }
 
 void MainMenu::Init() {
@@ -79,6 +82,7 @@ void MainMenu::Init() {
     t2->m_containerSizing.m_bExpandVertical = true;
 
 
+
     t1->m_containerSizing.m_verticalBehavior = v_Center;
     t2->m_containerSizing.m_verticalBehavior = v_Center;
     t1->m_containerSizing.m_horizontalBehavior = h_Center;
@@ -106,24 +110,25 @@ void MainMenu::Init() {
     vcontainer1->AddChild(*spacer1);
     vcontainer1->AddChild(*h1);
     vcontainer1->AddChild(*h2);
-    vcontainer1->AddChild(*h3);
-    vcontainer1->AddChild(*h4);
     vcontainer1->AddChild(*spacer2);
 
 
     AddChild(*spacer3);
     AddChild(*vcontainer1);
     AddChild(*spacer4);
+
+    NodeFactory::GetInstance().InitWithConfiguration(this, "../game/scenes/mainmenu/MainMenu.ini");
 }
 
 
 void MainMenu::Process(float deltaTime) {
     HContainer::Process(deltaTime);
     const char* soundOnSelection = "hardpop-mainmenu-onSelection.wav";
+    HandleMouseInteraction();
 
     if (InputManager::GetInstance().GetButtonState(SDLK_DOWN)) {
         if (!m_bSelectionLocked) {
-            if (m_currentSelection < 3) {
+            if (m_currentSelection < 1) {
                 SoundManager::GetInstance().Play(soundOnSelection);
                 m_currentSelection++;
             }
@@ -141,9 +146,7 @@ void MainMenu::Process(float deltaTime) {
     }
     else if (InputManager::GetInstance().GetButtonState(SDLK_RETURN)) {
         if (!m_bSelectionLocked) {
-
-            SceneManager::GetInstance().SetSceneActive("Whoosh");
-            //Game::GetInstance().Quit();
+            ExecuteOption();
             return;
         }
     }
@@ -151,8 +154,45 @@ void MainMenu::Process(float deltaTime) {
         m_bSelectionLocked = false;
     }
     cursor->m_parent = m_selectionParents[m_currentSelection];
+
+    if (t1->m_textSprite != nullptr && t2->m_textSprite != nullptr && cursor->m_textSprite != nullptr) {
+        t1->m_textSprite->m_iLayer = 1;
+        t2->m_textSprite->m_iLayer = 1;
+        cursor->m_textSprite->m_iLayer = 1;
+    }
+
+}
+
+void MainMenu::SetupParameter(IniParser *parser, const std::string &sectionId) {
+    HContainer::SetupParameter(parser, sectionId);
 }
 
 void MainMenu::Draw(Renderer &renderer) {
     HContainer::Draw(renderer);
+}
+
+void MainMenu::HandleMouseInteraction() {
+    auto mousePos = InputManager::GetInstance().GetMousePosition();
+    auto mouseEvent = InputManager::GetInstance().GetCurrentMouseEvent();
+
+
+    if (mousePos.y < h2->GetGlobalPosition().y) {
+        m_currentSelection = 0;
+    }
+    if (mousePos.y > h2->GetGlobalPosition().y) {
+        m_currentSelection = 1;
+    }
+
+    if (mouseEvent.type == SDL_MOUSEBUTTONDOWN && mouseEvent.button == 1) {
+        ExecuteOption();
+    }
+    LogManager::GetInstance().Log(INFO, "%f, %f", mousePos.x, mousePos.y);
+
+}
+
+void MainMenu::ExecuteOption() {
+    if (m_currentSelection == 0)
+        SceneManager::GetInstance().SetSceneActive("Whoosh");
+    if (m_currentSelection == 1)
+        Game::GetInstance().Quit();
 }

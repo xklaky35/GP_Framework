@@ -8,6 +8,7 @@
 #include "../../engine/logmanager/logmanager.h"
 #include "../../engine/nodes/nodefactory.h"
 #include "../../engine/physics/physicsmanager.h"
+#include "../../engine/scenemanager/scenemanager.h"
 #include "box2d/box2d.h"
 
 using namespace Engine;
@@ -18,6 +19,7 @@ Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false
     m_bHasFiredHook = false;
     m_bIsShooting = false;
     m_bCheatsEnabled = false;
+    m_hasLevelCompleted = false;
 
 
     SetupNode("Player", NT_Custom);
@@ -139,6 +141,12 @@ void Player::Init() {
         m_groundSensor->OnExit.Register<Player>(&Player::OnJump, *this);
     }
 
+
+    m_levelGoal = dynamic_cast<ColliderNode*>(GetChild("GoalSensor"));
+    if (m_levelGoal != nullptr) {
+        m_levelGoal->OnEntry.Register<Player>(&Player::OnFinishLevel, *this);
+    }
+
 }
 
 
@@ -157,7 +165,6 @@ void Player::Process(float deltaTime) {
         HandleAnimations();
         HandleFlip();
     }
-
 }
 
 void Player::HandleMovementCheat(float deltaTime) {
@@ -218,7 +225,6 @@ void Player::HandleMovement(float deltaTime) {
             if (abs(m_velocity.x) < 0.1) m_velocity.x = 0;
         }
     }
-
     if (InputManager::GetInstance().GetButtonState(SDLK_SPACE) == BS_PRESSED) {
         if (m_jumpsMade < m_maxJumps) {
             m_rigidBody->ResetBodyVelocity();
@@ -227,11 +233,10 @@ void Player::HandleMovement(float deltaTime) {
         }
     }
 
-    if (m_bIsGrounded) {
+    if (!m_bHasFiredHook) {
         m_rigidBody->SetHorizontalVelocity(m_velocity);
     }
 }
-
 
 void Player::HandleAnimations() {
     float walkingThreshold = m_fGroundMaxSpeed * 0.8f;
@@ -369,11 +374,11 @@ float RayCastCallback(b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float frac
 
     if (b2Body_GetType(attachedBody) != b2_staticBody) {
         rayResult->hit = false;
-        return -1;
+        return 1;
     }
     if (b2Shape_IsSensor(shapeId) == true) {
         rayResult->hit = false;
-        return -1;
+        return 1;
     }
 
     rayResult->shapeId = shapeId;
@@ -381,17 +386,16 @@ float RayCastCallback(b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float frac
     rayResult->fraction = fraction;
     rayResult->normal = normal;
     rayResult->hit = true;
-    return 0;
+    return fraction;
 }
 
 b2RayResult Player::CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId world) const {
 
     // Calculate ray points
-    const b2Vec2 translation = origin - target;
+    const b2Vec2 translation = (origin - target) * 8;
 
     // Set up query filter
     const b2QueryFilter filter = b2DefaultQueryFilter();
-
 
     auto* rayResult = new b2RayResult();
 
@@ -426,8 +430,8 @@ void Player::CreateChainBetween(b2Vec2 origin, b2Vec2 target, b2BodyId targetBod
     distanceJointDef.base = playerJointDef;
     distanceJointDef.enableSpring = true;
     distanceJointDef.enableLimit = true;
-    distanceJointDef.hertz = 0.3f;
-    distanceJointDef.dampingRatio = 5.f;
+    distanceJointDef.hertz = 0.8f;
+    distanceJointDef.dampingRatio = 3.f;
     distanceJointDef.minLength = 0;
     distanceJointDef.maxLength = 10;
 
@@ -442,6 +446,17 @@ void Player::OnJump(const b2ShapeId* target) {
 void Player::OnLandOnGround(const b2ShapeId* target) {
     m_bIsGrounded = true;
     m_jumpsMade = 0;
+}
+
+void Player::OnFinishLevel(const b2ShapeId* collidedShapes) {
+    if (collidedShapes == nullptr) return;
+    if (!b2Shape_IsValid(collidedShapes[0])) return;
+    if (!b2Shape_IsSensor(collidedShapes[0])) return;
+
+    if (b2Body_GetType(b2Shape_GetBody(collidedShapes[0])) == b2_staticBody) {
+        SceneManager::GetInstance().SetSceneActive("MainMenu");
+    };
+
 }
 
 void Player::ChangeAnimation(AnimatedSpriteNode* animation) {
@@ -473,4 +488,3 @@ void Player::SetupParameter(IniParser *parser, const std::string &section) {
     // child setup
     NodeFactory::GetInstance().InitWithConfiguration(this, "../game/scenes/whoosh/Player.ini");
 }
-

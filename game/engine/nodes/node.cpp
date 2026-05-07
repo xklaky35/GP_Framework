@@ -180,7 +180,9 @@ namespace  Engine {
 
 
         for (Node *c: m_children) {
-            c->Process(deltaTime);
+            if (!m_children.empty()) {
+                c->Process(deltaTime);
+            }
         }
     }
 
@@ -197,9 +199,11 @@ namespace  Engine {
     }
 
     void Node::Draw(Renderer &renderer) {
-
         for (Node *c: m_children) {
-            c->Draw(renderer);
+
+            if (!m_children.empty()) {
+                c->Draw(renderer);
+            }
         }
     }
 
@@ -354,6 +358,7 @@ namespace  Engine {
         if (m_children.empty()) return;
         for (Node* c : m_children) {
             delete c;
+            c = nullptr;
         }
         m_children.clear();
     }

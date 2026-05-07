@@ -141,6 +141,10 @@ set(IMGUI_SOURCES
         game/scenes/whoosh/Level1/ColliderLayerLevel1.h
         game/scenes/whoosh/Level1/SpriteLayerLevel1.cpp
         game/scenes/whoosh/Level1/SpriteLayerLevel1.h
+        game/scenes/whoosh/levelgoal.cpp
+        game/scenes/whoosh/levelgoal.h
+        game/engine/time/timer.cpp
+        game/engine/time/timer.h
 
 
 )

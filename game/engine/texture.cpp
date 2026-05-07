@@ -31,6 +31,9 @@ namespace Engine {
             } else if (bytesPerPixel == 4) {
                 format = GL_RGBA;
             }
+            // also added here to fix texture error
+            glPixelStorei(GL_UNPACK_ROW_LENGTH, pSurface->pitch / pSurface->format->BytesPerPixel);
+
             glGenTextures(1, &m_uiTextureId);
             glBindTexture(GL_TEXTURE_2D, m_uiTextureId);
             glTexImage2D(GL_TEXTURE_2D, 0, format, m_iWidth, m_iHeight, 0, format, GL_UNSIGNED_BYTE, pSurface->pixels);
@@ -38,8 +41,8 @@ namespace Engine {
             pSurface = nullptr;
 
             // Moved to render function
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         } else {
             LogManager::GetInstance().Log(ERROR, "Texture failed to load!");
             return false;

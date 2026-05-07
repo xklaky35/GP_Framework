@@ -205,13 +205,32 @@ namespace Engine {
         for (int i = 0; i < m_renderList.size(); i++) {
             if (m_renderList.find(i) != m_renderList.end()) {
                 for (auto* sprite : m_renderList[i]) {
-                    sprite->SetActive();
+
+                    float sizeX = 0;
+                    float sizeY = 0;
+                    int frameNumber = 0;
+                    float offsetX = 0;
+                    float offsetY = 0;
+
+                    auto animSprite = dynamic_cast<AnimatedSprite *>(sprite);
+                    if (animSprite) {
+                        sizeX = animSprite->m_iFrameWidth * sprite->GetScale();
+                        sizeY = animSprite->m_iFrameHeight * sprite->GetScale();
+                        frameNumber = animSprite->m_iCurrentFrame;
+                        animSprite->m_pVertexData->SetActive();
+                        animSprite->SetActive();
+                    }
+                    else {
+
+                        sizeX = static_cast<float>(sprite->GetWidth());
+                        sizeY = static_cast<float>(sprite->GetHeight());
+                        sprite->SetActive();
+                        m_pSpriteVertexData->SetActive();
+                    }
+
                     m_pSpriteShader->SetActive();
-                    m_pSpriteVertexData->SetActive();
 
                     float angleInDegrees = sprite->GetAngle();
-                    float sizeX = static_cast<float>(sprite->GetWidth());
-                    float sizeY = static_cast<float>(sprite->GetHeight());
                     const float PI = 3.14159f;
                     float angleInRadians = (angleInDegrees * PI) / 180.0f;
 
@@ -233,21 +252,22 @@ namespace Engine {
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
                     glEnable(GL_BLEND);
                     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)((frameNumber * 6) * sizeof(GLuint)));
                 }
                 m_renderList[i].clear();
             }
         }
+
         m_renderList.clear();
     }
 
     void Renderer::DrawAnimatedSprite(Sprite &sprite, const int frame, const int frameHeight, const int frameWidth) {
         m_pSpriteShader->SetActive();
 
-        float angleInDegrees = sprite.GetAngle();
         float sizeX = static_cast<float>(frameWidth) * sprite.GetScale();
         float sizeY = static_cast<float>(frameHeight) * sprite.GetScale();
 
+        float angleInDegrees = sprite.GetAngle();
         const float PI = 3.14159f;
         float angleInRadians = (angleInDegrees * PI) / 180.0f;
 
@@ -268,6 +288,8 @@ namespace Engine {
                                            sprite.GetAlpha());
         m_pSpriteShader->SetMatrixUniform("uViewProj", m_orthoProjection);
 
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)((frame * 6) * sizeof(GLuint)));
@@ -297,8 +319,8 @@ namespace Engine {
         float offsetX =  m_orthoProjection.m[0][0] * x ;
         float offsetY = -m_orthoProjection.m[1][1] * y ;
 
-        m_orthoProjection.m[3][0] = -1.f - offsetX + (float)(abs((int)x) > 0);
-        m_orthoProjection.m[3][1] =  1.f + offsetY - (float)(abs((int)y) > 0);
+        m_orthoProjection.m[3][0] = -1.f - offsetX + !((int)x == 0 && (int)y == 0);
+        m_orthoProjection.m[3][1] =  1.f + offsetY - !((int)x == 0 && (int)y == 0);
 
         PhysicsManager::GetInstance().ChangeDebugOrthoPos(x, y);
     }

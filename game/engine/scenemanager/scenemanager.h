@@ -19,6 +19,15 @@ namespace Engine {
 
         bool Initialise();
 
+        void LoadNextScene();
+
+
+        void CheckForSceneSwitch();
+
+        void Draw(Renderer & renderer);
+        void Process(float delta_time);
+        void SystemProcess();
+
         static void DestroyInstance();
         void RegisterScene(const std::string&, Node*);
         void SetSceneActive(std::string);
@@ -42,6 +51,8 @@ namespace Engine {
         SceneManager();
         ~SceneManager();
         static SceneManager* m_pInstance;
+        bool m_bSceneSwitchOrdered;
+        std::string m_nextSceneName;
 
     };
 }

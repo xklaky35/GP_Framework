@@ -11,13 +11,16 @@ namespace Engine {
         void Init() override;
         void Draw(Renderer&) override;
         void SystemProcess() override;
+        void SetupParameter(IniParser *parser, const std::string &sectionId) override;
         void SetText(std::string);
 
+        char* GetText();
+
+        Sprite* m_textSprite;
     private:
         bool m_bIsInitialised;
         std::string m_text;
         int m_iPointSize;
-        Sprite* m_textSprite;
         float m_rgba[4];
 
 

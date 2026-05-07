@@ -176,6 +176,7 @@ namespace Engine {
 
     void RigidbodyNode::SetDensity(float density) {
         if (m_collider == nullptr) return;
+        if (!b2Shape_IsValid(m_collider->GetShapeId())) return;
         m_fDensity = density;
         b2Shape_SetDensity(m_collider->GetShapeId(), density, true);
     }
@@ -183,6 +184,7 @@ namespace Engine {
 
     void RigidbodyNode::SetMassData(float mass, Vector2d massCenter, float rotationalInertia) {
         auto newMassData = b2MassData();
+        if (!b2Body_IsValid(m_bodyId)) return;
         m_fMass = mass;
         newMassData.mass = mass;
         newMassData.center = b2Vec2(massCenter.x, massCenter.y);
@@ -200,6 +202,7 @@ namespace Engine {
 
     void RigidbodyNode::SetFriction(float friction) {
         if (m_collider == nullptr) return;
+        if (!b2Shape_IsValid(m_collider->GetShapeId())) return;
         m_fFriction = friction;
         b2Shape_SetFriction(m_collider->GetShapeId(), friction);
     }
@@ -278,10 +281,9 @@ namespace Engine {
                 return;
             }
         }
-
         SetFriction(m_fFriction);
         SetDensity(m_fDensity);
-        SetMassData(m_fMass, Vector2d(GetMassData().center.x,GetMassData().center.y), GetMassData().rotationalInertia);
+        SetMassData(m_fMass, Vector2d(GetMassData().center.x, GetMassData().center.y), GetMassData().rotationalInertia);
         b2Body_SetMotionLocks(m_bodyId, b2MotionLocks(m_bLinearMovementX, m_bLinearMovementY, m_bAngularRotation));
     }
 }

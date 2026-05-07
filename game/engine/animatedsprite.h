@@ -44,8 +44,8 @@ namespace Engine {
         bool m_bIsFlipped;
         int m_iFrameWidth;
         int m_iFrameHeight;
-    protected:
         VertexArray *m_pVertexData;
+    protected:
         float m_fTimeElapsed;
         float totalTime;
 

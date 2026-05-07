@@ -7,6 +7,7 @@ namespace Engine {
     class CameraNode : public Node {
     public:
         CameraNode();
+        ~CameraNode() override;
         void Init() override;
         void Process(float deltaTime) override;
         void Draw(Renderer &) override;
@@ -17,6 +18,7 @@ namespace Engine {
         Vector3d m_direction;
         Vector3d m_rightAxis;
         Vector3d m_upAxis;
+        Renderer* m_renderer;
 
     };
 
