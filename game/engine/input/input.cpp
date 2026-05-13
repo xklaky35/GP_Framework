@@ -1,16 +1,20 @@
 #include "input.h"
 
+#include "imgui.h"
+#include "../game.h"
+#include "../../config/config.h"
 #include "../logmanager/logmanager.h"
 
 namespace Engine {
+    InputManager::InputManager()
+        : m_bRelativeMouseMode(false),
+          m_pXboxController(nullptr),
+          m_iNumAttachedControllers(0),
+          m_previousKey(SDLK_UNKNOWN),
+          m_currentMouseEvent() {
 
-    InputManager::InputManager() : m_bRelativeMouseMode(false)
-                                   , m_pXboxController(nullptr), m_iNumAttachedControllers(0),
-                                   m_previousKey(SDLK_UNKNOWN) {
     }
-
     InputManager::~InputManager() = default;
-
     InputManager* InputManager::m_pInstance = nullptr;
 
     InputManager & InputManager::GetInstance() {
@@ -28,17 +32,16 @@ namespace Engine {
         if (event.key.type == SDL_KEYDOWN) {
             if (m_pressedKeys[event.key.keysym.sym] == BS_NEUTRAL) {
                 m_pressedKeys[event.key.keysym.sym] = BS_PRESSED;
-                m_isInInstableState.push(KeyState{event.key.keysym.sym, BS_PRESSED});
+                m_isInTransitionState.push(KeyState{event.key.keysym.sym, BS_PRESSED});
             }
             m_previousKey = event.key.keysym.sym;
         }
 
         if (event.key.type == SDL_KEYUP) {
             m_pressedKeys[event.key.keysym.sym] = BS_RELEASED;
-            m_isInInstableState.push(KeyState{event.key.keysym.sym, BS_RELEASED});
+            m_isInTransitionState.push(KeyState{event.key.keysym.sym, BS_RELEASED});
             m_previousKey = event.key.keysym.sym;
         }
-
 
         // mouse events
         if (event.type == SDL_MOUSEBUTTONUP) {
@@ -62,27 +65,40 @@ namespace Engine {
         return m_pressedKeys[keyCode];
     }
 
-
     Vector2d InputManager::GetMousePosition() const {
-        return m_mousePosition ;
+        auto mouseOffset = Game::GetInstance().GetMouseOffset();
+        auto mousePosition = m_mousePosition + mouseOffset;
+        auto cameraOffset = Vector2d{0,0};
+
+        if (mouseOffset.x != 0 || mouseOffset.y != 0) {
+            // temp solution!!!!!!!!!!!!! (assumes the player is always in the center of the camera)
+            // Problem: the mouse click position is not transformed when the ortho matrix is transformed that sets the offset for the camera
+            cameraOffset = Vector2d(Config::GetInstance().windowsWidth/2, Config::GetInstance().windowsHeight/2);
+        }
+
+        mousePosition -= cameraOffset;
+
+        return mousePosition ;
     }
 
     SDL_MouseButtonEvent InputManager::GetCurrentMouseEvent() const {
-        return m_currentMouseEvent;
+        if (!ImGui::GetIO().WantCaptureMouse)
+            return m_currentMouseEvent;
+        return SDL_MouseButtonEvent{};
     }
 
     void InputManager::Process(float delta_time) {
 
-        while (!m_isInInstableState.empty()) {
-            if (m_isInInstableState.front().state == BS_PRESSED) {
-                m_pressedKeys[m_isInInstableState.front().code] = BS_HELD;
+        while (!m_isInTransitionState.empty()) {
+            if (m_isInTransitionState.front().state == BS_PRESSED) {
+                m_pressedKeys[m_isInTransitionState.front().code] = BS_HELD;
             }
 
-            if (m_isInInstableState.front().state == BS_RELEASED) {
-                m_pressedKeys[m_isInInstableState.front().code] = BS_NEUTRAL;
+            if (m_isInTransitionState.front().state == BS_RELEASED) {
+                m_pressedKeys[m_isInTransitionState.front().code] = BS_NEUTRAL;
             }
 
-            m_isInInstableState.pop();
+            m_isInTransitionState.pop();
         }
 
 

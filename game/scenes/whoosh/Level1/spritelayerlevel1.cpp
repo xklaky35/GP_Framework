@@ -2,7 +2,7 @@
 // Created by leon on 06.05.26.
 //
 
-#include "SpriteLayerLevel1.h"
+#include "spritelayerlevel1.h"
 
 SpriteLayerLevel1::SpriteLayerLevel1() {
     SetupNode("SpriteLayerLevel1", NT_Custom);

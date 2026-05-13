@@ -4,7 +4,7 @@
 #include "../../../helper/inlinehelper.h"
 
 namespace Engine {
-    Control::Control() : Control(false) {}
+    Control::Control() : Control(true) {}
     Control::Control(bool useDebugRect) : m_bUseDebugRect(useDebugRect), m_positionMode(Position), m_bIsChildOfContainer(false), m_debugRect(nullptr) {
 
         m_containerSizing = ContainerSizing();
@@ -124,8 +124,6 @@ namespace Engine {
                 m_globalTransform.position = m_parent->m_globalTransform.position + m_transform.position;
             }
         }
-
-
     }
 
     void Control::Draw(Renderer &renderer) {
@@ -148,11 +146,11 @@ namespace Engine {
                         break;
                     case h_Center:
                         childControl->m_globalTransform.SetWidth(childControl->m_initialSize.x);
-                        childControl->m_transform.position.x = (childControl->m_controlSpace.x / 2) - childControl->m_globalTransform.GetWidth() / 2;
+                        childControl->m_transform.position.x = (childControl->m_controlSpace.x / 2); //- childControl->m_globalTransform.GetWidth() / 2;
                         break;
                     case h_Right:
                         childControl->m_globalTransform.SetWidth(childControl->m_initialSize.x);
-                        childControl->m_transform.position.x = childControl->m_controlSpace.x - childControl->m_globalTransform.GetWidth();
+                        childControl->m_transform.position.x = childControl->m_controlSpace.x; //- childControl->m_globalTransform.GetWidth();
                         break;
                 }
                 switch (childControl->m_containerSizing.m_verticalBehavior) {
@@ -166,11 +164,11 @@ namespace Engine {
                         break;
                     case v_Center:
                         childControl->m_globalTransform.SetHeight(childControl->m_initialSize.y);
-                        childControl->m_transform.position.y = (childControl->m_controlSpace.y / 2) - childControl->m_globalTransform.GetHeight() / 2;
+                        childControl->m_transform.position.y = (childControl->m_controlSpace.y / 2); //- childControl->m_globalTransform.GetHeight() / 2;
                         break;
                     case v_Bottom:
                         childControl->m_globalTransform.SetHeight(childControl->m_initialSize.y);
-                        childControl->m_transform.position.y = childControl->m_controlSpace.y - childControl->m_globalTransform.GetHeight();
+                        childControl->m_transform.position.y = childControl->m_controlSpace.y;// - childControl->m_globalTransform.GetHeight();
                         break;
                 }
             }

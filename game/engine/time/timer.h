@@ -14,21 +14,20 @@ public:
 
     // Seconds since Reset()
     float GetTotalTime()  const;
+    std::string GetTotalTimeAsString() const;
 
 private:
     using Clock = std::chrono::high_resolution_clock;
     using TimePoint = std::chrono::time_point<Clock>;
 
-    Timer()
-    {
-        Reset();
-    }
+    Timer();
+
 
     TimePoint m_StartTime;
     TimePoint m_LastTime;
-    float     m_DeltaTime  = 0.0f;
-    float     m_TotalTime  = 0.0f;
-    uint64_t  m_FrameCount = 0;
+    float     m_DeltaTime;
+    float     m_TotalTime;
+    uint64_t  m_FrameCount;
 
 
     static Timer* m_pInstance;

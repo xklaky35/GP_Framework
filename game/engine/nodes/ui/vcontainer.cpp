@@ -1,11 +1,13 @@
 #include "vcontainer.h"
 
+#include "../nodefactory.h"
+
 namespace Engine {
     VContainer::VContainer() = default;
 
     void VContainer::Init() {
         Container::Init();
-        m_name = "VContainer";
+        SetupNode("VContainer", NT_VContainer);
     }
 
     void VContainer::PositionChildren() {

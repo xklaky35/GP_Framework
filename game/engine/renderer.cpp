@@ -20,15 +20,16 @@
 namespace Engine {
     Renderer::Renderer()
         : m_pTextureManager(nullptr)
+          , m_pWindow(nullptr)
+          , m_glContext(nullptr)
           , m_pSpriteShader(nullptr)
           , m_pSpriteVertexData(nullptr)
-          , m_glContext(nullptr)
           , m_iWidth(0)
           , m_iHeight(0)
           , m_fClearRed(0.0f)
           , m_fClearGreen(0.0f)
-          , m_fClearBlue(0.0f)
-          , m_pWindow(nullptr) {
+          , m_fClearBlue(0.0f) {
+        m_currentOffset = {0,0};
 
     }
 
@@ -86,7 +87,7 @@ namespace Engine {
     bool Renderer::InitialiseOpenGL(const int screenWidth, const int screenHeight) {
         m_iWidth = screenWidth;
         m_iHeight = screenHeight;
-        m_pWindow = SDL_CreateWindow("My own little game engine", SDL_WINDOWPOS_UNDEFINED,
+        m_pWindow = SDL_CreateWindow("Grapple", SDL_WINDOWPOS_UNDEFINED,
                                      SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_OPENGL);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -142,7 +143,7 @@ namespace Engine {
         m_fClearBlue = b / 255.0f;
     }
 
-    void Renderer::GetClearColour(unsigned char &r, unsigned char &g, unsigned char &b) {
+    void Renderer::GetClearColour(unsigned char &r, unsigned char &g, unsigned char &b) const {
         r = static_cast<unsigned char>(m_fClearRed * 255.0f);
         g = static_cast<unsigned char>(m_fClearGreen * 255.0f);
         b = static_cast<unsigned char>(m_fClearBlue * 255.0f);
@@ -159,7 +160,7 @@ namespace Engine {
     Sprite *Renderer::CreateSprite(const char *pcFilename) {
         assert(m_pTextureManager);
         Texture *pTexture = m_pTextureManager->GetTexture(pcFilename);
-        Sprite *pSprite = new Sprite();
+        auto *pSprite = new Sprite();
         if (!pSprite->Initialise(*pTexture)) {
             LogManager::GetInstance().Log(ERROR, "Sprite Failed to Create!");
         }
@@ -169,7 +170,7 @@ namespace Engine {
     AnimatedSprite *Renderer::CreateAnimatedSprite(const char *pcFilename) {
         assert(m_pTextureManager);
         Texture *pTexture = m_pTextureManager->GetTexture(pcFilename);
-        AnimatedSprite *pSprite = new AnimatedSprite();
+        auto *pSprite = new AnimatedSprite();
         if (!pSprite->Initialise(*pTexture)) {
             LogManager::GetInstance().Log(ERROR, "Animated Sprite Failed to Create!");
         }
@@ -214,8 +215,8 @@ namespace Engine {
 
                     auto animSprite = dynamic_cast<AnimatedSprite *>(sprite);
                     if (animSprite) {
-                        sizeX = animSprite->m_iFrameWidth * sprite->GetScale();
-                        sizeY = animSprite->m_iFrameHeight * sprite->GetScale();
+                        sizeX = static_cast<float>(animSprite->m_iFrameWidth) * sprite->GetScale();
+                        sizeY = static_cast<float>(animSprite->m_iFrameHeight) * sprite->GetScale();
                         frameNumber = animSprite->m_iCurrentFrame;
                         animSprite->m_pVertexData->SetActive();
                         animSprite->SetActive();
@@ -261,52 +262,18 @@ namespace Engine {
         m_renderList.clear();
     }
 
-    void Renderer::DrawAnimatedSprite(Sprite &sprite, const int frame, const int frameHeight, const int frameWidth) {
-        m_pSpriteShader->SetActive();
-
-        float sizeX = static_cast<float>(frameWidth) * sprite.GetScale();
-        float sizeY = static_cast<float>(frameHeight) * sprite.GetScale();
-
-        float angleInDegrees = sprite.GetAngle();
-        const float PI = 3.14159f;
-        float angleInRadians = (angleInDegrees * PI) / 180.0f;
-
-        Matrix4 world;
-        SetIdentity(world);
-        world.m[0][0] = cosf(angleInRadians) * (sizeX);
-        world.m[0][1] = -sinf(angleInRadians) * (sizeX);
-        world.m[1][0] = sinf(angleInRadians) * (sizeY);
-        world.m[1][1] = cosf(angleInRadians) * (sizeY);
-        world.m[3][0] = static_cast<float>(sprite.GetX());
-        world.m[3][1] = static_cast<float>(sprite.GetY());
-
-        m_pSpriteShader->SetMatrixUniform("uWorldTransform", world);
-
-        m_pSpriteShader->SetVector4Uniform("colour", sprite.GetRedTint(),
-                                           sprite.GetGreenTint(),
-                                           sprite.GetBlueTint(),
-                                           sprite.GetAlpha());
-        m_pSpriteShader->SetMatrixUniform("uViewProj", m_orthoProjection);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)((frame * 6) * sizeof(GLuint)));
-    }
-
-
-    SDL_Window* Renderer::GetSDLWindow() {
+    SDL_Window* Renderer::GetSDLWindow() const {
         return m_pWindow;
     }
 
-    const SDL_GLContext Renderer::GetSDLGLContext() {
+    SDL_GLContext Renderer::GetSDLGLContext() const {
        return m_glContext;
     }
 
-    void Renderer::CreateStaticText(const char *pText, int pointsize, SDL_Color color) {
-        Texture *pTexture = new Texture();
-        pTexture->LoadTextTexture(pText, "../assets/Fonts/Romantic Mermaid.otf", pointsize, color);
+    void Renderer::CreateStaticText(const char *pText, int pointsize, SDL_Color color) const {
+        auto *pTexture = new Texture();
+        auto fontPath = Config::GetInstance().defaultFontPath;
+        pTexture->LoadTextTexture(pText, fontPath.c_str(), pointsize, color);
         m_pTextureManager->AddTexture(pText, pTexture);
     }
 
@@ -316,6 +283,8 @@ namespace Engine {
     }
 
     void Renderer::SetOrthoOffset(float x, float y) {
+        m_currentOffset.x = x;
+        m_currentOffset.y = y;
         float offsetX =  m_orthoProjection.m[0][0] * x ;
         float offsetY = -m_orthoProjection.m[1][1] * y ;
 
@@ -323,5 +292,9 @@ namespace Engine {
         m_orthoProjection.m[3][1] =  1.f + offsetY - !((int)x == 0 && (int)y == 0);
 
         PhysicsManager::GetInstance().ChangeDebugOrthoPos(x, y);
+    }
+
+    Vector2d Renderer::GetCurrentOffset() const {
+        return m_currentOffset;
     }
 }

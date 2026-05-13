@@ -1,28 +1,22 @@
-#ifndef GP_FRAMEWORK_MAINMEU_H
-#define GP_FRAMEWORK_MAINMEU_H
-
+#ifndef GP_FRAMEWORK_WINSCREEN_H
+#define GP_FRAMEWORK_WINSCREEN_H
+#include "../../engine/nodes/node.h"
 #include "../../engine/nodes/nodefactory.h"
-#include "../../engine/nodes/ui/vcontainer.h"
 #include "../../engine/nodes/ui/hcontainer.h"
-#include "../../engine/nodes/ui/control.h"
 #include "../../engine/nodes/ui/textcontrol.h"
+#include "../../engine/nodes/ui/vcontainer.h"
 
 using namespace Engine;
 
-class MainMenu : public HContainer {
-
+class WinScreen : public HContainer {
 public:
-    MainMenu();
-
+    WinScreen();
     void Init() override;
     void Draw(Renderer& renderer) override;
-
     void HandleMouseInteraction();
-
     void ExecuteSelection() const;
 
     void Process(float) override;
-    void SetupParameter(IniParser *parser, const std::string &sectionId) override;
 
     VContainer* vcontainer1;
     HContainer* h1;
@@ -37,7 +31,11 @@ public:
     Control* spacer3;
     Control* spacer4;
     int m_currentSelection;
-};
-REGISTER_CLASS(MainMenu)
 
-#endif //GP_FRAMEWORK_MAINMEU_H
+private:
+    std::string m_sCompletionTime;
+};
+REGISTER_CLASS(WinScreen)
+
+
+#endif //GP_FRAMEWORK_WINSCREEN_H

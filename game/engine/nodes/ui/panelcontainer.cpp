@@ -1,9 +1,11 @@
 #include "panelcontainer.h"
 
 #include "imgui.h"
+#include "../nodefactory.h"
 
 namespace Engine {
     PanelContainer::PanelContainer() : m_background(nullptr), m_transparency(0.4) {
+        SetupNode("PanelContainer", NT_PanelContainer);
 
         m_nodeInfo.push_back(
             {

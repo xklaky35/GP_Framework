@@ -137,14 +137,22 @@ set(IMGUI_SOURCES
         game/engine/physics/DebugFormsCreator.h
         game/scenes/whoosh/Level1/Level1.cpp
         game/scenes/whoosh/Level1/Level1.h
-        game/scenes/whoosh/Level1/ColliderLayerLevel1.cpp
-        game/scenes/whoosh/Level1/ColliderLayerLevel1.h
-        game/scenes/whoosh/Level1/SpriteLayerLevel1.cpp
-        game/scenes/whoosh/Level1/SpriteLayerLevel1.h
+        game/scenes/whoosh/Level1/colliderlayerlevel1.cpp
+        game/scenes/whoosh/Level1/colliderlayerlevel1.h
+        game/scenes/whoosh/Level1/spritelayerlevel1.cpp
+        game/scenes/whoosh/Level1/spritelayerlevel1.h
         game/scenes/whoosh/levelgoal.cpp
         game/scenes/whoosh/levelgoal.h
         game/engine/time/timer.cpp
         game/engine/time/timer.h
+        game/engine/nodes/ui/button.cpp
+        game/engine/nodes/ui/button.h
+        game/scenes/winscreen/winscreen.cpp
+        game/scenes/winscreen/winscreen.h
+        game/scenes/whoosh/Level1/foregroundlayerlevel1.cpp
+        game/scenes/whoosh/Level1/foregroundlayerlevel1.h
+        game/scenes/whoosh/enemy.cpp
+        game/scenes/whoosh/enemy.h
 
 
 )

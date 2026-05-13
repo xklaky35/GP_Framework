@@ -113,7 +113,7 @@ namespace Engine {
 
                             ImGui::Text("Radius");
                             if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &oldCircle.radius, 1, 0.5f, nullptr, nullptr)) {
-                                s->SetValue("circleRadius", tmpOffsetPos.x);
+                                s->SetValue("circleRadius", oldCircle.radius);
                                 s->SetCircleShape(oldCircle);
                             }
                             ImGui::Text("Center X - Y");
@@ -225,12 +225,10 @@ namespace Engine {
         }
 
         UpdateCurrentForm();
-
         UpdateCurrentBodyPosition();
         CheckForCollision();
         if (!b2Shape_IsValid(m_colliderShapeId)) {
             m_currentFormtype = FT_UNDEFINED;
-            //LogManager::GetInstance().Log(INFO, "selected: %d, current %d", m_selectedFormtype, m_currentFormtype);
         }
     }
 

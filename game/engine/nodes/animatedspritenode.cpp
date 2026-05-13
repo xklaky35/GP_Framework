@@ -113,6 +113,7 @@ namespace Engine {
 
         if (auto* animSprite = dynamic_cast<AnimatedSprite *>(m_pSprite)) {
             animSprite->Process(deltaTime);
+            m_bIsAnimating = animSprite->m_bAnimating;
         }
     }
 

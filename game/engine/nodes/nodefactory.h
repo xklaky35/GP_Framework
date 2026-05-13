@@ -28,9 +28,30 @@ namespace Engine {
         NT_ColliderNode,
         NT_CameraNode,
         NT_TextControl,
+        NT_Button,
+        NT_HContainer,
+        NT_MarginContainer,
+        NT_PanelContainer,
+        NT_VContainer,
+        NT_Control,
         NT_Custom
     };
-    static const char* NodeTypeStrings[] = {"Node", "SpriteNode", "AnimatedSpriteNode", "RigidBody", "ColliderNode", "CameraNode", "TextControl","Custom"};
+    static const char* NodeTypeStrings[] = {
+        "Node",
+        "SpriteNode",
+        "AnimatedSpriteNode",
+        "RigidBody",
+        "ColliderNode",
+        "CameraNode",
+        "TextControl",
+        "Button",
+        "HContainer",
+        "MarginContainer",
+        "PanelContainer",
+        "VContainer",
+        "Control",
+        "Custom"
+    };
     static constexpr int NODE_TYPE_COUNT = std::size(NodeTypeStrings);
 
     class NodeFactory {

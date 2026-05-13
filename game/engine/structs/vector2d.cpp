@@ -8,8 +8,17 @@ namespace Engine {
     Vector2d::Vector2d(const float x, const float y) : x(x), y(y) {
     }
 
-    float Vector2d::Distance(const Vector2d &) const {
-        return 0;
+    float Vector2d::Distance(const Vector2d & target) const {
+        auto d = sqrt(pow(target.x - x, 2) + pow(target.y - y,2));
+        return static_cast<float>(d);
+    }
+
+    bool Vector2d::Compare(Vector2d vector2d, float i) const {
+        return
+        (vector2d.x <= x+i
+        && vector2d.x >= x-i)
+        && (vector2d.y <= y+i
+        && vector2d.y >= y-i);
     }
 
     Vector2d Vector2d::Zero() {
@@ -21,7 +30,7 @@ namespace Engine {
     }
 
     Vector2d Vector2d::operator-(const Vector2d &vector) const {
-        return Vector2d{vector.x - x, vector.y - y};
+        return Vector2d{x - vector.x, y - vector.y};
     }
 
     Vector2d Vector2d::operator+(const Vector2d &vector) const {
@@ -30,6 +39,10 @@ namespace Engine {
 
     Vector2d Vector2d::operator+(const float vector) const {
         return Vector2d{x + vector, y + vector};
+    }
+
+    Vector2d Vector2d::operator/(float i) const {
+        return Vector2d{x / i, y / i};
     }
 
     Vector2d & Vector2d::operator+=(float f) {

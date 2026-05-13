@@ -1,5 +1,7 @@
 #include "hcontainer.h"
 
+#include "../nodefactory.h"
+
 
 namespace Engine {
 
@@ -7,9 +9,8 @@ namespace Engine {
 
     void HContainer::Init() {
         Container::Init();
-        m_name = "HContainer";
+        SetupNode("HContainer", NT_HContainer);
     }
-
 
     void HContainer::CalculateChildSpace() const {
         std::vector<Control*> childSections;

@@ -4,6 +4,7 @@
 
 #ifndef GP_FRAMEWORK_CONFIG_H
 #define GP_FRAMEWORK_CONFIG_H
+#include <string>
 
 
 class Config {
@@ -18,6 +19,7 @@ public:
 public:
     int windowsWidth;
     int windowsHeight;
+    std::pmr::string defaultFontPath;
 
 protected:
     Config();

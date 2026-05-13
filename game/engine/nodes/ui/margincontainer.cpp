@@ -1,11 +1,12 @@
 #include "margincontainer.h"
 
 #include "imgui.h"
+#include "../nodefactory.h"
 
 namespace Engine {
     MarginContainer::MarginContainer() : m_MarginLeft(0), m_MarginRight(0), m_MarginTop(0), m_MarginBottom(0) {
 
-
+        SetupNode("MarginContainer", NT_MarginContainer);
         m_nodeInfo.push_back(
             {
                 "", [](Node &n) {

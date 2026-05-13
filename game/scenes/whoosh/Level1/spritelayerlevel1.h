@@ -1,7 +1,3 @@
-//
-// Created by leon on 06.05.26.
-//
-
 #ifndef GP_FRAMEWORK_SPRITELAYER_H
 #define GP_FRAMEWORK_SPRITELAYER_H
 #include "../../../engine/nodes/node.h"

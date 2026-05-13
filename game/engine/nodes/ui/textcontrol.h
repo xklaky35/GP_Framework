@@ -13,6 +13,10 @@ namespace Engine {
         void SystemProcess() override;
         void SetupParameter(IniParser *parser, const std::string &sectionId) override;
         void SetText(std::string);
+        void SetTextRGBA(float r, float g, float b, float a);
+        const float* GetTextRGBA() const;
+
+        void SetPointSize(int pointSize);
 
         char* GetText();
 

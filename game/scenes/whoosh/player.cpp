@@ -17,11 +17,9 @@ using namespace Engine;
 Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false),
                    m_fGroundAcceleration(0), m_fGroundDeceleration(0), m_fGroundMinSpeed(0),
                    m_fGroundMaxSpeed(0), m_jumpsMade(0), m_maxJumps(1), m_fJumpForce(0), m_currentAnimation(nullptr), m_groundSensor(nullptr) {
-    m_bHasFiredHook = false;
-    m_bIsShooting = false;
-    m_bCheatsEnabled = false;
-    m_hasLevelCompleted = false;
 
+    m_lastMouseButtonEvent = SDL_MouseButtonEvent();
+    Reset({0,0});
 
     SetupNode("Player", NT_Custom);
 
@@ -114,6 +112,97 @@ Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false
             }
         }
     );
+    m_nodeInfo.push_back({
+            "Hook range min", [](Node &n) {
+                if (auto *s = dynamic_cast<Player *>(&n)) {
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    auto minDistance = s->GetHookMinRange();
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &minDistance, 1, 0.5f, nullptr, nullptr)) {
+                        s->SetValue("minHookRange", minDistance);
+                        s->SetHookMinRange(minDistance);
+                    }
+                }
+            }
+        }
+    );
+    m_nodeInfo.push_back({
+            "Hook range max", [](Node &n) {
+                if (auto *s = dynamic_cast<Player *>(&n)) {
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    auto maxDistance = s->GetHookMaxRange();
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &maxDistance, 1, 0.5f, nullptr, nullptr)) {
+                        s->SetValue("maxHookRange", maxDistance);
+                        s->SetHookMaxRange(maxDistance);
+                    }
+                }
+            }
+        }
+    );
+    m_nodeInfo.push_back({
+            "Damping", [](Node &n) {
+                if (auto *s = dynamic_cast<Player *>(&n)) {
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    auto damping = s->GetHookDamping();
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &damping, 1, 0.5f, nullptr, nullptr)) {
+                        s->SetValue("damping", damping);
+                        s->SetHookDamping(damping);
+                    }
+                }
+            }
+        }
+    );
+    m_nodeInfo.push_back({
+            "Hertz", [](Node &n) {
+                if (auto *s = dynamic_cast<Player *>(&n)) {
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    auto hertz = s->GetHookHertz();
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &hertz, 1, 0.5f, nullptr, nullptr)) {
+                        s->SetValue("hertz", hertz);
+                        s->SetHookHertz(hertz);
+                    }
+                }
+            }
+        }
+    );
+    m_nodeInfo.push_back({
+            "Swing accelleration", [](Node &n) {
+                if (auto *s = dynamic_cast<Player *>(&n)) {
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    auto acceleration = s->GetHookSwingAcceleration();
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &acceleration, 1, 0.5f, nullptr, nullptr)) {
+                        s->SetValue("swingAcceleration", acceleration);
+                        s->SetHookSwingAcceleration(acceleration);
+                    }
+                }
+            }
+        }
+    );
+    m_nodeInfo.push_back({
+            "Swing deceleration", [](Node &n) {
+                if (auto *s = dynamic_cast<Player *>(&n)) {
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    auto deceleration = s->GetHookSwingDeceleration();
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &deceleration, 1, 0.5f, nullptr, nullptr)) {
+                        s->SetValue("swingDeceleration", deceleration);
+                        s->SetHookSwingDeceleration(deceleration);
+                    }
+                }
+            }
+        }
+    );
+    m_nodeInfo.push_back({
+            "Enable spring", [](Node &n) {
+                if (auto *s = dynamic_cast<Player *>(&n)) {
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    auto spring = s->GetHookSpringEnabled();
+                    if (ImGui::Checkbox("##Editor", &spring)) {
+                        s->SetValue("hasSpring", spring);
+                        s->SetHookSpringEnabled(spring);
+                    }
+                }
+            }
+        }
+    );
 }
 
 void Player::Init() {
@@ -139,15 +228,45 @@ void Player::Init() {
     m_groundSensor = dynamic_cast<ColliderNode *>(GetChild("GroundSensor"));
     if (m_groundSensor != nullptr) {
         m_groundSensor->OnEntry.Register<Player>(&Player::OnLandOnGround, *this);
-        m_groundSensor->OnExit.Register<Player>(&Player::OnJump, *this);
     }
-
+    m_wallSensorLeft = dynamic_cast<ColliderNode *>(GetChild("WallSensorLeft"));
+    if (m_wallSensorLeft != nullptr) {
+        m_wallSensorLeft->OnEntry.Register<Player>(&Player::OnHitWallLeft, *this);
+    }
+    m_wallSensorRight = dynamic_cast<ColliderNode *>(GetChild("WallSensorRight"));
+    if (m_wallSensorRight != nullptr) {
+        m_wallSensorRight->OnEntry.Register<Player>(&Player::OnHitWallRight, *this);
+    }
     m_levelGoal = dynamic_cast<ColliderNode*>(GetChild("GoalSensor"));
     if (m_levelGoal != nullptr) {
         m_levelGoal->OnEntry.Register<Player>(&Player::HandleCollision, *this);
     }
-
+    m_hookSprite = dynamic_cast<SpriteNode*>(GetChild("HookSprite"));
 }
+
+
+void Player::SetupParameter(IniParser *parser, const std::string &section) {
+
+    Node::SetupParameter(parser, section); // IMORTANT!!
+
+    // own setup of variables
+    m_fGroundAcceleration = parser->GetValueAsFloat(section, "groundAcceleration");
+    m_fGroundDeceleration = parser->GetValueAsFloat(section, "groundDeceleration");
+    m_fGroundMaxSpeed = parser->GetValueAsFloat(section, "maxGroundSpeed");
+    m_fJumpForce = parser->GetValueAsFloat(section, "jumpForce");
+    m_maxJumps = parser->GetValueAsInt(section, "maxJumps");
+    m_fMinRange = parser->GetValueAsFloat(section, "minHookRange");
+    m_fMaxRange = parser->GetValueAsFloat(section, "maxHookRange");
+    m_fDamping = parser->GetValueAsFloat(section, "damping");
+    m_fHertz = parser->GetValueAsFloat(section, "hertz");
+    m_fSwingAcceleration = parser->GetValueAsFloat(section, "swingAcceleration");
+    m_fSwingDeceleration = parser->GetValueAsFloat(section, "swingDeceleration");
+    m_bJointSpringEnabled = parser->GetValueAsBoolean(section, "hasSpring");
+
+    // child setup
+    NodeFactory::GetInstance().InitWithConfiguration(this, "../game/scenes/whoosh/Player.ini");
+}
+
 
 
 void Player::Process(float deltaTime) {
@@ -157,17 +276,20 @@ void Player::Process(float deltaTime) {
 
     if (m_bCheatsEnabled) {
         HandleMovementCheat(deltaTime);
+        return;
     }
-    else {
-        HandleMovement(deltaTime);
-        HandleHookControls();
-        HandleHookVelocity();
-        HandleAnimations();
-        HandleFlip();
-    }
+
+    HandleMovement(deltaTime);
+    HandleHookControls();
+    HandleHookVelocity();
+    HandleHookVisualisation();
+    HandleAnimations();
+    HandleFlip();
+
+    m_bIsGrounded = false;
 }
 
-void Player::HandleMovementCheat(float deltaTime) {
+void Player::HandleMovementCheat(float deltaTime) const {
 
     auto pos = m_rigidBody->GetBodyPosition();
     float flySpeed = 500 * deltaTime;
@@ -193,7 +315,6 @@ void Player::HandleMovementCheat(float deltaTime) {
 }
 
 void Player::HandleMovement(float deltaTime) {
-
     if (InputManager::GetInstance().GetButtonState(SDLK_d) == BS_HELD) {
         if (m_bIsFlipped) {
             m_bIsFlipped = false;
@@ -233,23 +354,44 @@ void Player::HandleMovement(float deltaTime) {
         }
     }
 
-    if (!m_bHasFiredHook) {
+    if (m_bIsHittingWall) {
+        m_velocity.x = 0;
+        m_bIsHittingWall = false;
+    }
+
+    if (!m_bIsHookAttached) {
         m_rigidBody->SetHorizontalVelocity(m_velocity);
     }
 }
 
 void Player::HandleAnimations() {
-    float walkingThreshold = m_fGroundMaxSpeed * 0.8f;
-    if (abs(m_velocity.x) == 0) {
-        ChangeAnimation(m_idleAnimation);
-    } else if (abs(m_velocity.x) < walkingThreshold) {
-        ChangeAnimation(m_walkingAnimation);
-    } else {
-        ChangeAnimation(m_runningAnimation);
+    float walkingThreshold = m_fGroundMaxSpeed * 0.7f;
+
+    if (!m_bIsGrounded && !m_jumpAnimation->m_bIsAnimating) {
+        ChangeAnimation(m_jumpAnimation);
+        m_currentAnimation->SetLooping(false);
+    }
+
+    if (m_bIsGrounded) {
+        if (abs(m_velocity.x) == 0) {
+            ChangeAnimation(m_idleAnimation);
+        } else if (abs(m_velocity.x) < walkingThreshold) {
+            ChangeAnimation(m_walkingAnimation);
+        } else {
+            ChangeAnimation(m_runningAnimation);
+        }
     }
 }
 
-void Player::HandleFlip() {
+void Player::DestroyHook() {
+    if (b2Joint_IsValid(m_b2Hook)) {
+        m_globalHookOrigin = Vector2d::Zero();
+        m_globalHookTarget = Vector2d::Zero();
+        b2DestroyJoint(m_b2Hook, false);
+    }
+}
+
+void Player::HandleFlip() const {
     if (m_currentAnimation == nullptr) return;
 
     if (m_currentAnimation->IsFlipped() && !m_bIsFlipped) {
@@ -260,52 +402,36 @@ void Player::HandleFlip() {
     }
 }
 
-
 void Player::HandleHookControls() {
-    if (!m_bHasFiredHook) {
-        Vector2d mousePosition = InputManager::GetInstance().GetMousePosition()  + m_globalTransform.position;
 
-        // temp solution!!!!!!!!!!!!! (assumes the player is always in the center of the camera)
-        // Problem: the mouse click position is not transformed when the ortho matrix is transformed that sets the offset for the camera
-        auto mouseOffset = Vector2d(Config::GetInstance().windowsWidth/2, Config::GetInstance().windowsHeight/2);
-        mousePosition -= mouseOffset;
+    auto currentMouseButtonEvent = InputManager::GetInstance().GetCurrentMouseEvent();
+    Vector2d mousePosition = InputManager::GetInstance().GetMousePosition();
 
-        // check button pressed
-        if (InputManager::GetInstance().GetCurrentMouseEvent().button == 1) {
-            if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONDOWN && m_bIsShooting == false) {
-                m_bIsShooting = true;
 
-                if (!ShootHookSwing(mousePosition)) {
-                    m_bIsShooting = false;
-                    return;
-                }
-            }
-            if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONUP && m_bIsShooting == true) {
-                m_bIsShooting = false;
-                m_bHasFiredHook = true;
-            }
-        }
-        if (InputManager::GetInstance().GetCurrentMouseEvent().button == 3 && InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONUP) {
-            ShootHookPull(mousePosition);
-        }
 
+    // filter out duplicates of the same event
+    if (m_lastMouseButtonEvent.type == currentMouseButtonEvent.type) return;
+    m_lastMouseButtonEvent = currentMouseButtonEvent;
+
+    // only receive left mouse button UP events
+    if (currentMouseButtonEvent.button != 1 || currentMouseButtonEvent.type != SDL_MOUSEBUTTONUP) return;
+
+    // check hook states
+    if (m_bIsHookAttached) {
+        DestroyHook();
+
+        m_bIsHookAttached = false;
     }
     else {
-        if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONDOWN && m_bIsShooting == false) {
-            m_bIsShooting = true;
-            if (b2Joint_IsValid(m_b2Hook)) {
-                b2DestroyJoint(m_b2Hook, false);
-            }
-        }
-        if (InputManager::GetInstance().GetCurrentMouseEvent().type == SDL_MOUSEBUTTONUP && m_bIsShooting == true) {
-            m_bIsShooting = false;
-            m_bHasFiredHook = false;
+        auto hasShotHook = ShootHookSwing(mousePosition);
+        if (hasShotHook) {
+            m_bIsHookAttached = true;
         }
     }
 }
 
-void Player::HandleHookVelocity() {
-    if (!m_bHasFiredHook) return;
+void Player::HandleHookVelocity() const {
+    if (!m_bIsHookAttached) return;
     if (!b2Joint_IsValid(m_b2Hook)) return;
 
     auto currentVelocity = m_rigidBody->GetBodyVelocity();
@@ -313,58 +439,199 @@ void Player::HandleHookVelocity() {
     // accelerate while falling (y velocity > 0) and direction is pressed
     if (m_rigidBody->GetBodyVelocity().y > 0) {
         if (m_rigidBody->GetBodyVelocity().x > 0 && InputManager::GetInstance().GetButtonState(SDLK_d) == BS_HELD) {
-            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x + 0.01, currentVelocity.y ));
+            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * m_fSwingAcceleration, currentVelocity.y ));
 
         }
         else if (m_rigidBody->GetBodyVelocity().x > 0) {
-            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * 0.999, currentVelocity.y ));
+            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * m_fSwingDeceleration, currentVelocity.y ));
 
         }
         if (m_rigidBody->GetBodyVelocity().x < 0 && InputManager::GetInstance().GetButtonState(SDLK_a) == BS_HELD) {
-            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x - 0.01, currentVelocity.y ));
+            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * m_fSwingAcceleration, currentVelocity.y ));
         }
         else if (m_rigidBody->GetBodyVelocity().x < 0) {
-            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * 0.999, currentVelocity.y ));
+            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * m_fSwingDeceleration, currentVelocity.y ));
         }
     }
-
-
     // decelerate by factor while rising (y velocity < 0) and nothing is pressed
+}
 
+void Player::HandleHookVisualisation() const {
+    if (m_hookSprite == nullptr) return;
+    if (m_globalHookOrigin == Vector2d::Zero() || m_globalHookTarget == Vector2d::Zero()) {
+        m_hookSprite->SetRGBA(0,0,0,0);
+        return;
+    }
+
+    auto hookOffset = Vector2d{80,80};
+    auto currentOrigin = GetGlobalPosition() + hookOffset;
+
+    // length of hook
+    auto distance = currentOrigin.Distance(m_globalHookTarget);
+    m_hookSprite->SetBaseSize(Vector2d(distance*2, 2));
+
+    // angle of hook
+    auto direction = m_globalHookTarget - currentOrigin;
+    auto angle = atan2(direction.y, direction.x) * 180/std::numbers::pi;
+
+    m_hookSprite->SetRGBA(1,1,1,1);
+    auto newOffsetPos = Vector2d{currentOrigin} - Vector2d{distance, 0};
+    m_hookSprite->SetGlobalPosition(newOffsetPos);
+    m_hookSprite->m_globalTransform.SetRotation(-angle);
 
 }
 
+void Player::Reset(Vector2d pos) {
+    m_bHasTargetObjectReceived = false;
+    m_bIsHookAttached = false;
+    m_bCheatsEnabled = false;
+    m_bHasLevelCompleted = false;
+    DestroyHook();
+    SetGlobalPosition(pos);
+}
 
 bool Player::ShootHookSwing(Vector2d posInPixel) {
 
+    Vector2d hookOffset = Vector2d{80,80};
     b2WorldId world = PhysicsManager::GetInstance().GetWorld();
-    Vector2d playerPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(GetGlobalPosition() + 80);
+    Vector2d playerPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(GetGlobalPosition() + hookOffset);
     Vector2d targetPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(posInPixel);
 
     b2RayResult rayResult = CastRayFromTo(playerPositionInBox2DWorld, targetPositionInBox2DWorld, world);
-    if (!rayResult.hit) return false;
+
+    if (!rayResult.hit) {
+        m_globalHookOrigin = Vector2d::Zero();
+        m_globalHookTarget = Vector2d::Zero();
+        return false;
+    };
 
     // body that got hit
     b2BodyId targetBodyId = b2Shape_GetBody(rayResult.shapeId);
 
     CreateChainBetween(playerPositionInBox2DWorld,rayResult.point, targetBodyId, world);
+
+    m_globalHookOrigin = GetGlobalPosition() + hookOffset;
+    m_globalHookTarget = PhysicsManager::MeterToPixelsVector(Vector2d{rayResult.point.x, rayResult.point.y});
     return true;
 }
 
-bool Player::ShootHookPull(Vector2d posInPixel) const {
-    b2WorldId world = PhysicsManager::GetInstance().GetWorld();
-    Vector2d playerPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(GetGlobalPosition() + 80);
-    Vector2d targetPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(posInPixel);
 
-    b2RayResult rayResult = CastRayFromTo(playerPositionInBox2DWorld, targetPositionInBox2DWorld, world);
-    if (!rayResult.hit) return false;
+void Player::CreateChainBetween(b2Vec2 origin, b2Vec2 target, b2BodyId targetBody, b2WorldId world) {
+
+    // local point of raycast source
+    b2Transform localTransformPlayer;
+    localTransformPlayer.p = b2Body_GetLocalPoint(m_rigidBody->GetBodyId(), origin);
+    localTransformPlayer.q = b2MakeRot(0);
+
+    // transform of point hit
+    b2Transform localTransformTarget;
+    localTransformTarget.p = b2Body_GetLocalPoint(targetBody,target);
+    localTransformTarget.q = b2MakeRot(0);
 
 
-    m_rigidBody->ResetBodyVelocity();
-    m_rigidBody->ApplyImpluseToCenter((playerPositionInBox2DWorld - targetPositionInBox2DWorld) * 5);
-    return true;
+    b2JointDef playerJointDef = b2JointDef();
+    playerJointDef.bodyIdA = m_rigidBody->GetBodyId();
+    playerJointDef.bodyIdB = targetBody;
+    playerJointDef.localFrameA = localTransformPlayer;
+    playerJointDef.localFrameB = localTransformTarget;
+    playerJointDef.collideConnected = true;
+
+    b2DistanceJointDef distanceJointDef = b2DefaultDistanceJointDef();
+    distanceJointDef.base = playerJointDef;
+    distanceJointDef.enableSpring = m_bJointSpringEnabled;
+    distanceJointDef.enableLimit = true;
+    distanceJointDef.hertz = m_fHertz;
+    distanceJointDef.dampingRatio = m_fDamping;
+    distanceJointDef.minLength = m_fMinRange;
+    distanceJointDef.maxLength = m_fMaxRange;
+
+    auto distanceJoint = b2CreateDistanceJoint(PhysicsManager::GetInstance().GetWorld(), &distanceJointDef);
+    m_b2Hook = distanceJoint;
 }
 
+
+void Player::HandleCollision(const b2ShapeId* collidedShapes) {
+    if (collidedShapes == nullptr) return;
+    if (!b2Shape_IsValid(collidedShapes[0])) return;
+    if (!b2Shape_IsSensor(collidedShapes[0])) return;
+
+    auto collisionData = b2Body_GetUserData(b2Shape_GetBody(collidedShapes[0]));
+    auto collisionDataNode = static_cast<ColliderNode*>(collisionData);
+
+    if (collisionDataNode != nullptr && collisionDataNode->m_name == "ObjectPickup" && !m_bHasTargetObjectReceived) {
+        m_bHasTargetObjectReceived = true;
+    };
+    if (collisionDataNode != nullptr && collisionDataNode->m_name == "FinishArea" && m_bHasTargetObjectReceived) {
+        SceneManager::GetInstance().SetSceneActive("WinScreen");
+    };
+
+    if (collisionDataNode != nullptr && collisionDataNode->m_name == "HurtArea") {
+        Vector2d pos;
+        pos.x = m_iniParser->GetValueAsFloat(m_UId, "globalPosX");
+        pos.y = m_iniParser->GetValueAsFloat(m_UId, "globalPosY");
+        Reset(pos);
+    };
+}
+
+
+
+void Player::ChangeAnimation(AnimatedSpriteNode* animation) {
+    if (animation == nullptr) return;
+
+    if (m_currentAnimation == nullptr) {
+        m_currentAnimation = animation;
+    } else {
+        m_currentAnimation->SetRGBA(0, 0, 0, 0);
+        m_currentAnimation = animation;
+    }
+
+    m_currentAnimation->SetRGBA(1, 1, 1, 1);
+    m_currentAnimation->SetAnimating(true);
+    m_currentAnimation->SetLooping(true);
+}
+
+
+// ############# EVENT CALLBACKS ################
+void Player::OnJump(const b2ShapeId* target) {
+    m_bIsGrounded = false;
+}
+
+void Player::OnHitWallRight(const b2ShapeId* target) {
+    if (target == nullptr) return;
+    if (!b2Shape_IsValid(target[0])) return;
+    if (b2Shape_IsSensor(target[0])) return;
+    if (b2Body_GetType(b2Shape_GetBody(target[0])) != b2_staticBody) return;
+
+    if (m_velocity.x > 0) {
+        m_bIsHittingWall = true;
+    }
+}
+
+void Player::OnHitWallLeft(const b2ShapeId* target) {
+    if (target == nullptr) return;
+    if (!b2Shape_IsValid(target[0])) return;
+    if (b2Shape_IsSensor(target[0])) return;
+    if (b2Body_GetType(b2Shape_GetBody(target[0])) != b2_staticBody) return;
+
+    if (m_velocity.x < 0) {
+        m_bIsHittingWall = true;
+    }
+
+}
+
+void Player::OnLandOnGround(const b2ShapeId* target) {
+    if (target == nullptr) return;
+    if (!b2Shape_IsValid(target[0])) return;
+    if (b2Shape_IsSensor(target[0])) return;
+    if (b2Body_GetType(b2Shape_GetBody(target[0])) != b2_staticBody) return;
+
+    m_bIsGrounded = true;
+    m_jumpsMade = 0;
+}
+
+
+
+// ######## HOOK RAY CASTING ###############
 
 float RayCastCallback(b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, void *context) {
 
@@ -392,7 +659,7 @@ float RayCastCallback(b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float frac
 b2RayResult Player::CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId world) const {
 
     // Calculate ray points
-    const b2Vec2 translation = (origin - target) * 8;
+    const b2Vec2 translation = (target - origin) * 10;
 
     // Set up query filter
     const b2QueryFilter filter = b2DefaultQueryFilter();
@@ -405,96 +672,60 @@ b2RayResult Player::CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId wo
     return *rayResult;
 }
 
+// ############# GETTER ###############
 
-void Player::CreateChainBetween(b2Vec2 origin, b2Vec2 target, b2BodyId targetBody, b2WorldId world) {
-
-    // local point of raycast source
-    b2Transform localTransformPlayer;
-    localTransformPlayer.p = b2Body_GetLocalPoint(m_rigidBody->GetBodyId(), origin);
-    localTransformPlayer.q = b2MakeRot(0);
-
-    // transform of point hit
-    b2Transform localTransformTarget;
-    localTransformTarget.p = b2Body_GetLocalPoint(targetBody,target);
-    localTransformTarget.q = b2MakeRot(0);
-
-
-    b2JointDef playerJointDef = b2JointDef();
-    playerJointDef.bodyIdA = m_rigidBody->GetBodyId();
-    playerJointDef.bodyIdB = targetBody;
-    playerJointDef.localFrameA = localTransformPlayer;
-    playerJointDef.localFrameB = localTransformTarget;
-    playerJointDef.collideConnected = true;
-
-    b2DistanceJointDef distanceJointDef = b2DefaultDistanceJointDef();
-    distanceJointDef.base = playerJointDef;
-    distanceJointDef.enableSpring = true;
-    distanceJointDef.enableLimit = true;
-    distanceJointDef.hertz = 0.8f;
-    distanceJointDef.dampingRatio = 3.f;
-    distanceJointDef.minLength = 0;
-    distanceJointDef.maxLength = 10;
-
-    auto distanceJoint = b2CreateDistanceJoint(PhysicsManager::GetInstance().GetWorld(), &distanceJointDef);
-    m_b2Hook = distanceJoint;
+float Player::GetHookMinRange() {
+    return m_fMinRange;
 }
 
-void Player::OnJump(const b2ShapeId* target) {
-    m_bIsGrounded = false;
+float Player::GetHookMaxRange() {
+    return m_fMaxRange;
 }
 
-void Player::OnLandOnGround(const b2ShapeId* target) {
-    m_bIsGrounded = true;
-    m_jumpsMade = 0;
+float Player::GetHookDamping() {
+    return m_fDamping;
 }
 
-void Player::HandleCollision(const b2ShapeId* collidedShapes) {
-    if (collidedShapes == nullptr) return;
-    if (!b2Shape_IsValid(collidedShapes[0])) return;
-    if (!b2Shape_IsSensor(collidedShapes[0])) return;
+float Player::GetHookHertz() {
+    return m_fHertz;
+}
 
-    auto collisionData = b2Body_GetUserData(b2Shape_GetBody(collidedShapes[0]));
-    auto collisionDataNode = static_cast<ColliderNode*>(collisionData);
+float Player::GetHookSwingAcceleration() {
+    return m_fSwingAcceleration;
+}
+float Player::GetHookSwingDeceleration() {
+    return m_fSwingDeceleration;
+}
 
-    if (collisionDataNode != nullptr && collisionDataNode->m_name == "FinishArea") {
-        SceneManager::GetInstance().SetSceneActive("MainMenu");
-    };
-
-    if (collisionDataNode != nullptr && collisionDataNode->m_name == "HurtArea") {
-        Vector2d pos;
-        pos.x = m_iniParser->GetValueAsFloat(m_UId, "globalPosX");
-        pos.y = m_iniParser->GetValueAsFloat(m_UId, "globalPosY");
-        SetGlobalPosition(pos);
-    };
+bool Player::GetHookSpringEnabled() {
+    return m_bJointSpringEnabled;
 }
 
 
-void Player::ChangeAnimation(AnimatedSpriteNode* animation) {
-    if (animation == nullptr) return;
-
-    if (m_currentAnimation == nullptr) {
-        m_currentAnimation = animation;
-    } else {
-        m_currentAnimation->SetRGBA(0, 0, 0, 0);
-        m_currentAnimation = animation;
-    }
-
-    m_currentAnimation->SetRGBA(1, 1, 1, 1);
-    m_currentAnimation->SetAnimating(true);
-    m_currentAnimation->SetLooping(true);
+// ############### SETTER ###################
+void Player::SetHookMinRange(float min) {
+    m_fMinRange = min;
+}
+void Player::SetHookMaxRange(float max) {
+    m_fMaxRange = max;
 }
 
-void Player::SetupParameter(IniParser *parser, const std::string &section) {
+void Player::SetHookDamping(float damping) {
+    m_fDamping = damping;
+}
 
-    Node::SetupParameter(parser, section); // IMORTANT!!
+void Player::SetHookHertz(float hertz) {
+    m_fHertz = hertz;
+}
 
-    // own setup of variables
-    m_fGroundAcceleration = parser->GetValueAsFloat(section, "groundAcceleration");
-    m_fGroundDeceleration = parser->GetValueAsFloat(section, "groundDeceleration");
-    m_fGroundMaxSpeed = parser->GetValueAsFloat(section, "maxGroundSpeed");
-    m_fJumpForce = parser->GetValueAsFloat(section, "jumpForce");
-    m_maxJumps = parser->GetValueAsInt(section, "maxJumps");
+void Player::SetHookSwingAcceleration(float acceleration) {
+    m_fSwingAcceleration = acceleration;
+}
 
-    // child setup
-    NodeFactory::GetInstance().InitWithConfiguration(this, "../game/scenes/whoosh/Player.ini");
+void Player::SetHookSwingDeceleration(float deceleration) {
+    m_fSwingDeceleration = deceleration;
+}
+
+void Player::SetHookSpringEnabled(bool enabled) {
+    m_bJointSpringEnabled = enabled;
 }

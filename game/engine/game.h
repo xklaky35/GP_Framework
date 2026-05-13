@@ -27,7 +27,9 @@ namespace Engine {
 
         void TogglePause();
 
-        void ResetOrtho();
+        void ResetOrtho() const;
+
+        Vector2d GetMouseOffset() const;
 
     protected:
         void Process(float deltaTime);

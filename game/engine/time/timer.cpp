@@ -4,6 +4,13 @@
 
 #include "timer.h"
 
+Timer::Timer()
+    : m_DeltaTime(0.f),
+      m_TotalTime(0.f),
+      m_FrameCount(0){
+    Reset();
+}
+
 Timer* Timer::m_pInstance = nullptr;
 Timer &Timer::GetInstance() {
     if (m_pInstance == nullptr) {
@@ -38,3 +45,15 @@ void Timer::Reset() {
 float Timer::GetTotalTime() const {
     return m_TotalTime;
 }
+std::string Timer::GetTotalTimeAsString() const {
+    // need to find another way
+    // performance is butchered doint this because text rendering is incredibly unperformant (yet)
+    auto seconds = ((int) m_TotalTime % 60);
+    auto minutes = (int) (m_TotalTime / 60);
+
+    std::string secondsText = std::to_string(seconds);
+    std::string minutesText = std::to_string(minutes);
+    return minutesText + " : " + secondsText;
+}
+
+

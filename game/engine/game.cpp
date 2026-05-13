@@ -251,8 +251,15 @@ namespace Engine {
         m_bIsPaused = !m_bIsPaused;
     }
 
-    void Game::ResetOrtho() {
+    void Game::ResetOrtho() const {
         m_pRenderer->SetOrthoViewport(Config::GetInstance().windowsWidth, Config::GetInstance().windowsHeight);
         m_pRenderer->SetOrthoOffset(0,0);
+    }
+
+    Vector2d Game::GetMouseOffset() const {
+        if (m_pRenderer != nullptr) {
+            return m_pRenderer->GetCurrentOffset();
+        }
+        return Vector2d{0,0};
     }
 }

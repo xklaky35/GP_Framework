@@ -6,7 +6,12 @@
 #include "spritenode.h"
 #include "../../helper/inlinehelper.h"
 #include "../logmanager/logmanager.h"
+#include "ui/button.h"
+#include "ui/hcontainer.h"
+#include "ui/margincontainer.h"
+#include "ui/panelcontainer.h"
 #include "ui/textcontrol.h"
+#include "ui/vcontainer.h"
 
 namespace Engine {
 
@@ -155,6 +160,21 @@ namespace Engine {
         }
         if (nodeType == NT_TextControl) {
             return dynamic_cast<Node*>(new TextControl());
+        }
+        if (nodeType == NT_Button) {
+            return dynamic_cast<Node*>(new Button());
+        }
+        if (nodeType == NT_HContainer) {
+            return dynamic_cast<Node*>(new HContainer());
+        }
+        if (nodeType == NT_VContainer) {
+            return dynamic_cast<Node*>(new VContainer());
+        }
+        if (nodeType == NT_PanelContainer) {
+            return dynamic_cast<Node*>(new PanelContainer());
+        }
+        if (nodeType == NT_MarginContainer) {
+            return dynamic_cast<Node*>(new MarginContainer());
         }
         return nullptr;
     }

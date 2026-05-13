@@ -4,6 +4,7 @@
 #include "../../scenes/mainmenu/mainmenu.h"
 #include "../../scenes/slashscreen/splashscreen.h"
 #include "../../scenes/whoosh/scenewhoosh.h"
+#include "../../scenes/winscreen/winscreen.h"
 #include "../physics/physicsmanager.h"
 
 namespace Engine {
@@ -26,8 +27,8 @@ namespace Engine {
         RegisterScene("Splash", new Splashscreen());
         RegisterScene("MainMenu", new MainMenu());
         RegisterScene("Whoosh", new SceneWhoosh());
+        RegisterScene("WinScreen", new WinScreen());
     }
-
 
 
     SceneManager & SceneManager::GetInstance() {

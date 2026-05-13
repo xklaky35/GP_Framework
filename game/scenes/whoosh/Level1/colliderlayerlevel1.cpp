@@ -2,7 +2,7 @@
 // Created by leon on 06.05.26.
 //
 
-#include "ColliderLayerLevel1.h"
+#include "colliderlayerlevel1.h"
 
 ColliderLayerLevel1::ColliderLayerLevel1() {
     SetupNode("ColliderLayerLevel1", NT_Custom);

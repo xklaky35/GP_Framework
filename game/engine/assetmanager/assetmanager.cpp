@@ -70,6 +70,12 @@ namespace Engine {
         assetBrowser->AddItem(AssetField(AT_Node, NT_CameraNode));
         assetBrowser->AddItem(AssetField(AT_Node, NT_ColliderNode));
         assetBrowser->AddItem(AssetField(AT_Node, NT_TextControl));
+        assetBrowser->AddItem(AssetField(AT_Node, NT_Button));
+        assetBrowser->AddItem(AssetField(AT_Node, NT_HContainer));
+        assetBrowser->AddItem(AssetField(AT_Node, NT_MarginContainer));
+        assetBrowser->AddItem(AssetField(AT_Node, NT_PanelContainer));
+        assetBrowser->AddItem(AssetField(AT_Node, NT_VContainer));
+        assetBrowser->AddItem(AssetField(AT_Node, NT_Control));
 
         assets = &assetBrowser->Items;
         return true;

@@ -1,14 +1,17 @@
-#include "mainmenu.h"
-#include "../../config/config.h"
-#include "../../engine/game.h"
-#include "../../engine/input/input.h"
-#include "../../engine/logmanager/logmanager.h"
-#include "../../engine/nodes/nodefactory.h"
-#include "../../engine/scenemanager/scenemanager.h"
-#include "../../engine/sound/soundmanager.h"
-#include "../../engine/time/timer.h"
+#include "winscreen.h"
 
-MainMenu::MainMenu() : m_currentSelection(0){
+#include "../../engine/game.h"
+#include "../../config/config.h"
+#include "../../engine/time/timer.h"
+#include "../../engine/input/input.h"
+#include "../../engine/scenemanager/scenemanager.h"
+
+using namespace Engine;
+
+WinScreen::WinScreen()
+    : m_currentSelection(0) {
+
+    SetupNode("WinScreen", NT_Custom);
     vcontainer1 = new VContainer();
     h1 = new HContainer();
     h2 = new HContainer();
@@ -21,22 +24,11 @@ MainMenu::MainMenu() : m_currentSelection(0){
     spacer2 = new Control();
     spacer3 = new Control();
     spacer4 = new Control();
-    SetupNode("MainMenu", NT_Custom);
 }
 
-void MainMenu::Init() {
-    Timer::GetInstance().Reset();
+void WinScreen::Init() {
     HContainer::Init();
-
-    /* The Main menu proveds a choice between the 3 different games to play
-     * The Games are interactivaly selectable by moving the cursor up and down and pressing enter once a game is selected
-     *
-     * >  Play SpaceInvaders
-     *    Play Robotron
-     *    Play Asteroids
-     *
-     *         Quit
-     */
+    m_sCompletionTime = "Completed in  " + Timer::GetInstance().GetTotalTimeAsString();
 
     // OUTER LAYOUT
     m_screenSize = Vector2d(Config::GetInstance().windowsWidth, Config::GetInstance().windowsHeight);
@@ -91,14 +83,12 @@ void MainMenu::Init() {
     t3->m_containerSizing.m_verticalBehavior = v_Center;
     t3->m_containerSizing.m_horizontalBehavior = h_Center;
 
-
-    t1->SetText("Play");
+    t1->SetText("Play again");
     t1->SetPointSize(50);
-    t2->SetText("Quit");
+    t2->SetText("Return to menu");
     t2->SetPointSize(50);
-    t3->SetText("GRAPPLE");
-    t3->SetPointSize(70);
-
+    t3->SetText(m_sCompletionTime);
+    t3->SetPointSize(50);
 
     // Add Text to rows
     h1->AddChild(*t1);
@@ -112,39 +102,30 @@ void MainMenu::Init() {
     vcontainer1->AddChild(*h2);
     vcontainer1->AddChild(*spacer2);
 
-
     AddChild(*spacer3);
     AddChild(*vcontainer1);
     AddChild(*spacer4);
 
-    NodeFactory::GetInstance().InitWithConfiguration(this, "../game/scenes/mainmenu/MainMenu.ini");
+    NodeFactory::GetInstance().InitWithConfiguration(this, "../game/scenes/winscreen/WinScreen.ini");
 }
 
-
-void MainMenu::Process(float deltaTime) {
+void WinScreen::Process(float deltaTime) {
     HContainer::Process(deltaTime);
-    const char* soundOnSelection = "hardpop-mainmenu-onSelection.wav";
-
     HandleMouseInteraction();
-
     if (t1->m_textSprite != nullptr && t2->m_textSprite != nullptr) {
         t1->m_textSprite->m_iLayer = 1;
         t2->m_textSprite->m_iLayer = 1;
         t3->m_textSprite->m_iLayer = 1;
     }
+
 }
 
-void MainMenu::SetupParameter(IniParser *parser, const std::string &sectionId) {
-    HContainer::SetupParameter(parser, sectionId);
-}
-
-void MainMenu::Draw(Renderer &renderer) {
+void WinScreen::Draw(Renderer &renderer) {
     HContainer::Draw(renderer);
 }
 
-void MainMenu::HandleMouseInteraction() {
 
-
+void WinScreen::HandleMouseInteraction() {
     auto mousePos = InputManager::GetInstance().GetMousePosition();
     auto mouseEvent = InputManager::GetInstance().GetCurrentMouseEvent();
 
@@ -161,15 +142,11 @@ void MainMenu::HandleMouseInteraction() {
     if (mouseEvent.type == SDL_MOUSEBUTTONDOWN && mouseEvent.button == 1) {
         ExecuteSelection();
     }
-    LogManager::GetInstance().Log(INFO, "%f, %f", mousePos.x, mousePos.y);
 }
 
-void MainMenu::ExecuteSelection() const {
-    auto currentTime = Timer::GetInstance().GetTotalTime();
-    if (currentTime < 0.5f) return;
-
+void WinScreen::ExecuteSelection() const {
     if (m_currentSelection == 0)
         SceneManager::GetInstance().SetSceneActive("Whoosh");
     if (m_currentSelection == 1)
-        Game::GetInstance().Quit();
+        SceneManager::GetInstance().SetSceneActive("MainMenu");
 }

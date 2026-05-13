@@ -11,6 +11,8 @@
 // Library includes:
 #include <SDL.h>
 
+#include "structs/vector2d.h"
+
 
 namespace Engine {
     class Renderer {
@@ -22,25 +24,27 @@ namespace Engine {
         bool Initialise(bool windowed, int width = 0, int height = 0);
         void Clear();
         void Present();
-        void SetClearColour(unsigned char r, unsigned char g, unsigned char b);
-        void GetClearColour(unsigned char &r, unsigned char &g, unsigned char &b);
-        int GetWidth() const;
-        int GetHeight() const;
 
 
         Sprite *CreateSprite(const char *pcFilename);
         AnimatedSprite *CreateAnimatedSprite(const char *pcFilename);
 
         void DrawSprite(Sprite &sprite);
-        void DrawAnimatedSprite(Sprite &sprite, int frame, int width, int height);
         void Draw(); // draw all sprites collected
-        SDL_Window* GetSDLWindow();
-        const SDL_GLContext GetSDLGLContext();
 
-        void CreateStaticText(const char *pText, int pointsize, SDL_Color);
+        void CreateStaticText(const char *pText, int pointsize, SDL_Color) const;
 
+        void GetClearColour(unsigned char &r, unsigned char &g, unsigned char &b) const;
+        Vector2d GetCurrentOffset() const;
+        SDL_Window* GetSDLWindow() const;
+        SDL_GLContext GetSDLGLContext() const;
+        int GetWidth() const;
+        int GetHeight() const;
+
+        void SetClearColour(unsigned char r, unsigned char g, unsigned char b);
         void SetOrthoViewport(int windows_width, int windows_height);
         void SetOrthoOffset(float x, float y);
+
 
     protected:
         bool InitialiseOpenGL(int screenWidth, int screenHeight);
@@ -67,6 +71,7 @@ namespace Engine {
         float m_fClearRed;
         float m_fClearGreen;
         float m_fClearBlue;
+        Vector2d m_currentOffset;
 
     private:
     };

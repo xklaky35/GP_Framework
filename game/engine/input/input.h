@@ -53,7 +53,7 @@ namespace Engine {
 
         SDL_Keycode m_previousKey;
         std::map<SDL_Keycode, ButtonState> m_pressedKeys;
-        std::queue<KeyState> m_isInInstableState;
+        std::queue<KeyState> m_isInTransitionState;
 
 
         SDL_MouseButtonEvent m_currentMouseEvent;

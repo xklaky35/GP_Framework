@@ -1,7 +1,3 @@
-//
-// Created by leon on 10.03.26.
-//
-
 #include "config.h"
 
 Config* Config::instance = nullptr;
@@ -21,6 +17,7 @@ void Config::DestroyInstance() {
 void Config::SetDefaultConfig() {
     windowsHeight = 1080;
     windowsWidth = 1920;
+    defaultFontPath = "../assets/Fonts/KatalesBroken.otf";
 }
 
 Config::Config() : windowsWidth(0), windowsHeight(0) {}
