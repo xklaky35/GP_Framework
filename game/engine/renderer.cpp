@@ -184,7 +184,7 @@ namespace Engine {
 
     bool Renderer::SetupSpriteShader() {
         m_pSpriteShader = new Shader();
-        bool loaded = m_pSpriteShader->Load("shaders/sprite.vert", "shaders/sprite.frag");
+        bool loaded = m_pSpriteShader->Load("../assets/shaders/sprite.vert", "../assets/shaders/sprite.frag");
         m_pSpriteShader->SetActive();
         float vertices[] =
         {

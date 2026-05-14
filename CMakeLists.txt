@@ -31,6 +31,20 @@ set(SCENES_SOURCES
         ${SCENES_DIR}/spaceinvader/bulletspawner.h
         ${SCENES_DIR}/whoosh/player.cpp
         ${SCENES_DIR}/whoosh/player.h
+        ${SCENES_DIR}/whoosh/Level1/Level1.cpp
+        ${SCENES_DIR}/whoosh/Level1/Level1.h
+        ${SCENES_DIR}/whoosh/Level1/colliderlayerlevel1.cpp
+        ${SCENES_DIR}/whoosh/Level1/colliderlayerlevel1.h
+        ${SCENES_DIR}/whoosh/Level1/spritelayerlevel1.cpp
+        ${SCENES_DIR}/whoosh/Level1/spritelayerlevel1.h
+        ${SCENES_DIR}/whoosh/levelgoal.cpp
+        ${SCENES_DIR}/whoosh/levelgoal.h
+        ${SCENES_DIR}/winscreen/winscreen.cpp
+        ${SCENES_DIR}/winscreen/winscreen.h
+        ${SCENES_DIR}/whoosh/Level1/foregroundlayerlevel1.cpp
+        ${SCENES_DIR}/whoosh/Level1/foregroundlayerlevel1.h
+        ${SCENES_DIR}/whoosh/enemy.cpp
+        ${SCENES_DIR}/whoosh/enemy.h
 )
 
 
@@ -83,6 +97,21 @@ set(ENGINE_SOURCES
         ${ENGINE_DIR}/iniparser/iniparser.h
         ${ENGINE_DIR}/animatedsprite.cpp
         ${ENGINE_DIR}/animatedsprite.h
+        ${ENGINE_DIR}/scenemanager/sceneselector.cpp
+        ${ENGINE_DIR}/scenemanager/sceneselector.h
+        ${ENGINE_DIR}/physics/debugdraw.cpp
+        ${ENGINE_DIR}/physics/debugdraw.h
+        ${ENGINE_DIR}/nodes/cameranode.cpp
+        ${ENGINE_DIR}/nodes/cameranode.h
+        ${ENGINE_DIR}/structs/vector3d.cpp
+        ${ENGINE_DIR}/structs/vector3d.h
+        ${ENGINE_DIR}/physics/DebugFormsCreator.cpp
+        ${ENGINE_DIR}/physics/DebugFormsCreator.h
+        ${ENGINE_DIR}/time/timer.cpp
+        ${ENGINE_DIR}/time/timer.h
+        ${ENGINE_DIR}/nodes/ui/button.cpp
+        ${ENGINE_DIR}/nodes/ui/button.h
+
 
         ${ENGINE_NODES}/node.cpp
         ${ENGINE_NODES}/node.h
@@ -108,7 +137,6 @@ set(ENGINE_SOURCES
         ${ENGINE_NODES}/ui/textcontrol.h
         ${ENGINE_NODES}/rigidbodynode.cpp
         ${ENGINE_NODES}/rigidbodynode.h
-
 )
 
 ################## IMGUI ####################
@@ -125,38 +153,7 @@ set(IMGUI_SOURCES
         ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp
         ${IMGUI_BACKENDS_DIR}/imgui_impl_sdl2.cpp
         ${IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
-        game/engine/scenemanager/sceneselector.cpp
-        game/engine/scenemanager/sceneselector.h
-        game/engine/physics/debugdraw.cpp
-        game/engine/physics/debugdraw.h
-        game/engine/nodes/cameranode.cpp
-        game/engine/nodes/cameranode.h
-        game/engine/structs/vector3d.cpp
-        game/engine/structs/vector3d.h
-        game/engine/physics/DebugFormsCreator.cpp
-        game/engine/physics/DebugFormsCreator.h
-        game/scenes/whoosh/Level1/Level1.cpp
-        game/scenes/whoosh/Level1/Level1.h
-        game/scenes/whoosh/Level1/colliderlayerlevel1.cpp
-        game/scenes/whoosh/Level1/colliderlayerlevel1.h
-        game/scenes/whoosh/Level1/spritelayerlevel1.cpp
-        game/scenes/whoosh/Level1/spritelayerlevel1.h
-        game/scenes/whoosh/levelgoal.cpp
-        game/scenes/whoosh/levelgoal.h
-        game/engine/time/timer.cpp
-        game/engine/time/timer.h
-        game/engine/nodes/ui/button.cpp
-        game/engine/nodes/ui/button.h
-        game/scenes/winscreen/winscreen.cpp
-        game/scenes/winscreen/winscreen.h
-        game/scenes/whoosh/Level1/foregroundlayerlevel1.cpp
-        game/scenes/whoosh/Level1/foregroundlayerlevel1.h
-        game/scenes/whoosh/enemy.cpp
-        game/scenes/whoosh/enemy.h
-
-
 )
-
 
 add_executable(GP_Framework
         game/main.cpp
@@ -180,9 +177,9 @@ set(FMOD_STUDIO_API ${FMOD_DIR}/studio/inc)
 set(FMOD_STUDIO_LIB ${FMOD_DIR}/studio/lib/x86_64)
 
 # setup static library directories
-find_library(FMODCORELIB fmod ${FMOD_CORE_LIB})
-find_library(FMODSTUDIOLIB fmodstudio ${FMOD_STUDIO_LIB})
-find_library(FMODFSBANKLIB fsbank ${FMOD_FSBANK_LIB})
+find_library(FMODCORELIB NAMES fmod libfmod.so.14 ${FMOD_CORE_LIB})
+find_library(FMODSTUDIOLIB NAMES fmodstudio libfmodstudio.so.14 ${FMOD_STUDIO_LIB})
+find_library(FMODFSBANKLIB NAMES fsbank libfsbank.so.14 ${FMOD_FSBANK_LIB})
 
 
 
@@ -204,8 +201,6 @@ find_library(GLEWLIB GLEW lib/GLEW/lib)
 
 # dependency for glew
 find_package(OpenGL REQUIRED)
-
-
 
 
 
