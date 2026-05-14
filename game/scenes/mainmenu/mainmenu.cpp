@@ -172,7 +172,6 @@ void MainMenu::HandleMouseInteraction() {
     if (mouseEvent.type == SDL_MOUSEBUTTONUP && mouseEvent.button == 1) {
         ExecuteSelection();
     }
-    LogManager::GetInstance().Log(INFO, "%f, %f", mousePos.x, mousePos.y);
 }
 
 void MainMenu::ExecuteSelection() const {

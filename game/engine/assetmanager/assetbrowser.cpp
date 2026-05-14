@@ -207,7 +207,6 @@ namespace Engine {
                         // because we use this to alter the color of our text/icon.
                         if (ImGui::IsItemToggledSelection()) {
                             item_is_selected = !item_is_selected;
-                            LogManager::GetInstance().Log(INFO, item_data->AssetName.c_str());
                         }
 
                         // Focus (for after deletion)

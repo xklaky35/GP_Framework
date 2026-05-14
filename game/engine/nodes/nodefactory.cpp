@@ -49,7 +49,6 @@ namespace Engine {
             // query node type
             auto nodeType = childData.find("nodeType");
             if (nodeType == childData.end()) {
-                LogManager::GetInstance().Log(WARNING ,"No node type found on object: [ %s ]", childNodeId.c_str());
                 continue;
             }
             if (nodeType->second != NodeTypeStrings[NT_Custom]) {
@@ -61,7 +60,6 @@ namespace Engine {
             // query node type name
             auto nodeTypeName = childData.find("typeName");
             if (nodeType == childData.end()) {
-                LogManager::GetInstance().Log(WARNING ,"No type name found on object: [ %s ]", childNodeId.c_str());
                 continue;
             }
 

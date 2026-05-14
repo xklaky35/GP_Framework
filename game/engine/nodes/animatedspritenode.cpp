@@ -47,9 +47,7 @@ namespace Engine {
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if (ImGui::DragScalarN("##Editor", ImGuiDataType_S32, &animNode->m_frameHeight, 1, 0.5f,
                                            &v_min, &v_max)) {
-                        LogManager::GetInstance().Log(INFO, "Before %d", animNode->m_frameHeight);
                         animNode->SetValue("frameHeight",animNode->m_frameHeight);
-                        LogManager::GetInstance().Log(INFO, "After %d", animNode->m_frameHeight);
                         animNode->SetupFrames();
                     }
                 }

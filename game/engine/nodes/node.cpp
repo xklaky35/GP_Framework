@@ -232,7 +232,6 @@ namespace  Engine {
                     const auto* pAssetField = static_cast<ImGuiID *>(payload->Data);
                     for (auto items = AssetManager::GetInstance().assets; auto& item : *items) {
                         if (item.ID == *pAssetField) {
-                            LogManager::GetInstance().Log(INFO, "%s", (*items)[item.ID].AssetName.c_str());
                             if (Node* nodeToAdd = (*items)[item.ID].GetNode())
                                 AddChild(*nodeToAdd);
                         }
