@@ -177,9 +177,9 @@ set(FMOD_STUDIO_API ${FMOD_DIR}/studio/inc)
 set(FMOD_STUDIO_LIB ${FMOD_DIR}/studio/lib/x86_64)
 
 # setup static library directories
-find_library(FMODCORELIB NAMES fmod libfmod.so.14 ${FMOD_CORE_LIB})
-find_library(FMODSTUDIOLIB NAMES fmodstudio libfmodstudio.so.14 ${FMOD_STUDIO_LIB})
-find_library(FMODFSBANKLIB NAMES fsbank libfsbank.so.14 ${FMOD_FSBANK_LIB})
+find_library(FMODCORELIB NAMES fmod libfmod.so.14 HINTS ${FMOD_CORE_LIB})
+find_library(FMODSTUDIOLIB NAMES fmodstudio libfmodstudio.so.14 HINTS ${FMOD_STUDIO_LIB})
+find_library(FMODFSBANKLIB NAMES fsbank libfsbank.so.14 HINTS ${FMOD_FSBANK_LIB})
 
 
 
