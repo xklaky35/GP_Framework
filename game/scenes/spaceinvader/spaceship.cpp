@@ -103,7 +103,7 @@ void Spaceship::HandleMovement(float deltaTime) {
 
     if (InputManager::GetInstance().GetButtonState(SDLK_SPACE)) {
         if (m_deltaSum >= 1 / m_dps) {
-            SoundManager::GetInstance().Play("hardpop-mainmenu-onSelection.wav");
+            SoundManager::GetInstance().PlaySound("hardpop-mainmenu-onSelection.wav");
             m_bulletSpawner->ShootInDirection(direction);
             m_deltaSum = 0;
         }

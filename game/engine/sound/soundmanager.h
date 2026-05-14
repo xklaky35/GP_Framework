@@ -18,8 +18,11 @@ namespace Engine {
 
         bool Initialise();
         void LoadAudio();
+
+
         void Process(float deltaTime);
-        void Play(const char * sound_on_selection);
+        FMOD::Channel* PlaySound(const char * sound_on_selection);
+        FMOD::Sound* PlayMusic(const char *soundName);
 
     private:
         SoundManager();

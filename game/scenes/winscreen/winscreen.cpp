@@ -5,6 +5,7 @@
 #include "../../engine/time/timer.h"
 #include "../../engine/input/input.h"
 #include "../../engine/scenemanager/scenemanager.h"
+#include "../../engine/sound/soundmanager.h"
 
 using namespace Engine;
 
@@ -28,6 +29,11 @@ WinScreen::WinScreen()
 
 void WinScreen::Init() {
     HContainer::Init();
+
+    auto sound = SoundManager::GetInstance().PlaySound("winning.mp3");
+    if (sound != nullptr) {
+        sound->setVolume(3);
+    }
     m_sCompletionTime = "Completed in  " + Timer::GetInstance().GetTotalTimeAsString();
 
     // OUTER LAYOUT

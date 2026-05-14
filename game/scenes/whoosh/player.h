@@ -1,5 +1,6 @@
 #ifndef GP_FRAMEWORK_PLAYER_H
 #define GP_FRAMEWORK_PLAYER_H
+#include "fmod.hpp"
 #include "../../engine/nodes/node.h"
 #include "../../engine/nodes/nodefactory.h"
 #include "../../engine/nodes/rigidbodynode.h"
@@ -9,9 +10,11 @@ class Player : public Node {
 
 public:
     Player();
+    ~Player() override;
 
 
     void Init() override;
+
 
 
     void Process(float deltaTime) override;
@@ -37,11 +40,11 @@ public:
 
 
 private:
-    void HandleFlip() const;
-    void HandleAnimations();
-
     void DestroyHook();
 
+    void HandleFlip() const;
+    void HandleAnimations();
+    void HandleSound();
     void HandleHookControls();
     void HandleHookVelocity() const;
     void HandleHookVisualisation() const;
@@ -52,7 +55,6 @@ private:
     void Reset(Vector2d pos);
 
 
-    void OnJump(const b2ShapeId *target);
     void OnHitWallRight(const b2ShapeId *target);
     void OnHitWallLeft(const b2ShapeId *target);
     void OnLandOnGround(const b2ShapeId* target);
@@ -61,6 +63,7 @@ private:
     bool ShootHookSwing(Vector2d pos);
     void CreateChainBetween(b2Vec2 vector2d, b2Vec2 point, b2BodyId targetBody, b2WorldId worldId);
     b2RayResult CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId worldId) const;
+
 
 
 public:
@@ -123,6 +126,9 @@ private:
     ColliderNode* m_wallSensorRight;
     ColliderNode* m_levelGoal;
     SpriteNode* m_hookSprite;
+
+    FMOD::Channel* m_walkingSound;
+    FMOD::Channel* m_landingSound;
 
 };
 REGISTER_CLASS(Player);

@@ -52,6 +52,7 @@ namespace Engine {
             LogManager::GetInstance().Log(ERROR, "FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
             return false;
         }
+
         return true;
     }
 
@@ -68,17 +69,29 @@ namespace Engine {
 
             result = m_pSystem->createSound(entry.path().c_str(), FMOD_DEFAULT, nullptr, &sound);
 
-            auto filename = SplitString(entry.path(), "/")[3];
+            auto filenameArray = SplitString(entry.path(), "/");
+            auto &filename = filenameArray[filenameArray.size()-1];
 
             m_loadedSounds[filename] = sound;
         }
     }
+    FMOD::Sound* SoundManager::PlayMusic(const char *soundName) {
+        if (m_loadedSounds.find(soundName) != m_loadedSounds.end()) {
+            FMOD_RESULT result;
+            FMOD::Sound *sound;
+            result = m_pSystem->createStream(soundName, FMOD_NONBLOCKING, nullptr, &sound);
+            return sound;
+        }
+        return nullptr;
+    }
 
-    void SoundManager::Play(const char *soundOnSelection) {
-        if (m_loadedSounds.find(soundOnSelection) != m_loadedSounds.end()) {
+    FMOD::Channel* SoundManager::PlaySound(const char *soundName) {
+        if (m_loadedSounds.find(soundName) != m_loadedSounds.end()) {
             FMOD_RESULT result;
             FMOD::Channel *channel;
-            result = m_pSystem->playSound(m_loadedSounds[soundOnSelection], nullptr, false, &channel);
+            result = m_pSystem->playSound(m_loadedSounds[soundName], nullptr, false, &channel);
+            return channel;
         }
+        return nullptr;
     }
 }

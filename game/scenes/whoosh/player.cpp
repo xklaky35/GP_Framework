@@ -3,20 +3,31 @@
 #include "imgui.h"
 #include "levelgoal.h"
 #include "../../../lib/BOX2D/src/body.h"
-#include "../../../lib/BOX2D/src/sensor.h"
 #include "../../config/config.h"
 #include "../../engine/input/input.h"
-#include "../../engine/logmanager/logmanager.h"
 #include "../../engine/nodes/nodefactory.h"
 #include "../../engine/physics/physicsmanager.h"
 #include "../../engine/scenemanager/scenemanager.h"
+#include "../../engine/sound/soundmanager.h"
 #include "box2d/box2d.h"
 
 using namespace Engine;
 
-Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false),
-                   m_fGroundAcceleration(0), m_fGroundDeceleration(0), m_fGroundMinSpeed(0),
-                   m_fGroundMaxSpeed(0), m_jumpsMade(0), m_maxJumps(1), m_fJumpForce(0), m_currentAnimation(nullptr), m_groundSensor(nullptr) {
+Player::Player()
+    : m_bIsGrounded(true),
+      m_fGroundAcceleration(0),
+      m_fGroundDeceleration(0),
+      m_fGroundMinSpeed(0),
+      m_fGroundMaxSpeed(0),
+      m_fJumpForce(0),
+      m_jumpsMade(0),
+      m_maxJumps(1),
+      m_bIsFlipped(false),
+      m_rigidBody(nullptr),
+      m_currentAnimation(nullptr),
+      m_groundSensor(nullptr),
+      m_walkingSound(nullptr),
+      m_landingSound(nullptr) {
 
     m_lastMouseButtonEvent = SDL_MouseButtonEvent();
     Reset({0,0});
@@ -205,8 +216,17 @@ Player::Player() : m_rigidBody(nullptr), m_bIsGrounded(true), m_bIsFlipped(false
     );
 }
 
+Player::~Player() {
+    if (m_walkingSound != nullptr) {
+        m_walkingSound->stop();
+        m_walkingSound = nullptr;
+    }
+}
+
+
 void Player::Init() {
     Node::Init();
+
     m_rigidBody = dynamic_cast<RigidbodyNode *>(GetChild("RigidBody"));
 
     m_runningAnimation = dynamic_cast<AnimatedSpriteNode *>(GetChild("RunAnimation"));
@@ -285,6 +305,7 @@ void Player::Process(float deltaTime) {
     HandleHookVisualisation();
     HandleAnimations();
     HandleFlip();
+    HandleSound();
 
     m_bIsGrounded = false;
 }
@@ -350,6 +371,8 @@ void Player::HandleMovement(float deltaTime) {
         if (m_jumpsMade < m_maxJumps) {
             m_rigidBody->ResetBodyVelocity();
             m_rigidBody->ApplyImpluseToCenter(Vector2d(0,-m_fJumpForce));
+            auto jumpSound = SoundManager::GetInstance().PlaySound("playerJump.wav");
+            jumpSound->setVolume(7);
             m_jumpsMade++;
         }
     }
@@ -370,6 +393,7 @@ void Player::HandleAnimations() {
     if (!m_bIsGrounded && !m_jumpAnimation->m_bIsAnimating) {
         ChangeAnimation(m_jumpAnimation);
         m_currentAnimation->SetLooping(false);
+        m_landingSound = nullptr;
     }
 
     if (m_bIsGrounded) {
@@ -380,6 +404,23 @@ void Player::HandleAnimations() {
         } else {
             ChangeAnimation(m_runningAnimation);
         }
+    }
+}
+
+void Player::HandleSound() {
+    float walkingThreshold = m_fGroundMaxSpeed * 0.7f;
+
+    if (abs(m_velocity.x) > walkingThreshold && m_bIsGrounded) {
+        if (m_walkingSound == nullptr) {
+            m_walkingSound = SoundManager::GetInstance().PlaySound("playerStep.wav");
+            m_walkingSound->setMode(FMOD_LOOP_NORMAL);
+            m_walkingSound->setVolume(5);
+            m_walkingSound->setPitch(2.5);
+        }
+    }
+    else {
+        m_walkingSound->stop();
+        m_walkingSound = nullptr;
     }
 }
 
@@ -453,7 +494,6 @@ void Player::HandleHookVelocity() const {
             m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * m_fSwingDeceleration, currentVelocity.y ));
         }
     }
-    // decelerate by factor while rising (y velocity < 0) and nothing is pressed
 }
 
 void Player::HandleHookVisualisation() const {
@@ -493,6 +533,7 @@ void Player::Reset(Vector2d pos) {
 bool Player::ShootHookSwing(Vector2d posInPixel) {
 
     Vector2d hookOffset = Vector2d{80,80};
+
     b2WorldId world = PhysicsManager::GetInstance().GetWorld();
     Vector2d playerPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(GetGlobalPosition() + hookOffset);
     Vector2d targetPositionInBox2DWorld = PhysicsManager::PixelsToMeterVector(posInPixel);
@@ -512,6 +553,9 @@ bool Player::ShootHookSwing(Vector2d posInPixel) {
 
     m_globalHookOrigin = GetGlobalPosition() + hookOffset;
     m_globalHookTarget = PhysicsManager::MeterToPixelsVector(Vector2d{rayResult.point.x, rayResult.point.y});
+
+    SoundManager::GetInstance().PlaySound("grapplingHook.mp3");
+
     return true;
 }
 
@@ -547,6 +591,7 @@ void Player::CreateChainBetween(b2Vec2 origin, b2Vec2 target, b2BodyId targetBod
 
     auto distanceJoint = b2CreateDistanceJoint(PhysicsManager::GetInstance().GetWorld(), &distanceJointDef);
     m_b2Hook = distanceJoint;
+    b2Joint_WakeBodies(m_b2Hook);
 }
 
 
@@ -563,6 +608,9 @@ void Player::HandleCollision(const b2ShapeId* collidedShapes) {
     };
     if (collisionDataNode != nullptr && collisionDataNode->m_name == "FinishArea" && m_bHasTargetObjectReceived) {
         SceneManager::GetInstance().SetSceneActive("WinScreen");
+        auto teleportSound = SoundManager::GetInstance().PlaySound("teleport.wav");
+        teleportSound->setVolume(4);
+
     };
 
     if (collisionDataNode != nullptr && collisionDataNode->m_name == "HurtArea") {
@@ -592,9 +640,6 @@ void Player::ChangeAnimation(AnimatedSpriteNode* animation) {
 
 
 // ############# EVENT CALLBACKS ################
-void Player::OnJump(const b2ShapeId* target) {
-    m_bIsGrounded = false;
-}
 
 void Player::OnHitWallRight(const b2ShapeId* target) {
     if (target == nullptr) return;
@@ -627,6 +672,11 @@ void Player::OnLandOnGround(const b2ShapeId* target) {
 
     m_bIsGrounded = true;
     m_jumpsMade = 0;
+
+    if (m_landingSound == nullptr) {
+        m_landingSound = SoundManager::GetInstance().PlaySound("playerLand.wav");
+        m_landingSound->setVolume(5);
+    }
 }
 
 
@@ -640,11 +690,9 @@ float RayCastCallback(b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float frac
     if (rayResult == nullptr) return -1;
 
     if (b2Body_GetType(attachedBody) != b2_staticBody) {
-        rayResult->hit = false;
         return 1;
     }
     if (b2Shape_IsSensor(shapeId) == true) {
-        rayResult->hit = false;
         return 1;
     }
 

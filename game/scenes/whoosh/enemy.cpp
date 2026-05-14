@@ -2,19 +2,50 @@
 
 #include "imgui.h"
 #include "../../engine/physics/physicsmanager.h"
+#include "../../engine/sound/soundmanager.h"
 #include "box2d/box2d.h"
 
 
 Enemy::Enemy()
     : m_bHasTargetLocated(false),
-      m_speed(50),
+      m_fSpeed(50),
+      m_fEnragedSpeed(0),
+      m_fNormalSpeed(0),
       m_detectionArea(nullptr),
-      m_currentAnimation(nullptr) {
+      m_idleAnimation(nullptr),
+      m_chasingAnimation(nullptr),
+      m_currentAnimation(nullptr),
+      m_idleSound(nullptr),
+      m_chasingSound(nullptr),
+      m_bIsEnraged(false),
+      m_detectedObject(nullptr) {
 
     SetupNode("Enemy", NT_Custom);
 
     m_nodeInfo.push_back({
-            "Enemy speed", [](Node &n) {
+            "Enemy enraged speed", [](Node &n) {
+                if (auto *s = dynamic_cast<Enemy *>(&n)) {
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_fEnragedSpeed, 1, 0.5f, nullptr, nullptr)) {
+                        s->SetValue("enragedSpeed", s->m_fEnragedSpeed);
+                    }
+                }
+            }
+        }
+    );
+    m_nodeInfo.push_back({
+            "Enemy normal speed", [](Node &n) {
+                if (auto *s = dynamic_cast<Enemy *>(&n)) {
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &s->m_fNormalSpeed, 1, 0.5f, nullptr, nullptr)) {
+                        s->SetValue("normalSpeed", s->m_fNormalSpeed);
+                    }
+                }
+            }
+        }
+    );
+    m_nodeInfo.push_back({
+            "Enemy current speed", [](Node &n) {
                 if (auto *s = dynamic_cast<Enemy *>(&n)) {
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     auto speed = s->GetSpeed();
@@ -26,7 +57,14 @@ Enemy::Enemy()
             }
         }
     );
-
+}
+Enemy::~Enemy() {
+    if (m_idleSound != nullptr) {
+        m_idleSound->stop();
+    }
+    if (m_chasingSound != nullptr) {
+        m_chasingSound->stop();
+    }
 }
 
 void Enemy::Init() {
@@ -52,25 +90,41 @@ void Enemy::Process(float deltaTime) {
 
     HandleAnimations();
     HandleDetectedEnemy(deltaTime);
-    m_bHasTargetLocated = false;
+    HandleSoundEffects();
+
+    if (!m_bIsEnraged) {
+        m_bHasTargetLocated = false;
+    }
 }
 
 void Enemy::SetupParameter(IniParser *parser, const std::string &sectionId) {
     Node::SetupParameter(parser, sectionId);
     NodeFactory::GetInstance().InitWithConfiguration(this, "../game/scenes/whoosh/Enemy.ini");
 
-    m_speed = parser->GetValueAsFloat(sectionId, "speed");
+    m_fSpeed = parser->GetValueAsFloat(sectionId, "speed");
+    m_fNormalSpeed = parser->GetValueAsFloat(sectionId, "normalSpeed");
+    m_fEnragedSpeed = parser->GetValueAsFloat(sectionId, "enragedSpeed");
 }
 
 float Enemy::GetSpeed() const {
-    return  m_speed;
+    return  m_fSpeed;
 }
 
 void Enemy::SetSpeed(float speed) {
-    m_speed = speed;
+    m_fSpeed = speed;
+}
+
+void Enemy::SetEnragedSpeed() {
+    m_fSpeed = m_fEnragedSpeed;
+}
+void Enemy::SetNormalSpeed() {
+    m_fSpeed = m_fNormalSpeed;
 }
 
 void Enemy::HandleDetectedEnemy(float deltaTime) {
+    if (m_detectedObject != nullptr) {
+        m_currentTargetPos = m_detectedObject->GetGlobalPosition();
+    }
 
     if (m_bHasTargetLocated) {
         auto currentPos = GetGlobalPosition();
@@ -80,7 +134,7 @@ void Enemy::HandleDetectedEnemy(float deltaTime) {
         direction.x = direction.x / currentPos.Distance(m_currentTargetPos);
         direction.y = direction.y / currentPos.Distance(m_currentTargetPos);
 
-        m_velocity =  (direction * deltaTime * m_speed);
+        m_velocity =  (direction * deltaTime * m_fSpeed);
 
         if (b2IsValidVec2(m_velocity)) {
             SetGlobalPosition(currentPos + m_velocity);
@@ -94,12 +148,44 @@ void Enemy::HandleDetectedEnemy(float deltaTime) {
         direction.x = direction.x / currentPos.Distance(m_originPos);
         direction.y = direction.y / currentPos.Distance(m_originPos);
 
-        m_velocity = (direction * deltaTime * m_speed);
+        m_velocity = (direction * deltaTime * m_fSpeed);
 
         if (b2IsValidVec2(m_velocity)) {
             SetGlobalPosition(currentPos + m_velocity);
         }
     }
+}
+
+void Enemy::HandleSoundEffects() {
+    if (m_bHasTargetLocated) {
+        if (m_chasingSound == nullptr) {
+            m_chasingSound = SoundManager::GetInstance().PlaySound("grumpyManAggressive.mp3");
+            m_chasingSound->setMode(FMOD_LOOP_NORMAL);
+        } else {
+            if (m_idleSound != nullptr) m_idleSound->stop();
+            bool isPlaying;
+            m_chasingSound->isPlaying(&isPlaying);
+
+            if (isPlaying == false) {
+                m_chasingSound = nullptr;
+            }
+        }
+
+    } else {
+        if (m_idleSound == nullptr) {
+            m_idleSound = SoundManager::GetInstance().PlaySound("grumpyManIdle2.mp3");
+            m_idleSound->setMode(FMOD_LOOP_NORMAL);
+        } else {
+            if (m_chasingSound != nullptr) m_chasingSound->stop();
+            bool isPlaying;
+            m_idleSound->isPlaying(&isPlaying);
+
+            if (isPlaying == false) {
+                m_idleSound = nullptr;
+            }
+        }
+    }
+
 }
 
 void Enemy::HandleAnimations() {
@@ -139,7 +225,7 @@ void Enemy::ChangeAnimation(AnimatedSpriteNode* animation) {
         m_currentAnimation = animation;
     }
 
-    m_currentAnimation->SetRGBA(1, 1, 1, 1);
+    m_currentAnimation->SetRGBA(1, !m_bIsEnraged, !m_bIsEnraged, 1);
     m_currentAnimation->SetAnimating(true);
     m_currentAnimation->SetLooping(true);
 }
@@ -151,8 +237,14 @@ void Enemy::OnDetection(const b2ShapeId* target) {
     auto body = b2Shape_GetBody(target[0]);
     if (b2Body_GetType(body) != b2_dynamicBody) return;
 
-    m_currentTargetPos = PhysicsManager::MeterToPixelsVector(Vector2d{b2Body_GetPosition(body).x, b2Body_GetPosition(body).y});
+    if (auto obj = static_cast<Node*>(b2Body_GetUserData(body))) {
+        m_detectedObject = obj;
+    }
+
     m_bHasTargetLocated = true;
 }
 
+void Enemy::SetEnraged(bool enraged) {
+    m_bIsEnraged = enraged;
+}
 

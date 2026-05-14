@@ -8,7 +8,7 @@
 #include "../../engine/sound/soundmanager.h"
 #include "../../engine/time/timer.h"
 
-MainMenu::MainMenu() : m_currentSelection(0){
+MainMenu::MainMenu() : m_currentSelection(0), m_backgroundMusic(nullptr){
     vcontainer1 = new VContainer();
     h1 = new HContainer();
     h2 = new HContainer();
@@ -24,9 +24,20 @@ MainMenu::MainMenu() : m_currentSelection(0){
     SetupNode("MainMenu", NT_Custom);
 }
 
+MainMenu::~MainMenu() {
+    if (m_backgroundMusic != nullptr) {
+        m_backgroundMusic->stop();
+    }
+}
+
 void MainMenu::Init() {
     Timer::GetInstance().Reset();
     HContainer::Init();
+    m_backgroundMusic = SoundManager::GetInstance().PlaySound("menuBackground.mp3");
+    if (m_backgroundMusic != nullptr) {
+        m_backgroundMusic->setMode(FMOD_LOOP_NORMAL);
+        m_backgroundMusic->setVolume(8);
+    }
 
     /* The Main menu proveds a choice between the 3 different games to play
      * The Games are interactivaly selectable by moving the cursor up and down and pressing enter once a game is selected
@@ -123,8 +134,6 @@ void MainMenu::Init() {
 
 void MainMenu::Process(float deltaTime) {
     HContainer::Process(deltaTime);
-    const char* soundOnSelection = "hardpop-mainmenu-onSelection.wav";
-
     HandleMouseInteraction();
 
     if (t1->m_textSprite != nullptr && t2->m_textSprite != nullptr) {
@@ -152,13 +161,15 @@ void MainMenu::HandleMouseInteraction() {
         t1->SetTextRGBA(1,1,1,255);
         t2->SetTextRGBA(0.5,0.5,0.5,255);
         m_currentSelection = 0;
+        SoundManager::GetInstance().PlaySound("menuHover.wav");
     }
     if (mousePos.y > h2->GetGlobalPosition().y && m_currentSelection != 1) {
         t1->SetTextRGBA(0.5,0.5,0.5,255);
         t2->SetTextRGBA(1,1,1,255);
         m_currentSelection = 1;
+        SoundManager::GetInstance().PlaySound("menuHover.wav");
     }
-    if (mouseEvent.type == SDL_MOUSEBUTTONDOWN && mouseEvent.button == 1) {
+    if (mouseEvent.type == SDL_MOUSEBUTTONUP && mouseEvent.button == 1) {
         ExecuteSelection();
     }
     LogManager::GetInstance().Log(INFO, "%f, %f", mousePos.x, mousePos.y);
@@ -172,4 +183,5 @@ void MainMenu::ExecuteSelection() const {
         SceneManager::GetInstance().SetSceneActive("Whoosh");
     if (m_currentSelection == 1)
         Game::GetInstance().Quit();
+    SoundManager::GetInstance().PlaySound("selectOption.mp3");
 }
