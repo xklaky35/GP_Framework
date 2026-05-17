@@ -1,6 +1,8 @@
 # Grapple - A small custom game engine
 
 
+![EngineScreenshot](docs/media/EngineScreenshot.png)
+
 
 ## Overview
 
