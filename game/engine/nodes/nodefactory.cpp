@@ -5,7 +5,6 @@
 #include "rigidbodynode.h"
 #include "spritenode.h"
 #include "../../helper/inlinehelper.h"
-#include "../logmanager/logmanager.h"
 #include "ui/button.h"
 #include "ui/hcontainer.h"
 #include "ui/margincontainer.h"
@@ -19,18 +18,18 @@ namespace Engine {
     NodeFactory::~NodeFactory() = default;
 
 
-    NodeFactory* NodeFactory::m_pInstance = nullptr;
+    NodeFactory* NodeFactory::s_pInstance = nullptr;
 
     NodeFactory & NodeFactory::GetInstance() {
-        if (m_pInstance == nullptr) {
-            m_pInstance = new NodeFactory();
+        if (s_pInstance == nullptr) {
+            s_pInstance = new NodeFactory();
         }
-        return *m_pInstance;
+        return *s_pInstance;
     }
 
     void NodeFactory::DestroyInstance() {
-        delete m_pInstance;
-        m_pInstance = nullptr;
+        delete s_pInstance;
+        s_pInstance = nullptr;
     }
 
     void NodeFactory::InitWithConfiguration(Node* n, const std::string& dataFilePath) {
@@ -118,7 +117,6 @@ namespace Engine {
                 CheckForNestedNodes(*nodeToConfigure, config, rootNode);
             }
         }
-
     }
 
     Node* NodeFactory::GetBaseNode(const std::unordered_map<std::string, std::string>& childData) {
@@ -181,6 +179,15 @@ namespace Engine {
         std::unique_ptr<Node> nodeToConfigure = Create(name);
         InitWithConfiguration(nodeToConfigure.get(), path);
         return nodeToConfigure.release();
+    }
+    void NodeFactory::RegisterClass(const std::string& name, Creator creator) {
+        m_registry[name] = std::move(creator);
+    }
+
+    std::unique_ptr<Node> NodeFactory::Create(const std::string& name) {
+        auto it = m_registry.find(name);
+        if (it == m_registry.end()) return nullptr;
+        return it->second();
     }
 
 }

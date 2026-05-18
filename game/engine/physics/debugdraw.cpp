@@ -7,6 +7,13 @@
 #include "physicsmanager.h"
 #include "../../config/config.h"
 
+
+/*
+ * DISCLAIMER: This class is mostly created by AI and I don't take credit for it.
+ * It is standing by its own and does not fit into the already existing rendering system.
+ */
+
+
 namespace Engine {
     // ─────────────────────────────────────────────────────────────────────────────
     //  Minimal colour-only vertex / fragment shaders
@@ -119,7 +126,7 @@ void main()
 
         glBindVertexArray(m_vao);
         glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-        glBufferData(GL_ARRAY_BUFFER, kScratchFloats * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, s_iScratchFloats * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
         glBindVertexArray(0);
@@ -153,7 +160,7 @@ void main()
     //  Callbacks
     // ─────────────────────────────────────────────────────────────────────────────
     void DebugDraw::OnDrawPolygon(const b2Vec2 *verts, int count, b2HexColor color) {
-        assert(count * 2 <= kScratchFloats);
+        assert(count * 2 <= s_iScratchFloats);
         for (int i = 0; i < count; ++i) {
             m_scratch[i * 2 + 0] = verts[i].x;
             m_scratch[i * 2 + 1] = verts[i].y;
@@ -168,7 +175,7 @@ void main()
         float r, g, b;
         UnpackColor(color, r, g, b);
 
-        assert(count * 2 <= kScratchFloats);
+        assert(count * 2 <= s_iScratchFloats);
         for (int i = 0; i < count; ++i) {
             b2Vec2 w = TransformPt(xf, verts[i]);
             m_scratch[i * 2 + 0] = w.x;
@@ -290,7 +297,7 @@ void main()
     //  Private helpers
     // ─────────────────────────────────────────────────────────────────────────────
     void DebugDraw::FlushLines(const float *xy, int vertCount,
-                               float r, float g, float b, float a) {
+                               float r, float g, float b, float a) const {
         if (vertCount < 2) return;
         glUseProgram(m_shaderProg);
         glUniformMatrix4fv(m_locProj, 1, GL_FALSE, m_proj);
@@ -306,7 +313,7 @@ void main()
     }
 
     void DebugDraw::FlushTris(const float *xy, int vertCount,
-                              float r, float g, float b, float a) {
+                              float r, float g, float b, float a) const {
         if (vertCount < 3) return;
         glUseProgram(m_shaderProg);
         glUniformMatrix4fv(m_locProj, 1, GL_FALSE, m_proj);
@@ -321,8 +328,8 @@ void main()
         glUseProgram(0);
     }
 
-    void DebugDraw::FlushPoints(const float *xy, int vertCount, float size,
-                                float r, float g, float b, float a) {
+    void DebugDraw::FlushPoints(const float *xy, const int vertCount, float size,
+                                float r, float g, float b, float a) const {
         if (vertCount < 1) return;
         glUseProgram(m_shaderProg);
         glUniformMatrix4fv(m_locProj, 1, GL_FALSE, m_proj);

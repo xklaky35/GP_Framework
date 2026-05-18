@@ -115,7 +115,7 @@ namespace Engine {
 
     // ################### Setter ######################
 
-    void IniParser::SetValue(const std::string &iniSection, const std::string &key, std::string& value) {
+    void IniParser::SetValue(const std::string &iniSection, const std::string &key, const std::string& value) {
         m_data[iniSection][key] = value;
     }
 

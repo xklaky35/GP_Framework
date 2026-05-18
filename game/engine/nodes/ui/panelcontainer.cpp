@@ -32,23 +32,16 @@ namespace Engine {
         m_name = "PanelContainer";
 
         m_background = new SpriteNode();
-        m_background->SetSpritePath(std::string("../assets/Sprites/rect.png").data());
+        m_background->SetSpritePath(std::string("../assets/Sprites/rect.png"));
         m_background->m_spriteDisplayMode = Fit;
         m_background->SetRGBA(1,1,1,m_transparency);
         AddChild(*m_background);
     }
 
-    void PanelContainer::PositionChildren() {
-        for (int i = 0; i < m_children.size(); i++) {
-            if (auto* childControl = dynamic_cast<Control*>(m_children[i])) {
-
-            }
-        }
-    }
 
     void PanelContainer::CalculateChildSpace() const {
-        for (int i = 0; i < m_children.size(); i++) {
-            if (auto *childControl = dynamic_cast<Control *>(m_children[i])) {
+        for (auto child : m_children) {
+            if (auto *childControl = dynamic_cast<Control *>(child)) {
                 if (childControl->m_containerSizing.m_bExpandVertical) {
                     childControl->m_controlSpace.y = m_controlSpace.y;
                 } else {

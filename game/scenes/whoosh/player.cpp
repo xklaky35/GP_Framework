@@ -20,14 +20,14 @@ Player::Player()
       m_fGroundMinSpeed(0),
       m_fGroundMaxSpeed(0),
       m_fJumpForce(0),
-      m_jumpsMade(0),
-      m_maxJumps(1),
+      m_iJumpsMade(0),
+      m_iMaxJumps(1),
       m_bIsFlipped(false),
-      m_rigidBody(nullptr),
-      m_currentAnimation(nullptr),
-      m_groundSensor(nullptr),
-      m_walkingSound(nullptr),
-      m_landingSound(nullptr) {
+      m_pRigidBody(nullptr),
+      m_pCurrentAnimation(nullptr),
+      m_pGroundSensor(nullptr),
+      m_pWalkingSound(nullptr),
+      m_pLandingSound(nullptr) {
 
     m_lastMouseButtonEvent = SDL_MouseButtonEvent();
     Reset({0,0});
@@ -85,8 +85,8 @@ Player::Player()
                 if (auto *s = dynamic_cast<Player *>(&n)) {
                     int v_min = 0, v_max = 100000;
                     ImGui::SetNextItemWidth(-FLT_MIN);
-                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_U32, &s->m_maxJumps, 1, 0.5f, &v_min, &v_max)) {
-                        s->SetValue("maxJumps", s->m_maxJumps);
+                    if (ImGui::DragScalarN("##Editor", ImGuiDataType_U32, &s->m_iMaxJumps, 1, 0.5f, &v_min, &v_max)) {
+                        s->SetValue("maxJumps", s->m_iMaxJumps);
                     }
                 }
             }
@@ -217,9 +217,9 @@ Player::Player()
 }
 
 Player::~Player() {
-    if (m_walkingSound != nullptr) {
-        m_walkingSound->stop();
-        m_walkingSound = nullptr;
+    if (m_pWalkingSound != nullptr) {
+        m_pWalkingSound->stop();
+        m_pWalkingSound = nullptr;
     }
 }
 
@@ -227,41 +227,41 @@ Player::~Player() {
 void Player::Init() {
     Node::Init();
 
-    m_rigidBody = dynamic_cast<RigidbodyNode *>(GetChild("RigidBody"));
+    m_pRigidBody = dynamic_cast<RigidbodyNode *>(GetChild("RigidBody"));
 
-    m_runningAnimation = dynamic_cast<AnimatedSpriteNode *>(GetChild("RunAnimation"));
-    if (m_runningAnimation != nullptr) {
-        m_runningAnimation->SetRGBA(0,0,0,0);
+    m_pRunningAnimation = dynamic_cast<AnimatedSpriteNode *>(GetChild("RunAnimation"));
+    if (m_pRunningAnimation != nullptr) {
+        m_pRunningAnimation->SetRGBA(0,0,0,0);
     }
-    m_idleAnimation = dynamic_cast<AnimatedSpriteNode *>(GetChild("IdleAnimation"));
-    if (m_idleAnimation != nullptr) {
-        m_idleAnimation->SetRGBA(0,0,0,0);
+    m_pIdleAnimation = dynamic_cast<AnimatedSpriteNode *>(GetChild("IdleAnimation"));
+    if (m_pIdleAnimation != nullptr) {
+        m_pIdleAnimation->SetRGBA(0,0,0,0);
     }
-    m_jumpAnimation = dynamic_cast<AnimatedSpriteNode *>(GetChild("JumpAnimation"));
-    if (m_jumpAnimation != nullptr) {
-        m_jumpAnimation->SetRGBA(0,0,0,0);
+    m_pJumpAnimation = dynamic_cast<AnimatedSpriteNode *>(GetChild("JumpAnimation"));
+    if (m_pJumpAnimation != nullptr) {
+        m_pJumpAnimation->SetRGBA(0,0,0,0);
     }
-    m_walkingAnimation = dynamic_cast<AnimatedSpriteNode *>(GetChild("WalkAnimation"));
-    if (m_walkingAnimation != nullptr) {
-        m_walkingAnimation->SetRGBA(0,0,0,0);
+    m_pWalkingAnimation = dynamic_cast<AnimatedSpriteNode *>(GetChild("WalkAnimation"));
+    if (m_pWalkingAnimation != nullptr) {
+        m_pWalkingAnimation->SetRGBA(0,0,0,0);
     }
-    m_groundSensor = dynamic_cast<ColliderNode *>(GetChild("GroundSensor"));
-    if (m_groundSensor != nullptr) {
-        m_groundSensor->OnEntry.Register<Player>(&Player::OnLandOnGround, *this);
+    m_pGroundSensor = dynamic_cast<ColliderNode *>(GetChild("GroundSensor"));
+    if (m_pGroundSensor != nullptr) {
+        m_pGroundSensor->OnEntry.Register<Player>(&Player::OnLandOnGround, *this);
     }
-    m_wallSensorLeft = dynamic_cast<ColliderNode *>(GetChild("WallSensorLeft"));
-    if (m_wallSensorLeft != nullptr) {
-        m_wallSensorLeft->OnEntry.Register<Player>(&Player::OnHitWallLeft, *this);
+    m_pWallSensorLeft = dynamic_cast<ColliderNode *>(GetChild("WallSensorLeft"));
+    if (m_pWallSensorLeft != nullptr) {
+        m_pWallSensorLeft->OnEntry.Register<Player>(&Player::OnHitWallLeft, *this);
     }
-    m_wallSensorRight = dynamic_cast<ColliderNode *>(GetChild("WallSensorRight"));
-    if (m_wallSensorRight != nullptr) {
-        m_wallSensorRight->OnEntry.Register<Player>(&Player::OnHitWallRight, *this);
+    m_pWallSensorRight = dynamic_cast<ColliderNode *>(GetChild("WallSensorRight"));
+    if (m_pWallSensorRight != nullptr) {
+        m_pWallSensorRight->OnEntry.Register<Player>(&Player::OnHitWallRight, *this);
     }
-    m_levelGoal = dynamic_cast<ColliderNode*>(GetChild("GoalSensor"));
-    if (m_levelGoal != nullptr) {
-        m_levelGoal->OnEntry.Register<Player>(&Player::HandleCollision, *this);
+    m_pLevelGoal = dynamic_cast<ColliderNode*>(GetChild("GoalSensor"));
+    if (m_pLevelGoal != nullptr) {
+        m_pLevelGoal->OnEntry.Register<Player>(&Player::HandleCollision, *this);
     }
-    m_hookSprite = dynamic_cast<SpriteNode*>(GetChild("HookSprite"));
+    m_pHookSprite = dynamic_cast<SpriteNode*>(GetChild("HookSprite"));
 }
 
 
@@ -274,7 +274,7 @@ void Player::SetupParameter(IniParser *parser, const std::string &section) {
     m_fGroundDeceleration = parser->GetValueAsFloat(section, "groundDeceleration");
     m_fGroundMaxSpeed = parser->GetValueAsFloat(section, "maxGroundSpeed");
     m_fJumpForce = parser->GetValueAsFloat(section, "jumpForce");
-    m_maxJumps = parser->GetValueAsInt(section, "maxJumps");
+    m_iMaxJumps = parser->GetValueAsInt(section, "maxJumps");
     m_fMinRange = parser->GetValueAsFloat(section, "minHookRange");
     m_fMaxRange = parser->GetValueAsFloat(section, "maxHookRange");
     m_fDamping = parser->GetValueAsFloat(section, "damping");
@@ -291,7 +291,7 @@ void Player::SetupParameter(IniParser *parser, const std::string &section) {
 
 void Player::Process(float deltaTime) {
     Node::Process(deltaTime);
-    if (m_rigidBody == nullptr)
+    if (m_pRigidBody == nullptr)
         return;
 
     if (m_bCheatsEnabled) {
@@ -312,26 +312,26 @@ void Player::Process(float deltaTime) {
 
 void Player::HandleMovementCheat(float deltaTime) const {
 
-    auto pos = m_rigidBody->GetBodyPosition();
+    auto pos = m_pRigidBody->GetBodyPosition();
     float flySpeed = 500 * deltaTime;
     if (InputManager::GetInstance().GetButtonState(SDLK_d) == BS_HELD) {
         pos.x += flySpeed;
-        m_rigidBody->SetPositionInMeters(PhysicsManager::PixelsToMeterVector(pos));
+        m_pRigidBody->SetPositionInMeters(PhysicsManager::PixelsToMeterVector(pos));
     }
 
     if (InputManager::GetInstance().GetButtonState(SDLK_a) == BS_HELD) {
         pos.x -= flySpeed;
-        m_rigidBody->SetPositionInMeters(PhysicsManager::PixelsToMeterVector(pos));
+        m_pRigidBody->SetPositionInMeters(PhysicsManager::PixelsToMeterVector(pos));
     }
 
     if (InputManager::GetInstance().GetButtonState(SDLK_w) == BS_HELD) {
         pos.y -= flySpeed;
-        m_rigidBody->SetPositionInMeters(PhysicsManager::PixelsToMeterVector(pos));
+        m_pRigidBody->SetPositionInMeters(PhysicsManager::PixelsToMeterVector(pos));
     }
 
     if (InputManager::GetInstance().GetButtonState(SDLK_s) == BS_HELD) {
         pos.y += flySpeed;
-        m_rigidBody->SetPositionInMeters(PhysicsManager::PixelsToMeterVector(pos));
+        m_pRigidBody->SetPositionInMeters(PhysicsManager::PixelsToMeterVector(pos));
     }
 }
 
@@ -368,12 +368,12 @@ void Player::HandleMovement(float deltaTime) {
         }
     }
     if (InputManager::GetInstance().GetButtonState(SDLK_SPACE) == BS_PRESSED) {
-        if (m_jumpsMade < m_maxJumps) {
-            m_rigidBody->ResetBodyVelocity();
-            m_rigidBody->ApplyImpluseToCenter(Vector2d(0,-m_fJumpForce));
+        if (m_iJumpsMade < m_iMaxJumps) {
+            m_pRigidBody->ResetBodyVelocity();
+            m_pRigidBody->ApplyImpluseToCenter(Vector2d(0,-m_fJumpForce));
             auto jumpSound = SoundManager::GetInstance().PlaySound("playerJump.wav");
             jumpSound->setVolume(7);
-            m_jumpsMade++;
+            m_iJumpsMade++;
         }
     }
 
@@ -383,26 +383,26 @@ void Player::HandleMovement(float deltaTime) {
     }
 
     if (!m_bIsHookAttached) {
-        m_rigidBody->SetHorizontalVelocity(m_velocity);
+        m_pRigidBody->SetHorizontalVelocity(m_velocity);
     }
 }
 
 void Player::HandleAnimations() {
     float walkingThreshold = m_fGroundMaxSpeed * 0.7f;
 
-    if (!m_bIsGrounded && !m_jumpAnimation->m_bIsAnimating) {
-        ChangeAnimation(m_jumpAnimation);
-        m_currentAnimation->SetLooping(false);
-        m_landingSound = nullptr;
+    if (!m_bIsGrounded && !m_pJumpAnimation->m_bIsAnimating) {
+        ChangeAnimation(m_pJumpAnimation);
+        m_pCurrentAnimation->SetLooping(false);
+        m_pLandingSound = nullptr;
     }
 
     if (m_bIsGrounded) {
         if (abs(m_velocity.x) == 0) {
-            ChangeAnimation(m_idleAnimation);
+            ChangeAnimation(m_pIdleAnimation);
         } else if (abs(m_velocity.x) < walkingThreshold) {
-            ChangeAnimation(m_walkingAnimation);
+            ChangeAnimation(m_pWalkingAnimation);
         } else {
-            ChangeAnimation(m_runningAnimation);
+            ChangeAnimation(m_pRunningAnimation);
         }
     }
 }
@@ -411,16 +411,16 @@ void Player::HandleSound() {
     float walkingThreshold = m_fGroundMaxSpeed * 0.7f;
 
     if (abs(m_velocity.x) > walkingThreshold && m_bIsGrounded) {
-        if (m_walkingSound == nullptr) {
-            m_walkingSound = SoundManager::GetInstance().PlaySound("playerStep.wav");
-            m_walkingSound->setMode(FMOD_LOOP_NORMAL);
-            m_walkingSound->setVolume(5);
-            m_walkingSound->setPitch(2.5);
+        if (m_pWalkingSound == nullptr) {
+            m_pWalkingSound = SoundManager::GetInstance().PlaySound("playerStep.wav");
+            m_pWalkingSound->setMode(FMOD_LOOP_NORMAL);
+            m_pWalkingSound->setVolume(5);
+            m_pWalkingSound->setPitch(2.5);
         }
     }
     else {
-        m_walkingSound->stop();
-        m_walkingSound = nullptr;
+        m_pWalkingSound->stop();
+        m_pWalkingSound = nullptr;
     }
 }
 
@@ -433,13 +433,13 @@ void Player::DestroyHook() {
 }
 
 void Player::HandleFlip() const {
-    if (m_currentAnimation == nullptr) return;
+    if (m_pCurrentAnimation == nullptr) return;
 
-    if (m_currentAnimation->IsFlipped() && !m_bIsFlipped) {
-        m_currentAnimation->Flip();
+    if (m_pCurrentAnimation->IsFlipped() && !m_bIsFlipped) {
+        m_pCurrentAnimation->Flip();
     }
-    if (!m_currentAnimation->IsFlipped() && m_bIsFlipped) {
-        m_currentAnimation->Flip();
+    if (!m_pCurrentAnimation->IsFlipped() && m_bIsFlipped) {
+        m_pCurrentAnimation->Flip();
     }
 }
 
@@ -475,31 +475,31 @@ void Player::HandleHookVelocity() const {
     if (!m_bIsHookAttached) return;
     if (!b2Joint_IsValid(m_b2Hook)) return;
 
-    auto currentVelocity = m_rigidBody->GetBodyVelocity();
+    auto currentVelocity = m_pRigidBody->GetBodyVelocity();
 
     // accelerate while falling (y velocity > 0) and direction is pressed
-    if (m_rigidBody->GetBodyVelocity().y > 0) {
-        if (m_rigidBody->GetBodyVelocity().x > 0 && InputManager::GetInstance().GetButtonState(SDLK_d) == BS_HELD) {
-            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * m_fSwingAcceleration, currentVelocity.y ));
+    if (m_pRigidBody->GetBodyVelocity().y > 0) {
+        if (m_pRigidBody->GetBodyVelocity().x > 0 && InputManager::GetInstance().GetButtonState(SDLK_d) == BS_HELD) {
+            m_pRigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * m_fSwingAcceleration, currentVelocity.y ));
 
         }
-        else if (m_rigidBody->GetBodyVelocity().x > 0) {
-            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * m_fSwingDeceleration, currentVelocity.y ));
+        else if (m_pRigidBody->GetBodyVelocity().x > 0) {
+            m_pRigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * m_fSwingDeceleration, currentVelocity.y ));
 
         }
-        if (m_rigidBody->GetBodyVelocity().x < 0 && InputManager::GetInstance().GetButtonState(SDLK_a) == BS_HELD) {
-            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * m_fSwingAcceleration, currentVelocity.y ));
+        if (m_pRigidBody->GetBodyVelocity().x < 0 && InputManager::GetInstance().GetButtonState(SDLK_a) == BS_HELD) {
+            m_pRigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * m_fSwingAcceleration, currentVelocity.y ));
         }
-        else if (m_rigidBody->GetBodyVelocity().x < 0) {
-            m_rigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * m_fSwingDeceleration, currentVelocity.y ));
+        else if (m_pRigidBody->GetBodyVelocity().x < 0) {
+            m_pRigidBody->SetHorizontalVelocity( Vector2d(currentVelocity.x * m_fSwingDeceleration, currentVelocity.y ));
         }
     }
 }
 
 void Player::HandleHookVisualisation() const {
-    if (m_hookSprite == nullptr) return;
+    if (m_pHookSprite == nullptr) return;
     if (m_globalHookOrigin == Vector2d::Zero() || m_globalHookTarget == Vector2d::Zero()) {
-        m_hookSprite->SetRGBA(0,0,0,0);
+        m_pHookSprite->SetRGBA(0,0,0,0);
         return;
     }
 
@@ -508,16 +508,16 @@ void Player::HandleHookVisualisation() const {
 
     // length of hook
     auto distance = currentOrigin.Distance(m_globalHookTarget);
-    m_hookSprite->SetBaseSize(Vector2d(distance*2, 2));
+    m_pHookSprite->SetBaseSize(Vector2d(distance*2, 2));
 
     // angle of hook
     auto direction = m_globalHookTarget - currentOrigin;
     auto angle = atan2(direction.y, direction.x) * 180/std::numbers::pi;
 
-    m_hookSprite->SetRGBA(1,1,1,1);
+    m_pHookSprite->SetRGBA(1,1,1,1);
     auto newOffsetPos = Vector2d{currentOrigin} - Vector2d{distance, 0};
-    m_hookSprite->SetGlobalPosition(newOffsetPos);
-    m_hookSprite->m_globalTransform.SetRotation(-angle);
+    m_pHookSprite->SetGlobalPosition(newOffsetPos);
+    m_pHookSprite->m_globalTransform.SetRotation(-angle);
 
 }
 
@@ -564,7 +564,7 @@ void Player::CreateChainBetween(b2Vec2 origin, b2Vec2 target, b2BodyId targetBod
 
     // local point of raycast source
     b2Transform localTransformPlayer;
-    localTransformPlayer.p = b2Body_GetLocalPoint(m_rigidBody->GetBodyId(), origin);
+    localTransformPlayer.p = b2Body_GetLocalPoint(m_pRigidBody->GetBodyId(), origin);
     localTransformPlayer.q = b2MakeRot(0);
 
     // transform of point hit
@@ -574,7 +574,7 @@ void Player::CreateChainBetween(b2Vec2 origin, b2Vec2 target, b2BodyId targetBod
 
 
     b2JointDef playerJointDef = b2JointDef();
-    playerJointDef.bodyIdA = m_rigidBody->GetBodyId();
+    playerJointDef.bodyIdA = m_pRigidBody->GetBodyId();
     playerJointDef.bodyIdB = targetBody;
     playerJointDef.localFrameA = localTransformPlayer;
     playerJointDef.localFrameB = localTransformTarget;
@@ -626,16 +626,16 @@ void Player::HandleCollision(const b2ShapeId* collidedShapes) {
 void Player::ChangeAnimation(AnimatedSpriteNode* animation) {
     if (animation == nullptr) return;
 
-    if (m_currentAnimation == nullptr) {
-        m_currentAnimation = animation;
+    if (m_pCurrentAnimation == nullptr) {
+        m_pCurrentAnimation = animation;
     } else {
-        m_currentAnimation->SetRGBA(0, 0, 0, 0);
-        m_currentAnimation = animation;
+        m_pCurrentAnimation->SetRGBA(0, 0, 0, 0);
+        m_pCurrentAnimation = animation;
     }
 
-    m_currentAnimation->SetRGBA(1, 1, 1, 1);
-    m_currentAnimation->SetAnimating(true);
-    m_currentAnimation->SetLooping(true);
+    m_pCurrentAnimation->SetRGBA(1, 1, 1, 1);
+    m_pCurrentAnimation->SetAnimating(true);
+    m_pCurrentAnimation->SetLooping(true);
 }
 
 
@@ -671,11 +671,11 @@ void Player::OnLandOnGround(const b2ShapeId* target) {
     if (b2Body_GetType(b2Shape_GetBody(target[0])) != b2_staticBody) return;
 
     m_bIsGrounded = true;
-    m_jumpsMade = 0;
+    m_iJumpsMade = 0;
 
-    if (m_landingSound == nullptr) {
-        m_landingSound = SoundManager::GetInstance().PlaySound("playerLand.wav");
-        m_landingSound->setVolume(5);
+    if (m_pLandingSound == nullptr) {
+        m_pLandingSound = SoundManager::GetInstance().PlaySound("playerLand.wav");
+        m_pLandingSound->setVolume(5);
     }
 }
 
@@ -722,30 +722,30 @@ b2RayResult Player::CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId wo
 
 // ############# GETTER ###############
 
-float Player::GetHookMinRange() {
+float Player::GetHookMinRange() const {
     return m_fMinRange;
 }
 
-float Player::GetHookMaxRange() {
+float Player::GetHookMaxRange() const {
     return m_fMaxRange;
 }
 
-float Player::GetHookDamping() {
+float Player::GetHookDamping() const {
     return m_fDamping;
 }
 
-float Player::GetHookHertz() {
+float Player::GetHookHertz() const {
     return m_fHertz;
 }
 
-float Player::GetHookSwingAcceleration() {
+float Player::GetHookSwingAcceleration() const {
     return m_fSwingAcceleration;
 }
-float Player::GetHookSwingDeceleration() {
+float Player::GetHookSwingDeceleration() const {
     return m_fSwingDeceleration;
 }
 
-bool Player::GetHookSpringEnabled() {
+bool Player::GetHookSpringEnabled() const {
     return m_bJointSpringEnabled;
 }
 

@@ -12,17 +12,13 @@ namespace Engine {
         void Process(float deltaTime) override;
         void Draw(Renderer &) override;
 
-
     private:
         Vector3d m_pos;
         Vector3d m_direction;
         Vector3d m_rightAxis;
         Vector3d m_upAxis;
-        Renderer* m_renderer;
-
+        Renderer* m_pRenderer;
     };
-
-
 
     REGISTER_CLASS(CameraNode);
 }

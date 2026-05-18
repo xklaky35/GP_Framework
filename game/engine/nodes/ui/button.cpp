@@ -2,7 +2,7 @@
 #include "../nodefactory.h"
 #include "../../input/input.h"
 
-Button::Button() {
+Button::Button() : m_pTemplateButton(nullptr) {
     SetupNode("Button", NT_Button);
 
     OnClick = Event<Button>();
@@ -10,11 +10,11 @@ Button::Button() {
 }
 void Button::Init() {
     TextControl::Init();
-    m_templateButton = new SpriteNode();
-    m_templateButton->SetSpritePath("../assets/Sprites/rect.png");
-    m_templateButton->m_spriteDisplayMode = Fit;
-    m_templateButton->SetBaseSize(Vector2d{m_globalTransform.GetWidth(), m_globalTransform.GetHeight()});
-    AddChild(*m_templateButton);
+    m_pTemplateButton = new SpriteNode();
+    m_pTemplateButton->SetSpritePath("../assets/Sprites/rect.png");
+    m_pTemplateButton->m_spriteDisplayMode = Fit;
+    m_pTemplateButton->SetBaseSize(Vector2d{m_globalTransform.GetWidth(), m_globalTransform.GetHeight()});
+    AddChild(*m_pTemplateButton);
 }
 
 void Button::Draw(Renderer &renderer) {

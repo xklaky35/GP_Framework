@@ -3,15 +3,8 @@
 #include <GL/glew.h>
 #include <box2d/box2d.h>
 
-#include "../structs/matrix4.h"
-
 namespace Engine {
-    // ─────────────────────────────────────────────────────────────────────────────
-    //  DebugDraw
-    //  Owns a VAO/VBO pair and a minimal colour shader.
-    //  Call Initialise() once after your GL context is ready.
-    //  Call BuildDebugDraw() to get a wired-up b2DebugDraw struct.
-    // ─────────────────────────────────────────────────────────────────────────────
+
     class DebugDraw {
     public:
         DebugDraw();
@@ -56,27 +49,18 @@ namespace Engine {
 
 
         // ── Helpers ──────────────────────────────────────────────────────────────
-        void FlushLines(const float *xy, int count, float r, float g, float b, float a);
-
-        void FlushTris(const float *xy, int count, float r, float g, float b, float a);
-
-        void FlushPoints(const float *xy, int count, float size, float r, float g, float b, float a);
-
-        void BuildCircleLines(float cx, float cy, float radius,
-                              float *out, int &outCount, int segments = 32);
-
-        void BuildCircleFan(float cx, float cy, float radius,
-                            float *out, int &outCount, int segments = 32);
+        void FlushLines(const float *xy, int count, float r, float g, float b, float a) const;
+        void FlushTris(const float *xy, int count, float r, float g, float b, float a) const;
+        void FlushPoints(const float *xy, int count, float size, float r, float g, float b, float a) const;
+        void BuildCircleLines(float cx, float cy, float radius, float *out, int &outCount, int segments = 32);
+        void BuildCircleFan(float cx, float cy, float radius, float *out, int &outCount, int segments = 32);
 
         static bool CompileShader(GLuint id, const char *src);
-
-
         static void UnpackColor(b2HexColor hex, float &r, float &g, float &b);
-
         static b2Vec2 TransformPt(b2Transform xf, b2Vec2 local);
 
         // scratch buffer — avoids per-frame heap allocs
-        static constexpr int kScratchFloats = 8192;
-        float m_scratch[kScratchFloats] = {};
+        static constexpr int s_iScratchFloats = 8192;
+        float m_scratch[s_iScratchFloats] = {};
     };
 }

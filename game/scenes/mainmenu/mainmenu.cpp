@@ -2,13 +2,12 @@
 #include "../../config/config.h"
 #include "../../engine/game.h"
 #include "../../engine/input/input.h"
-#include "../../engine/logmanager/logmanager.h"
 #include "../../engine/nodes/nodefactory.h"
 #include "../../engine/scenemanager/scenemanager.h"
 #include "../../engine/sound/soundmanager.h"
 #include "../../engine/time/timer.h"
 
-MainMenu::MainMenu() : m_currentSelection(0), m_backgroundMusic(nullptr){
+MainMenu::MainMenu() : m_iCurrentSelection(0), m_pBackgroundMusic(nullptr){
     vcontainer1 = new VContainer();
     h1 = new HContainer();
     h2 = new HContainer();
@@ -25,18 +24,18 @@ MainMenu::MainMenu() : m_currentSelection(0), m_backgroundMusic(nullptr){
 }
 
 MainMenu::~MainMenu() {
-    if (m_backgroundMusic != nullptr) {
-        m_backgroundMusic->stop();
+    if (m_pBackgroundMusic != nullptr) {
+        m_pBackgroundMusic->stop();
     }
 }
 
 void MainMenu::Init() {
     Timer::GetInstance().Reset();
     HContainer::Init();
-    m_backgroundMusic = SoundManager::GetInstance().PlaySound("menuBackground.mp3");
-    if (m_backgroundMusic != nullptr) {
-        m_backgroundMusic->setMode(FMOD_LOOP_NORMAL);
-        m_backgroundMusic->setVolume(8);
+    m_pBackgroundMusic = SoundManager::GetInstance().PlaySound("menuBackground.mp3");
+    if (m_pBackgroundMusic != nullptr) {
+        m_pBackgroundMusic->setMode(FMOD_LOOP_NORMAL);
+        m_pBackgroundMusic->setVolume(8);
     }
 
     /* The Main menu proveds a choice between the 3 different games to play
@@ -50,7 +49,7 @@ void MainMenu::Init() {
      */
 
     // OUTER LAYOUT
-    m_screenSize = Vector2d(Config::GetInstance().windowsWidth, Config::GetInstance().windowsHeight);
+    m_screenSize = Vector2d(static_cast<float>(Config::GetInstance().windowsWidth), static_cast<float>(Config::GetInstance().windowsHeight));
     m_globalTransform.SetSize(m_screenSize.x, m_screenSize.y);
     m_controlSpace.x = m_globalTransform.GetWidth();
     m_controlSpace.y = m_globalTransform.GetHeight();
@@ -136,10 +135,10 @@ void MainMenu::Process(float deltaTime) {
     HContainer::Process(deltaTime);
     HandleMouseInteraction();
 
-    if (t1->m_textSprite != nullptr && t2->m_textSprite != nullptr) {
-        t1->m_textSprite->m_iLayer = 1;
-        t2->m_textSprite->m_iLayer = 1;
-        t3->m_textSprite->m_iLayer = 1;
+    if (t1->m_pTextSprite != nullptr && t2->m_pTextSprite != nullptr) {
+        t1->m_pTextSprite->m_iLayer = 1;
+        t2->m_pTextSprite->m_iLayer = 1;
+        t3->m_pTextSprite->m_iLayer = 1;
     }
 }
 
@@ -157,16 +156,16 @@ void MainMenu::HandleMouseInteraction() {
     auto mousePos = InputManager::GetInstance().GetMousePosition();
     auto mouseEvent = InputManager::GetInstance().GetCurrentMouseEvent();
 
-    if (mousePos.y < h2->GetGlobalPosition().y && m_currentSelection != 0) {
+    if (mousePos.y < h2->GetGlobalPosition().y && m_iCurrentSelection != 0) {
         t1->SetTextRGBA(1,1,1,255);
         t2->SetTextRGBA(0.5,0.5,0.5,255);
-        m_currentSelection = 0;
+        m_iCurrentSelection = 0;
         SoundManager::GetInstance().PlaySound("menuHover.wav");
     }
-    if (mousePos.y > h2->GetGlobalPosition().y && m_currentSelection != 1) {
+    if (mousePos.y > h2->GetGlobalPosition().y && m_iCurrentSelection != 1) {
         t1->SetTextRGBA(0.5,0.5,0.5,255);
         t2->SetTextRGBA(1,1,1,255);
-        m_currentSelection = 1;
+        m_iCurrentSelection = 1;
         SoundManager::GetInstance().PlaySound("menuHover.wav");
     }
     if (mouseEvent.type == SDL_MOUSEBUTTONUP && mouseEvent.button == 1) {
@@ -178,9 +177,9 @@ void MainMenu::ExecuteSelection() const {
     auto currentTime = Timer::GetInstance().GetTotalTime();
     if (currentTime < 0.5f) return;
 
-    if (m_currentSelection == 0)
+    if (m_iCurrentSelection == 0)
         SceneManager::GetInstance().SetSceneActive("Whoosh");
-    if (m_currentSelection == 1)
+    if (m_iCurrentSelection == 1)
         Game::GetInstance().Quit();
     SoundManager::GetInstance().PlaySound("selectOption.mp3");
 }

@@ -30,10 +30,10 @@ public:
     Control* spacer2;
     Control* spacer3;
     Control* spacer4;
-    int m_currentSelection;
+    int m_iCurrentSelection;
 
 private:
-    std::string m_sCompletionTime;
+    std::string m_completionTime;
 };
 REGISTER_CLASS(WinScreen)
 

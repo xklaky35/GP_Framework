@@ -21,4 +21,4 @@ void Config::SetDefaultConfig() {
 }
 
 Config::Config() : windowsWidth(0), windowsHeight(0) {}
-Config::~Config() {}
+Config::~Config() = default;

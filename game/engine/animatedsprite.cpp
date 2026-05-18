@@ -10,22 +10,22 @@
 namespace Engine {
 
     AnimatedSprite::AnimatedSprite()
-        : m_pVertexData(nullptr)
-          , m_iFrameWidth(0)
-          , m_iFrameHeight(0)
-          , m_iCurrentFrame(0)
-          , m_iTotalFrames(0)
-          , m_bIsFlipped(false), m_fTimeElapsed(0.0f)
+        : m_iCurrentFrame(0)
+          , m_frameDuration(1.0f)
           , m_bAnimating(true)
           , m_bLooping(true)
-          , m_frameDuration(1.0f)
+          , m_iTotalFrames(0)
+          , m_bIsFlipped(false), m_iFrameWidth(0)
+          , m_iFrameHeight(0)
+          , m_pVertexData(nullptr)
+          , m_fTimeElapsed(0.0f)
           , totalTime(0.0f) {
     }
 
     AnimatedSprite::~AnimatedSprite()
     {
         delete m_pVertexData;
-        m_pVertexData = 0;
+        m_pVertexData = nullptr;
     }
 
     bool AnimatedSprite::Initialise(Texture& texture)
@@ -37,11 +37,11 @@ namespace Engine {
     }
     float AnimatedSprite::GetWidth() const
     {
-        return static_cast<int>(ceilf(m_iFrameWidth * m_scale));
+        return ceilf(static_cast<float>(m_iFrameWidth) * m_scale);
     }
     float AnimatedSprite::GetHeight() const
     {
-        return static_cast<int>(ceilf(m_iFrameHeight * m_scale));
+        return ceilf(static_cast<float>(m_iFrameHeight) * m_scale);
     }
     bool AnimatedSprite::IsAnimating() const
     {
@@ -57,29 +57,33 @@ namespace Engine {
         const int textureHeight = m_pTexture->GetHeight();
         const int totalFramesWide = textureWidth / fixedFrameWidth;
         const int totalFramesHigh = textureHeight / fixedFrameHeight;
-        const int stride = 5;
-        const float uFrameWidth = 1.0f / totalFramesWide;
-        const float vFrameHeight = 1.0f / totalFramesHigh;
+        constexpr int stride = 5;
+        const float uFrameWidth = 1.0f / static_cast<float>(totalFramesWide);
+        const float vFrameHeight = 1.0f / static_cast<float>(totalFramesHigh);
         m_iTotalFrames = totalFramesWide * totalFramesHigh;
-        const int vertsPerSprite = 4;
+        constexpr int vertsPerSprite = 4;
         const int numVertices = vertsPerSprite * (m_iTotalFrames);
-        float* vertices = new float[numVertices * stride];
+        auto vertices = new float[numVertices * stride];
+
+        auto isFlipped = static_cast<float>(m_bIsFlipped);
+        auto isNotFlipped = static_cast<float>(!m_bIsFlipped);
+
         for (int h = 0; h < totalFramesHigh; ++h)
         {
             for (int w = 0; w < totalFramesWide; ++w)
             {
-                float uOffset = (w * uFrameWidth);
-                float vOffset = (h * vFrameHeight);
+                float uOffset = static_cast<float>(w) * uFrameWidth;
+                float vOffset = static_cast<float>(h) * vFrameHeight;
                 float quad[] =
                 {
                     // x      y      z      u                      v
-                    -0.5f,  0.5f,  0.0f,  uOffset + (uFrameWidth * m_bIsFlipped), vOffset + vFrameHeight,               // top-left
-                     0.5f,  0.5f,  0.0f,  uOffset + (uFrameWidth * !m_bIsFlipped),               vOffset + vFrameHeight,               // top-right
-                     0.5f, -0.5f,  0.0f,  uOffset + (uFrameWidth * !m_bIsFlipped),               vOffset , // bottom-right
-                    -0.5f, -0.5f,  0.0f,  uOffset + (uFrameWidth * m_bIsFlipped), vOffset , // bottom-left
+                    -0.5f,  0.5f,  0.0f,  uOffset + (uFrameWidth *  isFlipped),   vOffset + vFrameHeight,  // top-left
+                     0.5f,  0.5f,  0.0f,  uOffset + (uFrameWidth * isNotFlipped), vOffset + vFrameHeight,  // top-right
+                     0.5f, -0.5f,  0.0f,  uOffset + (uFrameWidth * isNotFlipped), vOffset ,                // bottom-right
+                    -0.5f, -0.5f,  0.0f,  uOffset + (uFrameWidth *  isFlipped),   vOffset ,                // bottom-left
                 };
 
-                const int floatsPerSprite = stride * vertsPerSprite;
+                constexpr int floatsPerSprite = stride * vertsPerSprite;
                 for (int j = 0; j < floatsPerSprite; ++j)
                 {
                     int index = ((w * floatsPerSprite) + j) + (h * (floatsPerSprite * totalFramesWide));
@@ -88,23 +92,23 @@ namespace Engine {
             }
         }
         const int totalIndices = 6 * m_iTotalFrames;
-        unsigned int* allIndices = new unsigned int[totalIndices];
+        auto* allIndices = new unsigned int[totalIndices];
         unsigned int i = 0;
         for (int k = 0; k < m_iTotalFrames; ++k)
         {
-            unsigned int indices[] = { 0 + i, 1 + i, 2 + i, 2 + i, 3 + i, 0 + i };
+            const unsigned int indices[] = { 0 + i, 1 + i, 2 + i, 2 + i, 3 + i, 0 + i };
             for (int j = 0; j < 6; ++j)
             {
-                int index = (k * 6) + j;
+                const int index = (k * 6) + j;
                 allIndices[index] = indices[j];
             }
             i += 4;
         }
         m_pVertexData = new VertexArray(vertices, numVertices, allIndices, totalIndices);
         delete[] vertices;
-        vertices = 0;
+        vertices = nullptr;
         delete[] allIndices;
-        allIndices = 0;
+        allIndices = nullptr;
     }
 
     void AnimatedSprite::Process(float deltaTime)

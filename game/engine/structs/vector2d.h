@@ -10,9 +10,8 @@ namespace Engine {
         Vector2d();
         Vector2d(float x, float y);
 
-        float Distance(const Vector2d&) const;
-
-        bool Compare(Vector2d vector2d, float i) const;
+        [[nodiscard]] float Distance(const Vector2d&) const;
+        [[nodiscard]] bool Compare(Vector2d vector2d, float i) const;
 
         static Vector2d Zero();
         operator b2Vec2() const;

@@ -12,7 +12,7 @@ namespace Engine {
         void Draw(Renderer&) override;
         void SystemProcess() override;
         void SetupParameter(IniParser *parser, const std::string &sectionId) override;
-        void SetText(std::string);
+        void SetText(const std::string &);
         void SetTextRGBA(float r, float g, float b, float a);
         const float* GetTextRGBA() const;
 
@@ -20,7 +20,7 @@ namespace Engine {
 
         char* GetText();
 
-        Sprite* m_textSprite;
+        Sprite* m_pTextSprite;
     private:
         bool m_bIsInitialised;
         std::string m_text;

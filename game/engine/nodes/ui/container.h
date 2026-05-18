@@ -11,8 +11,6 @@ namespace Engine {
         virtual void CalculateChildSpace() const = 0;
         virtual void CalculateInitialSize();
     };
-
-
 }
 
 #endif //GP_FRAMEWORK_CONTAINER_H

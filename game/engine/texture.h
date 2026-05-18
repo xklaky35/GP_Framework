@@ -1,7 +1,6 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 #include <SDL_surface.h>
-#include <vector>
 
 namespace Engine {
     class Texture {
@@ -12,8 +11,8 @@ namespace Engine {
 
         bool Initialise(const char *pcFilename);
         void SetActive() const;
-        int GetWidth() const;
-        int GetHeight() const;
+        [[nodiscard]] int GetWidth() const;
+        [[nodiscard]] int GetHeight() const;
 
         void LoadTextTexture(const char *text, const char *fontname, int pointsize, SDL_Color);
 

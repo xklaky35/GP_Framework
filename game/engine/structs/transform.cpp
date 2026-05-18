@@ -11,7 +11,6 @@ namespace Engine {
         rotation = degrees;
     }
 
-
     void Transform::SetSize(const float w, const float h) {
         scaledSize.x = w;
         scaledSize.y = h;
@@ -37,7 +36,7 @@ namespace Engine {
     }
 
     float Transform::GetRotationRad() const {
-        return rotation * (std::numbers::pi / 180);
+        return static_cast<float>(rotation * (std::numbers::pi / 180));
     }
 
     float Transform::GetWidth() const {

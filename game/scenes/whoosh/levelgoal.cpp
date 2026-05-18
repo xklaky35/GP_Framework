@@ -1,7 +1,3 @@
-//
-// Created by leon on 07.05.26.
-//
-
 #include "levelgoal.h"
 
 
@@ -13,7 +9,7 @@ void LevelGoal::Init() {
     Node::Init();
     m_collisionArea = dynamic_cast<ColliderNode*>(GetChild("FinishArea"));
     if (m_collisionArea != nullptr) {
-        //m_collisionArea->SetData(this);
+        m_collisionArea->SetData(this);
     }
 }
 

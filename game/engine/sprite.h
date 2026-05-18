@@ -16,33 +16,31 @@ namespace Engine {
         virtual void Process(float deltaTime);
         virtual void Draw(Renderer &renderer);
         virtual void DrawDebug();
-        virtual float GetWidth() const;
+        [[nodiscard]] virtual float GetWidth() const;
+        [[nodiscard]] virtual float GetHeight() const;
 
-        float GetOriginalWidth() const;
-
-        void SetWidth(float x);
-        virtual float GetHeight() const;
-
-        float GetOriginalHeight() const;
+        [[nodiscard]] float GetOriginalWidth() const;
+        [[nodiscard]] float GetOriginalHeight() const;
+        [[nodiscard]] float GetX() const;
+        [[nodiscard]] float GetY() const;
+        [[nodiscard]] float GetAngle() const;
+        [[nodiscard]] float GetGreenTint() const;
+        [[nodiscard]] float GetAlpha() const;
+        [[nodiscard]] float GetRedTint() const;
+        [[nodiscard]] float GetBlueTint() const;
+        [[nodiscard]] float GetScale() const;
 
         void SetHeight(float x);
         void SetX(float x);
-        float GetX() const;
         void SetY(float y);
-        float GetY() const;
         void SetAngle(float angle);
-        float GetAngle() const;
+        void SetWidth(float x);
         void SetScale(float scale);
-        float GetScale() const;
         void SetAlpha(float alpha);
-        float GetAlpha() const;
         void SetRedTint(float value);
-        float GetRedTint() const;
         void SetGreenTint(float value);
-        float GetGreenTint() const;
         void SetBlueTint(float value);
-        float GetBlueTint() const;
-        void SetActive();
+        void SetActive() const;
 
     protected:
         float Clamp(float minimum, float value, float maximum);

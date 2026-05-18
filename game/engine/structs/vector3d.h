@@ -31,7 +31,7 @@ namespace Engine {
         bool operator!=(const Vector3d&) const;
         Vector3d& operator/=(float);
 
-        float Length() const;
+        [[nodiscard]] float Length() const;
     };
 }
 

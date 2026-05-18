@@ -2,11 +2,8 @@
 #include <cmath>
 
 namespace Engine {
-    Vector2d::Vector2d() : x(0), y(0) {
-    }
-
-    Vector2d::Vector2d(const float x, const float y) : x(x), y(y) {
-    }
+    Vector2d::Vector2d() : x(0), y(0) {}
+    Vector2d::Vector2d(const float x, const float y) : x(x), y(y) {}
 
     float Vector2d::Distance(const Vector2d & target) const {
         auto d = sqrt(pow(target.x - x, 2) + pow(target.y - y,2));
@@ -22,7 +19,7 @@ namespace Engine {
     }
 
     Vector2d Vector2d::Zero() {
-        return Vector2d(0,0);
+        return Vector2d{0,0};
     }
 
     Vector2d::operator b2Vec2() const {

@@ -1,11 +1,8 @@
-
 #ifndef GP_FRAMEWORK_NODEFACTORY_H
 #define GP_FRAMEWORK_NODEFACTORY_H
 #include <memory>
 
-#include "animatedspritenode.h"
 #include "node.h"
-#include "spritenode.h"
 
 
 // Helper macro to register classes
@@ -61,28 +58,19 @@ namespace Engine {
 
         static NodeFactory &GetInstance();
         static void DestroyInstance();
+
         void InitWithConfiguration(Node*, const std::string&);
-
         void CheckForNestedNodes(Node& newParentNode, NodeConfiguration& config, const Node& rootNode);
-
         void ConfigureIniNodesOf(Node* n);
         void ConfigureBaseNodesOf(Node *n);
 
         Node *GetBaseNode(const std::unordered_map<std::string, std::string>& childData);
-
         Node *CreateBaseNode(NodeType nodeType);
         Node *CreateCustomNode(const std::string &name, const std::string &path);
 
+        void RegisterClass(const std::string &name, Creator creator);
 
-        void RegisterClass(const std::string& name, Creator creator) {
-            registry[name] = std::move(creator);
-        }
-
-        std::unique_ptr<Node> Create(const std::string& name) {
-            auto it = registry.find(name);
-            if (it == registry.end()) return nullptr;
-            return it->second();
-        }
+        std::unique_ptr<Node> Create(const std::string &name);
 
     private:
         NodeFactory();
@@ -90,8 +78,8 @@ namespace Engine {
 
 
     private:
-        std::unordered_map<std::string, Creator> registry;
-        static NodeFactory *m_pInstance;
+        std::unordered_map<std::string, Creator> m_registry;
+        static NodeFactory *s_pInstance;
 
     };
 

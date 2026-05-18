@@ -105,8 +105,8 @@ set(ENGINE_SOURCES
         ${ENGINE_DIR}/nodes/cameranode.h
         ${ENGINE_DIR}/structs/vector3d.cpp
         ${ENGINE_DIR}/structs/vector3d.h
-        ${ENGINE_DIR}/physics/DebugFormsCreator.cpp
-        ${ENGINE_DIR}/physics/DebugFormsCreator.h
+        ${ENGINE_DIR}/physics/debugformscreator.cpp
+        ${ENGINE_DIR}/physics/debugformscreator.h
         ${ENGINE_DIR}/time/timer.cpp
         ${ENGINE_DIR}/time/timer.h
         ${ENGINE_DIR}/nodes/ui/button.cpp

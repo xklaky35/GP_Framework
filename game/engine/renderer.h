@@ -10,6 +10,7 @@
 
 // Library includes:
 #include <SDL.h>
+#include <vector>
 
 #include "structs/vector2d.h"
 
@@ -35,11 +36,11 @@ namespace Engine {
         void CreateStaticText(const char *pText, int pointsize, SDL_Color) const;
 
         void GetClearColour(unsigned char &r, unsigned char &g, unsigned char &b) const;
-        Vector2d GetCurrentOffset() const;
-        SDL_Window* GetSDLWindow() const;
-        SDL_GLContext GetSDLGLContext() const;
-        int GetWidth() const;
-        int GetHeight() const;
+        [[nodiscard]] Vector2d GetCurrentOffset() const;
+        [[nodiscard]] SDL_Window* GetSDLWindow() const;
+        [[nodiscard]] SDL_GLContext GetSDLGLContext() const;
+        [[nodiscard]] int GetWidth() const;
+        [[nodiscard]] int GetHeight() const;
 
         void SetClearColour(unsigned char r, unsigned char g, unsigned char b);
         void SetOrthoViewport(int windows_width, int windows_height);
@@ -73,7 +74,6 @@ namespace Engine {
         float m_fClearBlue;
         Vector2d m_currentOffset;
 
-    private:
     };
 }
 #endif // RENDERER_H

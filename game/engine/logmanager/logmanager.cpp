@@ -5,21 +5,21 @@
 
 namespace Engine {
     // Static Members:
-    LogManager *LogManager::sm_pInstance = nullptr;
+    LogManager *LogManager::s_pInstance = nullptr;
 
     LogManager::LogManager() = default;
     LogManager::~LogManager() = default;
 
     LogManager &LogManager::GetInstance() {
-        if (sm_pInstance == nullptr) {
-            sm_pInstance = new LogManager();
+        if (s_pInstance == nullptr) {
+            s_pInstance = new LogManager();
         }
-        return (*sm_pInstance);
+        return (*s_pInstance);
     }
 
     void LogManager::DestroyInstance() {
-        delete sm_pInstance;
-        sm_pInstance = nullptr;
+        delete s_pInstance;
+        s_pInstance = nullptr;
     }
 
 

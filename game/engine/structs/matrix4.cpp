@@ -1,7 +1,5 @@
 #include "matrix4.h"
 
-#include <cmath>
-
 namespace Engine {
     void SetZero(Matrix4& mat)
     {
@@ -43,8 +41,4 @@ namespace Engine {
         mat.m[3][2] =  0.0f; // z
         mat.m[3][3] =  1.0f; // ZOOM???!!??!?!?!?!?
     }
-
-
-
-
 }

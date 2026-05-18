@@ -2,10 +2,13 @@
 
 #include "imgui.h"
 #include "../nodefactory.h"
-#include "../../logmanager/logmanager.h"
 
 namespace Engine {
-    TextControl::TextControl() : m_bIsInitialised(false), m_iPointSize(16), m_textSprite(nullptr), m_rgba{0,0,0,255} {
+    TextControl::TextControl()
+        : m_pTextSprite(nullptr),
+          m_bIsInitialised(false),
+          m_iPointSize(16),
+          m_rgba{0,0,0,255} {
 
 
         SetupNode("TextControl", NT_TextControl);
@@ -32,8 +35,8 @@ namespace Engine {
         m_nodeInfo.push_back({
                 "Layer", [](Node &n) {
                     if (auto *s = dynamic_cast<TextControl *>(&n)) {
-                        if (s->m_textSprite != nullptr) {
-                            ImGui::DragInt("Layer", &s->m_textSprite->m_iLayer, 1, 0, 10);
+                        if (s->m_pTextSprite != nullptr) {
+                            ImGui::DragInt("Layer", &s->m_pTextSprite->m_iLayer, 1, 0, 10);
                         }
                     }
                 }
@@ -42,7 +45,7 @@ namespace Engine {
         m_nodeInfo.push_back({
                 "PointSize", [](Node &n) {
                     if (auto *s = dynamic_cast<TextControl *>(&n)) {
-                        if (s->m_textSprite != nullptr) {
+                        if (s->m_pTextSprite != nullptr) {
                             if (ImGui::DragInt("Layer", &s->m_iPointSize, 1, 0, 10)) {
                                 s->SetValue("pointSize", s->m_iPointSize);
                                 s->m_bIsInitialised = false;
@@ -80,15 +83,15 @@ namespace Engine {
             auto color = SDL_Color(static_cast<Uint8>(m_rgba[2]*255), static_cast<Uint8>(m_rgba[1]*255),static_cast<Uint8>(m_rgba[0]*255),static_cast<Uint8>(m_rgba[3]));
             renderer.CreateStaticText(m_text.c_str(), m_iPointSize, color);
             // Generate sprites that use the static text textures...
-            m_textSprite = renderer.CreateSprite(m_text.c_str());
-            m_textSprite->SetX(m_globalTransform.position.x);
-            m_textSprite->SetY(m_globalTransform.position.y);
+            m_pTextSprite = renderer.CreateSprite(m_text.c_str());
+            m_pTextSprite->SetX(m_globalTransform.position.x);
+            m_pTextSprite->SetY(m_globalTransform.position.y);
         }
 
-        if (m_textSprite != nullptr) {
-            m_textSprite->SetX(m_globalTransform.position.x);
-            m_textSprite->SetY(m_globalTransform.position.y);
-            m_textSprite->Draw(renderer);
+        if (m_pTextSprite != nullptr) {
+            m_pTextSprite->SetX(m_globalTransform.position.x);
+            m_pTextSprite->SetY(m_globalTransform.position.y);
+            m_pTextSprite->Draw(renderer);
             m_bIsInitialised = true;
         }
     }
@@ -96,12 +99,12 @@ namespace Engine {
     void TextControl::SystemProcess() {
         Control::SystemProcess();
 
-        if (m_textSprite != nullptr) {
-            m_initialSize.x = m_textSprite->GetWidth();
-            m_initialSize.y = m_textSprite->GetHeight();
-            m_textSprite->SetX(m_globalTransform.position.x + m_textSprite->GetWidth()/2);
-            m_textSprite->SetY(m_globalTransform.position.y + m_textSprite->GetHeight()/2);
-            m_textSprite->SetAngle(m_globalTransform.GetRotationDeg());
+        if (m_pTextSprite != nullptr) {
+            m_initialSize.x = m_pTextSprite->GetWidth();
+            m_initialSize.y = m_pTextSprite->GetHeight();
+            m_pTextSprite->SetX(m_globalTransform.position.x + m_pTextSprite->GetWidth()/2);
+            m_pTextSprite->SetY(m_globalTransform.position.y + m_pTextSprite->GetHeight()/2);
+            m_pTextSprite->SetAngle(m_globalTransform.GetRotationDeg());
         }
     }
 
@@ -112,10 +115,10 @@ namespace Engine {
         m_rgba[1] = parser->GetValueAsFloat(sectionId, "greenTint");
         m_rgba[0] = parser->GetValueAsFloat(sectionId, "blueTint");
         m_rgba[3] = parser->GetValueAsFloat(sectionId, "alpha");
-        m_iPointSize = parser->GetValueAsFloat(sectionId, "pointSize");
+        m_iPointSize = parser->GetValueAsInt(sectionId, "pointSize");
     }
 
-    void TextControl::SetText(std::string str) {
+    void TextControl::SetText(const std::string &str) {
         m_text = str;
         m_bIsInitialised = false;
     }

@@ -15,19 +15,16 @@ public:
 
     void Init() override;
 
-
-
     void Process(float deltaTime) override;
     void SetupParameter(IniParser *parser, const std::string &section) override;
 
-
-    float GetHookMinRange();
-    float GetHookMaxRange();
-    float GetHookDamping();
-    float GetHookHertz();
-    float GetHookSwingAcceleration();
-    float GetHookSwingDeceleration();
-    bool GetHookSpringEnabled();
+    float GetHookMinRange() const;
+    float GetHookMaxRange() const;
+    float GetHookDamping() const;
+    float GetHookHertz() const;
+    float GetHookSwingAcceleration() const;
+    float GetHookSwingDeceleration() const;
+    bool GetHookSpringEnabled() const;
 
     void SetHookMinRange(float);
     void SetHookMaxRange(float);
@@ -62,7 +59,7 @@ private:
     void ChangeAnimation(AnimatedSpriteNode *animation);
     bool ShootHookSwing(Vector2d pos);
     void CreateChainBetween(b2Vec2 vector2d, b2Vec2 point, b2BodyId targetBody, b2WorldId worldId);
-    b2RayResult CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId worldId) const;
+    [[nodiscard]] b2RayResult CastRayFromTo(Vector2d origin, Vector2d target, b2WorldId worldId) const;
 
 
 
@@ -87,8 +84,8 @@ private:
     // air stats
     float m_fMaxSwingSpeed;
 
-    int m_jumpsMade;
-    int m_maxJumps;
+    int m_iJumpsMade;
+    int m_iMaxJumps;
 
     Vector2d m_velocity;
     Vector2d m_moveDirection;
@@ -115,20 +112,20 @@ private:
 
     // components
     b2JointId m_b2Hook;
-    RigidbodyNode* m_rigidBody;
-    AnimatedSpriteNode* m_currentAnimation;
-    AnimatedSpriteNode* m_runningAnimation;
-    AnimatedSpriteNode* m_idleAnimation;
-    AnimatedSpriteNode* m_jumpAnimation;
-    AnimatedSpriteNode* m_walkingAnimation;
-    ColliderNode* m_groundSensor;
-    ColliderNode* m_wallSensorLeft;
-    ColliderNode* m_wallSensorRight;
-    ColliderNode* m_levelGoal;
-    SpriteNode* m_hookSprite;
+    RigidbodyNode* m_pRigidBody;
+    AnimatedSpriteNode* m_pCurrentAnimation;
+    AnimatedSpriteNode* m_pRunningAnimation;
+    AnimatedSpriteNode* m_pIdleAnimation;
+    AnimatedSpriteNode* m_pJumpAnimation;
+    AnimatedSpriteNode* m_pWalkingAnimation;
+    ColliderNode* m_pGroundSensor;
+    ColliderNode* m_pWallSensorLeft;
+    ColliderNode* m_pWallSensorRight;
+    ColliderNode* m_pLevelGoal;
+    SpriteNode* m_pHookSprite;
 
-    FMOD::Channel* m_walkingSound;
-    FMOD::Channel* m_landingSound;
+    FMOD::Channel* m_pWalkingSound;
+    FMOD::Channel* m_pLandingSound;
 
 };
 REGISTER_CLASS(Player);

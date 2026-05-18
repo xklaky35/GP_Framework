@@ -23,16 +23,15 @@ namespace Engine {
         void Draw(Renderer &renderer) override;
         void SetupSpriteRendering(Renderer& renderer) override;
 
-        void SetupFrames();
+        void SetupFrames() const;
 
-        void SetLooping(bool);
-        void SetAnimating(bool);
-        bool IsAnimating() const;
-        void Restart();
-        void SetFrameDuration(float seconds);
-        void Flip();
-
-        bool IsFlipped();
+        void SetLooping(bool) const;
+        void SetAnimating(bool) const;
+        [[nodiscard]] bool IsAnimating() const;
+        [[nodiscard]] bool IsFlipped() const;
+        void Restart() const;
+        void SetFrameDuration(float seconds) const;
+        void Flip() const;
 
     private:
         AnimatedSpriteNode(const AnimatedSpriteNode &animatedsprite);
@@ -43,8 +42,8 @@ namespace Engine {
         bool m_bIsLooping;
         bool m_bIsAnimating;
         float m_fFrameDuration;
-        int m_frameHeight;
-        int m_frameWidth;
+        int m_iFrameHeight;
+        int m_iFrameWidth;
     };
 }
 #endif

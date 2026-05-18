@@ -89,10 +89,10 @@ void Meteors::Split() {
         m3->m_globalTransform.position = m_globalTransform.position;
         m3->m_globalTransform.SetScale(m_globalTransform.GetScale() / 2);
 
-        m_parent->AddChild(*m1);
-        m_parent->AddChild(*m2);
-        m_parent->AddChild(*m3);
-        m_parent->RemoveChild(this);
+        m_pParent->AddChild(*m1);
+        m_pParent->AddChild(*m2);
+        m_pParent->AddChild(*m3);
+        m_pParent->RemoveChild(this);
 }
 
 

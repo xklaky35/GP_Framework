@@ -5,7 +5,11 @@
 
 namespace Engine {
     Control::Control() : Control(true) {}
-    Control::Control(bool useDebugRect) : m_bUseDebugRect(useDebugRect), m_positionMode(Position), m_bIsChildOfContainer(false), m_debugRect(nullptr) {
+    Control::Control(bool useDebugRect)
+        : m_positionMode(Position),
+          m_bIsChildOfContainer(false),
+          m_bUseDebugRect(useDebugRect),
+          m_pDebugRect(nullptr) {
 
         m_containerSizing = ContainerSizing();
         m_nodeInfo.push_back(
@@ -101,11 +105,11 @@ namespace Engine {
         m_globalTransformationFlag = IF_Disable;
 
         if (m_bUseDebugRect) {
-            m_debugRect = new SpriteNode();
-            m_debugRect->SetSpritePath(std::string("../assets/Sprites/board8x8.png").data());
-            m_debugRect->m_spriteDisplayMode = Fit;
-            m_debugRect->SetRGBA(GetRandomPercentage(), GetRandomPercentage(),GetRandomPercentage(),1);
-            AddChild(*m_debugRect);
+            m_pDebugRect = new SpriteNode();
+            m_pDebugRect->SetSpritePath(std::string("../assets/Sprites/board8x8.png").data());
+            m_pDebugRect->m_spriteDisplayMode = Fit;
+            m_pDebugRect->SetRGBA(GetRandomPercentage(), GetRandomPercentage(),GetRandomPercentage(),1);
+            AddChild(*m_pDebugRect);
         }
 
         m_globalTransform.SetSize(50,50);
@@ -119,9 +123,9 @@ namespace Engine {
 
     void Control::SystemProcess() {
         Node::SystemProcess();
-        if (m_parent != nullptr) {
-            if (dynamic_cast<Control*>(m_parent)) {
-                m_globalTransform.position = m_parent->m_globalTransform.position + m_transform.position;
+        if (m_pParent != nullptr) {
+            if (dynamic_cast<Control*>(m_pParent)) {
+                m_globalTransform.position = m_pParent->m_globalTransform.position + m_transform.position;
             }
         }
     }
@@ -174,5 +178,4 @@ namespace Engine {
             }
         }
     }
-
 }

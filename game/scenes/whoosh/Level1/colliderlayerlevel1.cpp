@@ -1,6 +1,3 @@
-//
-// Created by leon on 06.05.26.
-//
 
 #include "colliderlayerlevel1.h"
 

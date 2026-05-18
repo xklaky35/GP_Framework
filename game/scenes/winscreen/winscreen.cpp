@@ -10,7 +10,7 @@
 using namespace Engine;
 
 WinScreen::WinScreen()
-    : m_currentSelection(0) {
+    : m_iCurrentSelection(0) {
 
     SetupNode("WinScreen", NT_Custom);
     vcontainer1 = new VContainer();
@@ -34,10 +34,10 @@ void WinScreen::Init() {
     if (sound != nullptr) {
         sound->setVolume(3);
     }
-    m_sCompletionTime = "Completed in  " + Timer::GetInstance().GetTotalTimeAsString();
+    m_completionTime = "Completed in  " + Timer::GetInstance().GetTotalTimeAsString();
 
     // OUTER LAYOUT
-    m_screenSize = Vector2d(Config::GetInstance().windowsWidth, Config::GetInstance().windowsHeight);
+    m_screenSize = Vector2d(static_cast<float>(Config::GetInstance().windowsWidth), static_cast<float>(Config::GetInstance().windowsHeight));
     m_globalTransform.SetSize(m_screenSize.x, m_screenSize.y);
     m_controlSpace.x = m_globalTransform.GetWidth();
     m_controlSpace.y = m_globalTransform.GetHeight();
@@ -93,7 +93,7 @@ void WinScreen::Init() {
     t1->SetPointSize(50);
     t2->SetText("Return to menu");
     t2->SetPointSize(50);
-    t3->SetText(m_sCompletionTime);
+    t3->SetText(m_completionTime);
     t3->SetPointSize(50);
 
     // Add Text to rows
@@ -118,10 +118,10 @@ void WinScreen::Init() {
 void WinScreen::Process(float deltaTime) {
     HContainer::Process(deltaTime);
     HandleMouseInteraction();
-    if (t1->m_textSprite != nullptr && t2->m_textSprite != nullptr) {
-        t1->m_textSprite->m_iLayer = 1;
-        t2->m_textSprite->m_iLayer = 1;
-        t3->m_textSprite->m_iLayer = 1;
+    if (t1->m_pTextSprite != nullptr && t2->m_pTextSprite != nullptr) {
+        t1->m_pTextSprite->m_iLayer = 1;
+        t2->m_pTextSprite->m_iLayer = 1;
+        t3->m_pTextSprite->m_iLayer = 1;
     }
 
 }
@@ -135,15 +135,15 @@ void WinScreen::HandleMouseInteraction() {
     auto mousePos = InputManager::GetInstance().GetMousePosition();
     auto mouseEvent = InputManager::GetInstance().GetCurrentMouseEvent();
 
-    if (mousePos.y < h2->GetGlobalPosition().y && m_currentSelection != 0) {
+    if (mousePos.y < h2->GetGlobalPosition().y && m_iCurrentSelection != 0) {
         t1->SetTextRGBA(1,1,1,255);
         t2->SetTextRGBA(0.5,0.5,0.5,255);
-        m_currentSelection = 0;
+        m_iCurrentSelection = 0;
     }
-    if (mousePos.y > h2->GetGlobalPosition().y && m_currentSelection != 1) {
+    if (mousePos.y > h2->GetGlobalPosition().y && m_iCurrentSelection != 1) {
         t1->SetTextRGBA(0.5,0.5,0.5,255);
         t2->SetTextRGBA(1,1,1,255);
-        m_currentSelection = 1;
+        m_iCurrentSelection = 1;
     }
     if (mouseEvent.type == SDL_MOUSEBUTTONDOWN && mouseEvent.button == 1) {
         ExecuteSelection();
@@ -151,8 +151,8 @@ void WinScreen::HandleMouseInteraction() {
 }
 
 void WinScreen::ExecuteSelection() const {
-    if (m_currentSelection == 0)
+    if (m_iCurrentSelection == 0)
         SceneManager::GetInstance().SetSceneActive("Whoosh");
-    if (m_currentSelection == 1)
+    if (m_iCurrentSelection == 1)
         SceneManager::GetInstance().SetSceneActive("MainMenu");
 }

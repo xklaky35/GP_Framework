@@ -30,7 +30,7 @@ namespace Engine {
 
 
     protected:
-        static PhysicsManager* m_pInstance;
+        static PhysicsManager* s_pInstance;
 
     private:
 
@@ -38,7 +38,7 @@ namespace Engine {
         ~PhysicsManager();
 
         b2WorldId m_gameWorldId;
-        b2DebugDraw m_b2DebugDraw;
+        b2DebugDraw m_box2DebugDraw;
         DebugDraw m_debugDraw;
     };
 

@@ -38,6 +38,6 @@ void Bullet::Process(float deltaTime) {
 
     // apply ttl
     if (m_deltaSum >= m_ttl) {
-        m_parent->RemoveChild(this);
+        m_pParent->RemoveChild(this);
     }
 }

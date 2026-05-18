@@ -1,10 +1,7 @@
 #include "sceneselector.h"
-
 #include "imgui.h"
 #include "scenemanager.h"
 #include "../assetmanager/assetbrowser.h"
-#include "../logmanager/logmanager.h"
-
 
 namespace Engine {
     SceneSelector::SceneSelector(bool visible) {
@@ -19,7 +16,7 @@ namespace Engine {
         bool p_open;
         // ########## Scene selector ##############
         ImGui::Begin(name.c_str(), &p_open, ImGuiWindowFlags_MenuBar);
-        ImGui::BeginMultiSelect(ImGuiMultiSelectFlags_NoSelectAll, sceneManager.m_loadedScenes.size()-1, sceneManager.m_loadedScenes.size()-1);
+        ImGui::BeginMultiSelect(ImGuiMultiSelectFlags_NoSelectAll, static_cast<int>(sceneManager.m_loadedScenes.size())-1, static_cast<int>(sceneManager.m_loadedScenes.size())-1);
 
 
         for (const auto&[sceneName, scene] : sceneManager.GetScenes()) {
@@ -82,6 +79,5 @@ namespace Engine {
         }
         ImGui::EndGroup(); // Lock X position
         ImGui::End();
-
     }
 }

@@ -2,21 +2,21 @@
 
 #include <numeric>
 #include <utility>
-
 #include "imgui.h"
 #include "nodefactory.h"
 #include "../../helper/inlinehelper.h"
 #include "misc/cpp/imgui_stdlib.h"
-//../assets/Sprites/Shinobi/rect.png
 namespace Engine {
-    /**
-     * This node uses the sprites dimensions by default.
-     */
-    SpriteNode::SpriteNode() : m_iLayer(0), m_spriteDisplayMode(Original),
-                               m_pSprite(nullptr),
-                               m_pRenderer(nullptr),
-                               m_redTint(1),
-                               m_greenTint(1), m_blueTint(1), m_alpha(1), m_scaleFactor(0) {
+    SpriteNode::SpriteNode()
+        : m_iLayer(0),
+          m_spriteDisplayMode(Original),
+          m_pSprite(nullptr),
+          m_pRenderer(nullptr),
+          m_redTint(1),
+          m_greenTint(1),
+          m_blueTint(1),
+          m_alpha(1),
+          m_scaleFactor(0) {
 
         SetupNode("SpriteNode", NT_SpriteNode);
         m_spritePath = {};

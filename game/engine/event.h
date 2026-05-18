@@ -3,8 +3,6 @@
 #define GP_FRAMEWORK_EVENT_H
 #include <functional>
 
-#include "nodes/node.h"
-
 namespace Engine {
     template<class X>
     class Event {
@@ -25,7 +23,7 @@ namespace Engine {
         }
 
         void Emit() const {
-            for (auto f : m_actionContainer) {
+            for (const auto& f : m_actionContainer) {
                 f();
             }
         }
@@ -36,11 +34,10 @@ namespace Engine {
             }
         }
 
-
     public:
         std::vector<std::function<void()>> m_actionContainer;
         std::vector<std::function<void(X *)>> m_paramEventContainer;
     };
 }
 
-#endif //GP_FRAMEWORK_EVENT_H
+#endif

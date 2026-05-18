@@ -5,8 +5,6 @@
 #include <string>
 
 #include "../event.h"
-#include "../imgui/imguiwindowbaseclass.h"
-
 #include "../nodes/node.h"
 
 namespace Engine {
@@ -29,15 +27,15 @@ namespace Engine {
         void SystemProcess();
 
         static void DestroyInstance();
+
         void RegisterScene(const std::string&, Node*);
-        void SetSceneActive(std::string);
-        Node& GetCurrentVisibleNode();
+        void SetSceneActive(const std::string &);
+        [[nodiscard]] Node& GetCurrentVisibleNode() const;
+        [[nodiscard]] const std::pmr::map<std::string, Node*>& GetScenes() const;
         Node* GetCurrentScene();
-        const std::pmr::map<std::string, Node*>& GetScenes();
+
         void ReloadCurrentScene();
-
         void ResetWorldState();
-
         void DeleteScenes();
 
     public:

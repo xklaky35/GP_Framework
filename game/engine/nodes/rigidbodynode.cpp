@@ -10,11 +10,20 @@
 #include "box2d/types.h"
 
 namespace Engine {
-    RigidbodyNode::RigidbodyNode(const b2BodyType type, const float mass, const float friction) : m_bodyId(), m_fMass(mass), m_bIsActive(false),
-                                                    m_bIsSleeping(false),
-                                                    m_bHasFixedRotation(false),
-                                                    m_bIsBullet(false), m_fFriction(friction), m_collider(nullptr)
-                                                     {
+    RigidbodyNode::RigidbodyNode(const b2BodyType type, const float mass, const float friction)
+        : m_bodyId(),
+          m_pCollider(nullptr),
+          m_bIsActive(false),
+          m_bIsSleeping(false),
+          m_bHasFixedRotation(false),
+          m_bIsBullet(false),
+          m_bAngularRotation(false),
+          m_bLinearMovementX(false),
+          m_bLinearMovementY(false),
+          m_fFriction(friction),
+          m_fDensity(0.f),
+          m_fMass(mass) {
+
         SetupNode("RigidBody", NT_RigidBodyNode);
         m_nodeInfo.push_back(
             {
@@ -102,7 +111,7 @@ namespace Engine {
     void RigidbodyNode::Init() {
         Node::Init();
         TrySetupWithCollider();
-        m_globalTransform.position = m_parent->m_globalTransform.position;
+        m_globalTransform.position = m_pParent->m_globalTransform.position;
     }
 
     void RigidbodyNode::Process(float deltaTime) {
@@ -111,7 +120,7 @@ namespace Engine {
         TrySetupWithCollider();
 
         // set parent position
-        assert(m_parent);
+        assert(m_pParent);
         auto* parent = static_cast<Node *>(b2Body_GetUserData(m_bodyId));
         if (parent != nullptr) {
             parent->m_globalTransform.position = GetBodyPosition();
@@ -134,8 +143,8 @@ namespace Engine {
 
     // get position in pixels
     Vector2d RigidbodyNode::GetBodyPosition() const {
-        if (m_collider == nullptr) return Vector2d{0,0};
-        return m_collider->GetBodyPositionInPixel();
+        if (m_pCollider == nullptr) return Vector2d{0,0};
+        return m_pCollider->GetBodyPositionInPixel();
     }
 
     b2Rot RigidbodyNode::GetBodyRotation() const {
@@ -143,10 +152,10 @@ namespace Engine {
     }
 
     Vector2d RigidbodyNode::GetBodyVelocity() const {
-        if (m_collider != nullptr) {
-            return m_collider->GetCurrentVelocity();
+        if (m_pCollider != nullptr) {
+            return m_pCollider->GetCurrentVelocity();
         }
-        return Vector2d(0,0);
+        return Vector2d{0,0};
     }
 
     b2MassData RigidbodyNode::GetMassData() const {
@@ -154,20 +163,20 @@ namespace Engine {
     }
 
     float RigidbodyNode::GetFriction() const {
-        if (m_collider == nullptr) return 0.f;
-        return b2Shape_GetFriction(m_collider->GetShapeId());
+        if (m_pCollider == nullptr) return 0.f;
+        return b2Shape_GetFriction(m_pCollider->GetShapeId());
     }
 
     float RigidbodyNode::GetDensity() const {
-        if (m_collider == nullptr) return 0.f;
-        return b2Shape_GetDensity(m_collider->GetShapeId());
+        if (m_pCollider == nullptr) return 0.f;
+        return b2Shape_GetDensity(m_pCollider->GetShapeId());
     }
 
     b2MotionLocks RigidbodyNode::GetMotionLocks() const {
         return b2Body_GetMotionLocks(m_bodyId);
     }
 
-    b2BodyId RigidbodyNode::GetBodyId() {
+    b2BodyId RigidbodyNode::GetBodyId() const {
         return m_bodyId;
     }
 
@@ -175,10 +184,10 @@ namespace Engine {
     // ############# SETTER ################
 
     void RigidbodyNode::SetDensity(float density) {
-        if (m_collider == nullptr) return;
-        if (!b2Shape_IsValid(m_collider->GetShapeId())) return;
+        if (m_pCollider == nullptr) return;
+        if (!b2Shape_IsValid(m_pCollider->GetShapeId())) return;
         m_fDensity = density;
-        b2Shape_SetDensity(m_collider->GetShapeId(), density, true);
+        b2Shape_SetDensity(m_pCollider->GetShapeId(), density, true);
     }
 
 
@@ -201,18 +210,18 @@ namespace Engine {
     }
 
     void RigidbodyNode::SetFriction(float friction) {
-        if (m_collider == nullptr) return;
-        if (!b2Shape_IsValid(m_collider->GetShapeId())) return;
+        if (m_pCollider == nullptr) return;
+        if (!b2Shape_IsValid(m_pCollider->GetShapeId())) return;
         m_fFriction = friction;
-        b2Shape_SetFriction(m_collider->GetShapeId(), friction);
+        b2Shape_SetFriction(m_pCollider->GetShapeId(), friction);
     }
 
 
 
-    void RigidbodyNode::SetPositionInMeters(Vector2d pos) {
+    void RigidbodyNode::SetPositionInMeters(Vector2d pos) const {
         //SetGlobalPosition(PhysicsManager::MeterToPixelsVector(pos));
-        if (m_collider != nullptr) {
-            m_collider->SetPositionInMeters(pos);
+        if (m_pCollider != nullptr) {
+            m_pCollider->SetPositionInMeters(pos);
         }
     }
 
@@ -265,13 +274,13 @@ namespace Engine {
 
     void RigidbodyNode::TrySetupWithCollider() {
 
-        if (m_collider == nullptr) {
-            m_collider = dynamic_cast<ColliderNode *>(GetChild("Collider"));
+        if (m_pCollider == nullptr) {
+            m_pCollider = dynamic_cast<ColliderNode *>(GetChild("Collider"));
 
-            if (m_collider != nullptr) {
+            if (m_pCollider != nullptr) {
                 // create body with definition
-                m_bodyId = m_collider->GetBodyId();
-                b2Body_SetUserData(m_bodyId, m_parent);
+                m_bodyId = m_pCollider->GetBodyId();
+                b2Body_SetUserData(m_bodyId, m_pParent);
             }
             else {
                 // definition

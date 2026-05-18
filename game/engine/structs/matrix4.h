@@ -1,7 +1,5 @@
-// COMP710 GP Framework 2025
 #ifndef MATRIX4_H
 #define MATRIX4_H
-#include <SDL_opengl.h>
 
 namespace Engine {
     struct Matrix4 {

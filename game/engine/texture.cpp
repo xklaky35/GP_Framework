@@ -2,17 +2,15 @@
 #include "logmanager/logmanager.h"
 
 #include <SDL_image.h>
-#include <cassert>
 
-#include "imgui.h"
 #include "SDL_ttf.h"
 #include "GL/glew.h"
 
 namespace Engine {
     Texture::Texture()
         : m_uiTextureId(0)
-          , m_iHeight(0)
-          , m_iWidth(0) {
+          , m_iWidth(0)
+          , m_iHeight(0) {
     }
 
     Texture::~Texture() {
@@ -36,7 +34,7 @@ namespace Engine {
 
             glGenTextures(1, &m_uiTextureId);
             glBindTexture(GL_TEXTURE_2D, m_uiTextureId);
-            glTexImage2D(GL_TEXTURE_2D, 0, format, m_iWidth, m_iHeight, 0, format, GL_UNSIGNED_BYTE, pSurface->pixels);
+            glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(format), m_iWidth, m_iHeight, 0, format, GL_UNSIGNED_BYTE, pSurface->pixels);
             SDL_FreeSurface(pSurface);
             pSurface = nullptr;
 
@@ -92,15 +90,10 @@ namespace Engine {
             }
             glGenTextures(1, &m_uiTextureId);
             glBindTexture(GL_TEXTURE_2D, m_uiTextureId);
-            glTexImage2D(GL_TEXTURE_2D, 0, format, m_iWidth, m_iHeight, 0, format,
+            glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(format), m_iWidth, m_iHeight, 0, format,
             GL_UNSIGNED_BYTE, pSurface->pixels);
             SDL_FreeSurface(pSurface);
             pSurface = nullptr;
-
-            // Moved to render function
-            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         }
     }
-
 }

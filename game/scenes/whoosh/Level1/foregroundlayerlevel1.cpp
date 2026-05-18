@@ -1,6 +1,3 @@
-//
-// Created by leon on 13.05.26.
-//
 
 #include "foregroundlayerlevel1.h"
 

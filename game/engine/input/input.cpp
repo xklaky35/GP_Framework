@@ -3,7 +3,6 @@
 #include "imgui.h"
 #include "../game.h"
 #include "../../config/config.h"
-#include "../logmanager/logmanager.h"
 
 namespace Engine {
     InputManager::InputManager()
@@ -28,7 +27,7 @@ namespace Engine {
         m_pInstance = nullptr;
     }
 
-    void InputManager::RegisterEvent(SDL_Event& event) {
+    void InputManager::RegisterEvent(const SDL_Event& event) {
         if (event.key.type == SDL_KEYDOWN) {
             if (m_pressedKeys[event.key.keysym.sym] == BS_NEUTRAL) {
                 m_pressedKeys[event.key.keysym.sym] = BS_PRESSED;
@@ -44,10 +43,7 @@ namespace Engine {
         }
 
         // mouse events
-        if (event.type == SDL_MOUSEBUTTONUP) {
-            m_currentMouseEvent = event.button;
-        }
-        else if (event.type == SDL_MOUSEBUTTONDOWN) {
+        if (event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEBUTTONDOWN) {
             m_currentMouseEvent = event.button;
         }
         else {
@@ -73,7 +69,7 @@ namespace Engine {
         if (mouseOffset.x != 0 || mouseOffset.y != 0) {
             // temp solution!!!!!!!!!!!!! (assumes the player is always in the center of the camera)
             // Problem: the mouse click position is not transformed when the ortho matrix is transformed that sets the offset for the camera
-            cameraOffset = Vector2d(Config::GetInstance().windowsWidth/2, Config::GetInstance().windowsHeight/2);
+            cameraOffset = Vector2d(static_cast<float>(Config::GetInstance().windowsWidth)/2, static_cast<float>(Config::GetInstance().windowsHeight)/2);
         }
 
         mousePosition -= cameraOffset;

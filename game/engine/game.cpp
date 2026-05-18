@@ -7,18 +7,9 @@
 #include <SDL_timer.h>
 #include <SDL_ttf.h>
 
-#include "../scenes/bouncingball/scenebouncingball.h"
-#include "../scenes/slashscreen/splashscreen.h"
-#include "../scenes/spaceinvader/scenespaceinvader.h"
-#include "../scenes/mainmenu/mainmenu.h"
 #include "imgui/imguimanager.h"
 #include "input/input.h"
 #include "scenemanager/scenemanager.h"
-
-#include "fmod.hpp"
-#include "fmod_errors.h"
-#include "../../lib/BOX2D/include/box2d/types.h"
-#include "../scenes/whoosh/scenewhoosh.h"
 #include "assetmanager/assetmanager.h"
 #include "physics/physicsmanager.h"
 #include "sound/soundmanager.h"
@@ -104,8 +95,9 @@ namespace Engine {
             return false;
         }
 
+        // TODO
+        // make work :(
         //SceneManager::GetInstance().onSceneSwitch.Register<Game>(&Game::ResetOrtho, *this);
-
 
         //################ INIT STUFF HERE ####################
 
@@ -218,7 +210,7 @@ namespace Engine {
         window_flags |= ImGuiWindowFlags_NoMove;
 
         ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-        if (ImGui::Begin("Stats", 0, window_flags))
+        if (ImGui::Begin("Stats", nullptr, window_flags))
         {
             ImGui::Text("FPS: (%.1f)", static_cast<double>(m_iFPS));
         }
@@ -231,7 +223,7 @@ namespace Engine {
         // Frame Counter:
         if (m_fElapsedSeconds > 1.0f) {
             m_fElapsedSeconds -= 1.0f;
-            m_iFPS = m_iFrameCount;
+            m_iFPS = static_cast<float>(m_iFrameCount);
             m_iFrameCount = 0;
         }
     }

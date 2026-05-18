@@ -1,7 +1,3 @@
-//
-// Created by leon on 13.05.26.
-//
-
 #ifndef GP_FRAMEWORK_ENEMY_H
 #define GP_FRAMEWORK_ENEMY_H
 #include "fmod.hpp"
@@ -22,7 +18,7 @@ public:
     void Process(float deltaTime) override;
     void SetupParameter(IniParser *parser, const std::string &sectionId) override;
 
-    float GetSpeed() const;
+    [[nodiscard]] float GetSpeed() const;
     void SetSpeed(float speed);
     void SetEnragedSpeed();
     void SetEnraged(bool enraged);
@@ -48,10 +44,10 @@ private:
     bool m_bIsEnraged;
 
     // components
-    ColliderNode* m_detectionArea;
-    AnimatedSpriteNode * m_idleAnimation;
-    AnimatedSpriteNode * m_chasingAnimation;
-    AnimatedSpriteNode * m_currentAnimation;
+    ColliderNode* m_pDetectionArea;
+    AnimatedSpriteNode * m_pIdleAnimation;
+    AnimatedSpriteNode * m_pChasingAnimation;
+    AnimatedSpriteNode * m_pCurrentAnimation;
 
     Node* m_detectedObject;
 

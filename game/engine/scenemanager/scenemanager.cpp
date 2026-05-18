@@ -8,8 +8,6 @@
 #include "../physics/physicsmanager.h"
 
 namespace Engine {
-
-
     SceneManager* SceneManager::m_pInstance = nullptr;
     SceneManager::SceneManager() : m_visibleNodeDebug(nullptr) {
         onSceneSwitch = Event<SceneManager>();
@@ -73,7 +71,7 @@ namespace Engine {
     }
 
 
-    void SceneManager::SetSceneActive(std::string sceneName) {
+    void SceneManager::SetSceneActive(const std::string &sceneName) {
         m_nextSceneName = sceneName;
         m_bSceneSwitchOrdered = true;
     }
@@ -91,7 +89,7 @@ namespace Engine {
         SetSceneActive(m_currentScene);
     }
 
-    Node& SceneManager::GetCurrentVisibleNode() {
+    Node& SceneManager::GetCurrentVisibleNode() const {
         return *m_visibleNodeDebug;
     }
 
@@ -108,7 +106,7 @@ namespace Engine {
     }
 
     void SceneManager::DeleteScenes() {
-        for (auto [sceneName, scene]: m_loadedScenes) {
+        for (auto& [sceneName, scene]: m_loadedScenes) {
             delete m_loadedScenes[sceneName];
             m_loadedScenes[sceneName] = nullptr;
         }
@@ -119,9 +117,7 @@ namespace Engine {
         return m_loadedScenes[m_currentScene];
     }
 
-
-
-    const std::pmr::map<std::string, Node *> &SceneManager::GetScenes() {
+    const std::pmr::map<std::string, Node *> &SceneManager::GetScenes() const {
         return m_loadedScenes;
     }
 }

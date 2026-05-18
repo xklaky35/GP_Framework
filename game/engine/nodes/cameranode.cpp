@@ -1,19 +1,17 @@
 #include "cameranode.h"
 
 #include "../../config/config.h"
-#include "../../helper/inlinehelper.h"
 #include "../physics/physicsmanager.h"
-
 
 namespace Engine {
     CameraNode::CameraNode() {
-        m_renderer = nullptr;
+        m_pRenderer = nullptr;
         SetupNode("CameraNode", NT_CameraNode);
     }
 
     CameraNode::~CameraNode() {
-        if (m_renderer != nullptr) {
-            m_renderer->SetOrthoOffset(0,0);
+        if (m_pRenderer != nullptr) {
+            m_pRenderer->SetOrthoOffset(0,0);
         }
     }
 
@@ -28,11 +26,10 @@ namespace Engine {
     void CameraNode::Draw(Renderer &renderer) {
         Node::Draw(renderer);
 
-        if (m_renderer == nullptr) {
-            m_renderer = &renderer;
+        if (m_pRenderer == nullptr) {
+            m_pRenderer = &renderer;
         }
 
-        //renderer.SetOrthoViewport(Config::GetInstance().windowsWidth, Config::GetInstance().windowsHeight);
         renderer.SetOrthoOffset(m_globalTransform.position.x, m_globalTransform.position.y);
     }
 }

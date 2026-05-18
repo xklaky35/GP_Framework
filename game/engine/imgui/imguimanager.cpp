@@ -5,18 +5,17 @@
 #include "imgui_impl_opengl3.h"
 #include "../logmanager/logmanager.h"
 
-
 namespace Engine {
 
-    ImguiManager *ImguiManager::m_pInstance = nullptr;
+    ImguiManager *ImguiManager::s_pInstance = nullptr;
     ImguiManager::ImguiManager(): m_bShowDemoWindow(IS_HELP_SHOWN) {}
     ImguiManager::~ImguiManager() = default;
 
     ImguiManager&  ImguiManager::GetInstance() {
-        if (m_pInstance == nullptr) {
-            m_pInstance = new ImguiManager();
+        if (s_pInstance == nullptr) {
+            s_pInstance = new ImguiManager();
         }
-        return *m_pInstance;
+        return *s_pInstance;
     }
 
     void  ImguiManager::DestroyInstance() {
@@ -24,8 +23,8 @@ namespace Engine {
         ImGui_ImplSDL2_Shutdown();
         ImGui::DestroyContext();
 
-        delete m_pInstance;
-        m_pInstance = nullptr;
+        delete s_pInstance;
+        s_pInstance = nullptr;
     }
 
     bool ImguiManager::Initialise(SDL_Window *window, SDL_GLContext context) {
@@ -44,7 +43,7 @@ namespace Engine {
         return true;
     }
 
-    void ImguiManager::ProcessEvent(SDL_Event event) {
+    void ImguiManager::ProcessEvent(SDL_Event& event) {
         ImGui_ImplSDL2_ProcessEvent(&event); // Forward your event to backend
     }
 

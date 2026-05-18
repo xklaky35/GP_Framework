@@ -1,6 +1,3 @@
-//
-// Created by leon on 06.05.26.
-//
 
 #ifndef GP_FRAMEWORK_COLLIDERLAYER_H
 #define GP_FRAMEWORK_COLLIDERLAYER_H

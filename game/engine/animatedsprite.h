@@ -1,14 +1,9 @@
-//
-// Created by leon on 27.03.26.
-//
-
 #ifndef GP_FRAMEWORK_ANIMATEDSPRITE_H
 #define GP_FRAMEWORK_ANIMATEDSPRITE_H
 
 // Local includes:
 #include "sprite.h"
 #include "structs/vertexarray.h"
-// Forward declarations:
 
 namespace Engine {
     class AnimatedSprite : public Sprite {
@@ -20,13 +15,13 @@ namespace Engine {
         void Process(float deltaTime) override;
         void Draw(Renderer &renderer) override;
         void DrawDebug() override;
-        float GetWidth() const override;
-        float GetHeight() const override;
+        [[nodiscard]] float GetWidth() const override;
+        [[nodiscard]] float GetHeight() const override;
 
         void SetupFrames(int fixedFrameWidth, int fixedFrameHeight);
         void SetLooping(bool loop);
         void Animate();
-        bool IsAnimating() const;
+        [[nodiscard]] bool IsAnimating() const;
         void Restart();
         void SetFrameDuration(float seconds);
 

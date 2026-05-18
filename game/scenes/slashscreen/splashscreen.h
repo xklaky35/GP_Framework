@@ -18,14 +18,14 @@ public:
 private:
     float m_fFadeSpeed;
     float m_fCurrentAlphaLevel;
-    float m_windowWidth;
-    float m_windowHeight;
+    float m_fWindowWidth;
+    float m_fWindowHeight;
     int m_iCurrentScreen;
     std::vector<SpriteNode*> m_screens;
 
-    SpriteNode* m_background;
-    SpriteNode* m_autLogo;
-    SpriteNode* m_fmodLogo;
+    SpriteNode* m_pBackground;
+    SpriteNode* m_pAutLogo;
+    SpriteNode* m_pFmodLogo;
 };
 
 

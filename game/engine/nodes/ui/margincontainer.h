@@ -8,15 +8,14 @@ namespace Engine {
     public:
         MarginContainer();
         void Init() override;
-        void SystemProcess();
         void PositionChildren() override;
         void CalculateChildSpace() const override;
 
     public:
-        float m_MarginLeft;
-        float m_MarginRight;
-        float m_MarginTop;
-        float m_MarginBottom;
+        float m_fMarginLeft;
+        float m_fMarginRight;
+        float m_fMarginTop;
+        float m_fMarginBottom;
 
     };
 }

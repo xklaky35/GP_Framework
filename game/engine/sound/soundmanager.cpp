@@ -1,22 +1,17 @@
-
 #include "soundmanager.h"
-
 #include <cassert>
 #include <filesystem>
-#include <ranges>
 #include <vector>
-
 #include "fmod_errors.h"
 #include "fmod_common.h"
 #include "../../helper/inlinehelper.h"
-
 #include "../logmanager/logmanager.h"
 
 namespace Engine {
 
     SoundManager* SoundManager::m_pInstance = nullptr;
 
-    SoundManager::SoundManager() : m_pSystem(nullptr), currentScene(nullptr) {
+    SoundManager::SoundManager() : m_pSystem(nullptr), m_pCurrentScene(nullptr) {
     }
 
     SoundManager::~SoundManager() = default;
@@ -35,9 +30,7 @@ namespace Engine {
     }
 
     bool SoundManager::Initialise() {
-        FMOD_RESULT result;
-
-        result = FMOD::System_Create(&m_pSystem);      // Create the main system object.
+        FMOD_RESULT result = FMOD::System_Create(&m_pSystem);      // Create the main system object.
         if (result != FMOD_OK)
         {
             LogManager::GetInstance().Log(ERROR, "FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
@@ -46,7 +39,7 @@ namespace Engine {
 
         m_pSystem->setDriver(1);
 
-        result = m_pSystem->init(512, FMOD_INIT_NORMAL, 0);    // Initialize FMOD.
+        result = m_pSystem->init(512, FMOD_INIT_NORMAL, nullptr);    // Initialize FMOD.
         if (result != FMOD_OK)
         {
             LogManager::GetInstance().Log(ERROR, "FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
@@ -56,7 +49,7 @@ namespace Engine {
         return true;
     }
 
-    void SoundManager::Process(float deltaTime) {
+    void SoundManager::Process(float deltaTime) const {
         if (m_pSystem != nullptr) {
             m_pSystem->update();
         }
@@ -64,10 +57,9 @@ namespace Engine {
 
     void SoundManager::LoadAudio() {
         for (const auto & entry : std::filesystem::directory_iterator(AUDIO_PATH)) {
-            FMOD_RESULT result;
             FMOD::Sound *sound;
 
-            result = m_pSystem->createSound(entry.path().c_str(), FMOD_DEFAULT, nullptr, &sound);
+            FMOD_RESULT result = m_pSystem->createSound(entry.path().c_str(), FMOD_DEFAULT, nullptr, &sound);
 
             auto filenameArray = SplitString(entry.path(), "/");
             auto &filename = filenameArray[filenameArray.size()-1];
@@ -75,21 +67,19 @@ namespace Engine {
             m_loadedSounds[filename] = sound;
         }
     }
-    FMOD::Sound* SoundManager::PlayMusic(const char *soundName) {
-        if (m_loadedSounds.find(soundName) != m_loadedSounds.end()) {
-            FMOD_RESULT result;
+    FMOD::Sound* SoundManager::PlayMusic(const char *soundName) const {
+        if (m_loadedSounds.contains(soundName)) {
             FMOD::Sound *sound;
-            result = m_pSystem->createStream(soundName, FMOD_NONBLOCKING, nullptr, &sound);
+            FMOD_RESULT result = m_pSystem->createStream(soundName, FMOD_NONBLOCKING, nullptr, &sound);
             return sound;
         }
         return nullptr;
     }
 
     FMOD::Channel* SoundManager::PlaySound(const char *soundName) {
-        if (m_loadedSounds.find(soundName) != m_loadedSounds.end()) {
-            FMOD_RESULT result;
+        if (m_loadedSounds.contains(soundName)) {
             FMOD::Channel *channel;
-            result = m_pSystem->playSound(m_loadedSounds[soundName], nullptr, false, &channel);
+            FMOD_RESULT result = m_pSystem->playSound(m_loadedSounds[soundName], nullptr, false, &channel);
             return channel;
         }
         return nullptr;

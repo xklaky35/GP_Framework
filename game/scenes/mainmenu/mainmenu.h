@@ -27,7 +27,6 @@ private:
     void ExecuteSelection() const;
 
 private:
-
     VContainer* vcontainer1;
     HContainer* h1;
     HContainer* h2;
@@ -40,9 +39,9 @@ private:
     Control* spacer2;
     Control* spacer3;
     Control* spacer4;
-    int m_currentSelection;
 
-    FMOD::Channel* m_backgroundMusic;
+    int m_iCurrentSelection;
+    FMOD::Channel* m_pBackgroundMusic;
 
 };
 REGISTER_CLASS(MainMenu)

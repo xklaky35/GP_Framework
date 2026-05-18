@@ -10,7 +10,7 @@ namespace Engine {
     }
 
     Vector3d Vector3d::Zero() {
-        return Vector3d(0,0,0);
+        return Vector3d{0,0,0};
     }
 
     Vector3d Vector3d::operator-(const Vector3d &vector) const {

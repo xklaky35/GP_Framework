@@ -15,7 +15,7 @@
 namespace  Engine {
     Node::Node() : m_Id(0),
                    m_bIsVisible(true),
-                   m_parent(nullptr),
+                   m_pParent(nullptr),
                    m_globalTransformationFlag(IF_Inherit),
                    m_iniParser(nullptr) {
 
@@ -155,9 +155,9 @@ namespace  Engine {
     void Node::Init() {
         // if a parent exists and he does not have a iniparser, this means this node is a nested node.
         // only nested nodes need a parent UID
-        if (m_parent != nullptr && m_parent->m_iniParser == nullptr) {
+        if (m_pParent != nullptr && m_pParent->m_iniParser == nullptr) {
 
-            m_parentUId = m_parent->GetUId();
+            m_parentUId = m_pParent->GetUId();
             auto* iniParserToWrite = GetNextParentIniParser();
             if (iniParserToWrite != nullptr) {
                 iniParserToWrite->SetValue(m_UId, "parentUId", m_parentUId);
@@ -188,8 +188,8 @@ namespace  Engine {
 
     void Node::SystemProcess() {
         // bubbles up the node tree so that the root of the element dictates the global m_position
-        if (m_parent != nullptr && m_globalTransformationFlag == IF_Inherit) {
-            m_globalTransform.position = m_parent->m_globalTransform.position;
+        if (m_pParent != nullptr && m_globalTransformationFlag == IF_Inherit) {
+            m_globalTransform.position = m_pParent->m_globalTransform.position;
             ApplyLocalTransform();
         }
 
@@ -281,7 +281,7 @@ namespace  Engine {
 
 
     Vector2d Node::GetGlobalPosition() const {
-        auto* r = dynamic_cast<RigidbodyNode*>(CheckForRigidbodyNode());
+        auto* r = dynamic_cast<RigidbodyNode*>(GetAttachedRigidbodyNode());
         if (r != nullptr) {
             // read meters back from Box2D, convert to pixels for the sprite
 
@@ -291,7 +291,7 @@ namespace  Engine {
     }
 
     void Node::SetGlobalPosition(const Vector2d pos) {
-        auto* r = dynamic_cast<RigidbodyNode*>(CheckForRigidbodyNode());
+        auto* r = dynamic_cast<RigidbodyNode*>(GetAttachedRigidbodyNode());
         if (r != nullptr) {
             r->SetPositionInMeters(PhysicsManager::PixelsToMeterVector(pos));
         }
@@ -322,7 +322,7 @@ namespace  Engine {
     }
 
     // if a rigidbody node is present we need to use its physics api insted to set the position
-    Node* Node::CheckForRigidbodyNode() const {
+    Node* Node::GetAttachedRigidbodyNode() const {
         for (Node* child : m_children) {
             if (child->m_nodeType == NT_RigidBodyNode)
                 return child;
@@ -363,7 +363,7 @@ namespace  Engine {
     }
 
     void Node::SetParent(Node* node) {
-        m_parent = node;
+        m_pParent = node;
     }
 
     void Node::SetVisibility(bool isVisible) {
@@ -372,7 +372,7 @@ namespace  Engine {
 
     void Node::ApplyLocalTransform() {
         // position
-        m_globalTransform.position = m_parent->m_globalTransform.position + m_transform.position;
+        m_globalTransform.position = m_pParent->m_globalTransform.position + m_transform.position;
 
         // angle
         const Vector2d vecX(cos(m_globalTransform.GetRotationDeg()), sin(m_globalTransform.GetRotationDeg()));
@@ -380,7 +380,7 @@ namespace  Engine {
         //m_globalTransform.position = (vecX * m_globalTransform.position.x) + (vecY * m_globalTransform.position.y);
 
         // scale
-        m_globalTransform.SetScale(m_parent->m_globalTransform.GetScale() * m_transform.GetScale());
+        m_globalTransform.SetScale(m_pParent->m_globalTransform.GetScale() * m_transform.GetScale());
 
     }
 
@@ -417,7 +417,7 @@ namespace  Engine {
 
     void Node::SetValue(const std::string &key, std::string& value) {
 
-        if (m_parent == nullptr) return;
+        if (m_pParent == nullptr) return;
 
         auto *iniParserToWrite = GetNextParentIniParser();
         if (iniParserToWrite != nullptr) {
@@ -428,7 +428,7 @@ namespace  Engine {
 
     void Node::SetValue(const std::string &key, const char* value) {
 
-        if (m_parent == nullptr) return;
+        if (m_pParent == nullptr) return;
 
         auto *iniParserToWrite = GetNextParentIniParser();
         if (iniParserToWrite != nullptr) {
@@ -440,7 +440,7 @@ namespace  Engine {
 
     void Node::SetValue(const std::string &key, const int value) {
 
-        if (m_parent == nullptr) return;
+        if (m_pParent == nullptr) return;
 
         auto *iniParserToWrite = GetNextParentIniParser();
         if (iniParserToWrite != nullptr) {
@@ -450,7 +450,7 @@ namespace  Engine {
     }
 
     void Node::SetValue(const std::string &key, const float value) {
-        if (m_parent == nullptr) return;
+        if (m_pParent == nullptr) return;
 
         auto *iniParserToWrite = GetNextParentIniParser();
         if (iniParserToWrite != nullptr) {
@@ -460,7 +460,7 @@ namespace  Engine {
     }
 
     void Node::SetValue(const std::string &key, const bool value) {
-        if (m_parent == nullptr) return;
+        if (m_pParent == nullptr) return;
 
         auto *iniParserToWrite = GetNextParentIniParser();
         if (iniParserToWrite != nullptr) {
@@ -480,16 +480,16 @@ namespace  Engine {
     }
 
     IniParser * Node::GetNextParentIniParser() {
-        if (m_parent == nullptr) {
+        if (m_pParent == nullptr) {
             return nullptr;
         }
 
         // check for parent ini parser
-        if (m_parent->m_iniParser != nullptr) {
-            return m_parent->m_iniParser;
+        if (m_pParent->m_iniParser != nullptr) {
+            return m_pParent->m_iniParser;
         }
 
-        return m_parent->GetNextParentIniParser();
+        return m_pParent->GetNextParentIniParser();
     }
 
 

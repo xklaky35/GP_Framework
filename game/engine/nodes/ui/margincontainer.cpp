@@ -4,7 +4,11 @@
 #include "../nodefactory.h"
 
 namespace Engine {
-    MarginContainer::MarginContainer() : m_MarginLeft(0), m_MarginRight(0), m_MarginTop(0), m_MarginBottom(0) {
+    MarginContainer::MarginContainer()
+        : m_fMarginLeft(0),
+          m_fMarginRight(0),
+          m_fMarginTop(0),
+          m_fMarginBottom(0) {
 
         SetupNode("MarginContainer", NT_MarginContainer);
         m_nodeInfo.push_back(
@@ -18,10 +22,10 @@ namespace Engine {
 
             {
                 "MarginLeft", [](Node &n) {
-                    if (MarginContainer *c = dynamic_cast<MarginContainer *>(&n)) {
+                    if (auto c = dynamic_cast<MarginContainer *>(&n)) {
                         int v_min = -10000, v_max = 10000;
                         ImGui::SetNextItemWidth(-FLT_MIN);
-                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &c->m_MarginLeft, 1, 0.5f,
+                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &c->m_fMarginLeft, 1, 0.5f,
                                            &v_min, &v_max);
                     }
 
@@ -31,10 +35,10 @@ namespace Engine {
 
             {
                 "MarginRight", [](Node &n) {
-                    if (MarginContainer *c = dynamic_cast<MarginContainer *>(&n)) {
+                    if (auto c = dynamic_cast<MarginContainer *>(&n)) {
                         int v_min = -10000, v_max = 10000;
                         ImGui::SetNextItemWidth(-FLT_MIN);
-                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &c->m_MarginRight, 1, 0.5f,
+                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &c->m_fMarginRight, 1, 0.5f,
                                            &v_min, &v_max);
                     }
 
@@ -44,10 +48,10 @@ namespace Engine {
 
             {
                 "MarginTop", [](Node &n) {
-                    if (MarginContainer *c = dynamic_cast<MarginContainer *>(&n)) {
+                    if (auto *c = dynamic_cast<MarginContainer *>(&n)) {
                         int v_min = -10000, v_max = 10000;
                         ImGui::SetNextItemWidth(-FLT_MIN);
-                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &c->m_MarginTop, 1, 0.5f,
+                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &c->m_fMarginTop, 1, 0.5f,
                                            &v_min, &v_max);
                     }
 
@@ -57,10 +61,10 @@ namespace Engine {
 
             {
                 "MarginBottom", [](Node &n) {
-                    if (MarginContainer *c = dynamic_cast<MarginContainer *>(&n)) {
+                    if (auto *c = dynamic_cast<MarginContainer *>(&n)) {
                         int v_min = -10000, v_max = 10000;
                         ImGui::SetNextItemWidth(-FLT_MIN);
-                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &c->m_MarginBottom, 1, 0.5f,
+                        ImGui::DragScalarN("##Editor", ImGuiDataType_Float, &c->m_fMarginBottom, 1, 0.5f,
                                            &v_min, &v_max);
                     }
 
@@ -74,10 +78,10 @@ namespace Engine {
     }
 
     void MarginContainer::SystemProcess() {
-        if (m_MarginRight < 0) m_MarginRight = 0;
-        if (m_MarginLeft < 0) m_MarginLeft = 0;
-        if (m_MarginTop < 0) m_MarginTop = 0;
-        if (m_MarginBottom < 0) m_MarginBottom = 0;
+        if (m_fMarginRight < 0) m_fMarginRight = 0;
+        if (m_fMarginLeft < 0) m_fMarginLeft = 0;
+        if (m_fMarginTop < 0) m_fMarginTop = 0;
+        if (m_fMarginBottom < 0) m_fMarginBottom = 0;
 
         Container::SystemProcess();
 
@@ -87,8 +91,8 @@ namespace Engine {
     void MarginContainer::PositionChildren() {
         assert(m_children.size() == 1);
         if (auto* childControl = dynamic_cast<Control*>(m_children[0])) {
-             childControl->m_transform.position.x = m_transform.position.x + m_MarginLeft;
-            childControl->m_transform.position.y = m_transform.position.y + m_MarginTop;
+             childControl->m_transform.position.x = m_transform.position.x + m_fMarginLeft;
+            childControl->m_transform.position.y = m_transform.position.y + m_fMarginTop;
         }
     }
 
@@ -96,13 +100,13 @@ namespace Engine {
         assert(m_children.size() == 1);
         if (auto* childControl = dynamic_cast<Control*>(m_children[0])) {
             if (childControl->m_containerSizing.m_bExpandVertical) {
-                childControl->m_controlSpace.y = m_controlSpace.y - m_MarginTop - m_MarginBottom;
+                childControl->m_controlSpace.y = m_controlSpace.y - m_fMarginTop - m_fMarginBottom;
             }
             else {
                 childControl->m_controlSpace.y = m_initialSize.y;
             }
             if (childControl->m_containerSizing.m_bExpandHorizontal) {
-                childControl->m_controlSpace.x = m_controlSpace.x - m_MarginRight - m_MarginLeft;
+                childControl->m_controlSpace.x = m_controlSpace.x - m_fMarginRight - m_fMarginLeft;
             }
             else {
                 childControl->m_controlSpace.x = m_initialSize.x;

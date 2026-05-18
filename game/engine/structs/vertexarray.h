@@ -10,8 +10,8 @@ namespace Engine {
         ~VertexArray();
 
         void SetActive() const;
-        unsigned int GetNumVertices() const;
-        unsigned int GetNumIndicies() const;
+        [[nodiscard]] unsigned int GetNumVertices() const;
+        [[nodiscard]] unsigned int GetNumIndicies() const;
 
     protected:
         unsigned int m_numVertices;

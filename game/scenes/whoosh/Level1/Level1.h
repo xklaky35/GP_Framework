@@ -1,4 +1,3 @@
-
 #ifndef GP_FRAMEWORK_LEVEL1_H
 #define GP_FRAMEWORK_LEVEL1_H
 
@@ -20,14 +19,14 @@ public:
     void SetupParameter(IniParser *parser, const std::string &sectionId) override;
 
 private:
-    TextControl* m_timerDisplay;
-    Player* m_player;
-    AnimatedSpriteNode * m_dropOffLocationSprite;
-    SpriteNode * m_pickedObject;
-    SpriteNode * m_unpickdObject;
+    TextControl* m_pTimerDisplay;
+    Player* m_pPlayer;
+    AnimatedSpriteNode * m_pDropOffLocationSprite;
+    SpriteNode * m_pPickedObject;
+    SpriteNode * m_pUnpickdObject;
     std::vector<Enemy*> m_enemies;
-    FMOD::Channel* m_backgroundSound;
-    FMOD::Channel* m_pickupSound;
+    FMOD::Channel* m_pBackgroundSound;
+    FMOD::Channel* m_pPickupSound;
 };
 REGISTER_CLASS(Level1)
 

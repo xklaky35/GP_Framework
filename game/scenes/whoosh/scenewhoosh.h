@@ -9,18 +9,14 @@ using namespace Engine;
 
 class SceneWhoosh : public Node {
 public:
-
     SceneWhoosh();
 
     void Init() override;
 
 
 public:
-
-    Player* m_player;
-    RigidbodyNode* m_floor;
-
-
+    Player* m_pPlayer;
+    RigidbodyNode* m_pFloor;
 };
 
 

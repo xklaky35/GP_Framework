@@ -46,13 +46,11 @@ float Timer::GetTotalTime() const {
     return m_TotalTime;
 }
 std::string Timer::GetTotalTimeAsString() const {
-    // need to find another way
-    // performance is butchered doint this because text rendering is incredibly unperformant (yet)
-    auto seconds = ((int) m_TotalTime % 60);
-    auto minutes = (int) (m_TotalTime / 60);
+    const auto seconds = static_cast<int>(m_TotalTime) % 60;
+    const auto minutes = static_cast<int>(m_TotalTime / 60);
 
-    std::string secondsText = std::to_string(seconds);
-    std::string minutesText = std::to_string(minutes);
+    const std::string secondsText = std::to_string(seconds);
+    const std::string minutesText = std::to_string(minutes);
     return minutesText + " : " + secondsText;
 }
 

@@ -1,7 +1,3 @@
-//
-// Created by leon on 20.03.26.
-//
-
 #ifndef GP_FRAMEWORK_SOUNDMANAGER_H
 #define GP_FRAMEWORK_SOUNDMANAGER_H
 #include <map>
@@ -20,9 +16,9 @@ namespace Engine {
         void LoadAudio();
 
 
-        void Process(float deltaTime);
+        void Process(float deltaTime) const;
         FMOD::Channel* PlaySound(const char * sound_on_selection);
-        FMOD::Sound* PlayMusic(const char *soundName);
+        FMOD::Sound* PlayMusic(const char *soundName) const;
 
     private:
         SoundManager();
@@ -36,7 +32,7 @@ namespace Engine {
         FMOD::System* m_pSystem;
         std::pmr::map<std::string, FMOD::Sound*> m_loadedSounds;
         const char* AUDIO_PATH = "../assets/Audio/";
-        char* currentScene;
+        char* m_pCurrentScene;
     };
 }
 

@@ -13,13 +13,12 @@ namespace Engine {
         Shader();
         ~Shader();
         bool Load(const char* vertexFile, const char* pixelFile);
-        void Unload();
-        void SetActive();
-        void SetMatrixUniform(const char* name, const Matrix4& matrix);
-        void SetVector4Uniform(const char* name, float x, float y, float z, float w);
-    protected:
+        void Unload() const;
+        void SetActive() const;
+        void SetMatrixUniform(const char* name, const Matrix4& matrix) const;
+        void SetVector4Uniform(const char* name, float x, float y, float z, float w) const;
     private:
-        bool IsValidProgram();
+        [[nodiscard]] bool IsValidProgram() const;
         static bool CompileShader(const char* filename, GLenum shaderType, GLuint& outShader);
         static bool IsCompiled(GLuint shader);
         // Member data:

@@ -22,7 +22,6 @@ namespace Engine {
         const bool pixelCompiled = CompileShader(pixelFile, GL_FRAGMENT_SHADER, m_pixelShader);
         if (vertexCompiled == false || pixelCompiled == false) {
             LogManager::GetInstance().Log(ERROR, "Shaders failed to compile!");
-            assert(0);
             return false;
         }
         m_shaderProgram = glCreateProgram();
@@ -32,30 +31,30 @@ namespace Engine {
         return IsValidProgram();
     }
 
-    void Shader::Unload() {
+    void Shader::Unload() const {
         glDeleteProgram(m_shaderProgram);
         glDeleteShader(m_vertexShader);
         glDeleteShader(m_pixelShader);
     }
 
-    void Shader::SetActive() {
+    void Shader::SetActive() const {
         assert(m_shaderProgram);
         glUseProgram(m_shaderProgram);
     }
 
-    void Shader::SetMatrixUniform(const char *name, const Matrix4 &matrix) {
+    void Shader::SetMatrixUniform(const char *name, const Matrix4 &matrix) const {
         GLuint location = glGetUniformLocation(m_shaderProgram, name);
-        glUniformMatrix4fv(location, 1, GL_TRUE, (float *) &matrix);
+        glUniformMatrix4fv(static_cast<int>(location), 1, GL_TRUE, (float*)(&matrix));
     }
 
-    void Shader::SetVector4Uniform(const char *name, float x, float y, float z, float w) {
+    void Shader::SetVector4Uniform(const char *name, float x, float y, float z, float w) const {
         GLuint location = glGetUniformLocation(m_shaderProgram, name);
         float vec4[4];
         vec4[0] = x;
         vec4[1] = y;
         vec4[2] = z;
         vec4[3] = w;
-        glUniform4fv(location, 1, vec4);
+        glUniform4fv(static_cast<int>(location), 1, vec4);
     }
 
     bool Shader::CompileShader(const char *filename, GLenum shaderType, GLuint &outShader) {
@@ -66,7 +65,7 @@ namespace Engine {
             std::string shaderCode = sstream.str();
             const char *pShaderCode = shaderCode.c_str();
             outShader = glCreateShader(shaderType);
-            glShaderSource(outShader, 1, &(pShaderCode), 0);
+            glShaderSource(outShader, 1, &(pShaderCode), nullptr);
             glCompileShader(outShader);
             if (!IsCompiled(outShader)) {
                 LogManager::GetInstance().Log(ERROR, "Shader failed to compile!");
@@ -85,22 +84,21 @@ namespace Engine {
         if (compiledStatus != GL_TRUE) {
             char error[1024];
             error[0] = 0;
-            glGetShaderInfoLog(shader, 1023, 0, error);
+            glGetShaderInfoLog(shader, 1023, nullptr, error);
             LogManager::GetInstance().Log(ERROR, "Shader failed to compile!");
             return false;
         }
         return true;
     }
 
-    bool Shader::IsValidProgram() {
+    bool Shader::IsValidProgram() const {
         GLint linkedStatus;
         glGetProgramiv(m_shaderProgram, GL_LINK_STATUS, &linkedStatus);
         if (linkedStatus != GL_TRUE) {
             char error[1024];
             error[0] = 0;
-            glGetShaderInfoLog(m_shaderProgram, 1023, 0, error);
+            glGetShaderInfoLog(m_shaderProgram, 1023, nullptr, error);
             LogManager::GetInstance().Log(ERROR, "Shader failed to link!");
-            assert(0);
             return false;
         }
         return true;

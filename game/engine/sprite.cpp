@@ -3,14 +3,17 @@
 
 namespace Engine {
     Sprite::Sprite()
-        : m_iLayer(0), m_pTexture(nullptr)
+        : m_iLayer(0)
+          , m_pTexture(nullptr)
           , m_x(0)
           , m_y(0)
-          , m_width(0)
-          , m_height(0)
           , m_angle(0.0f)
           , m_centerX(0)
           , m_centerY(0)
+          , m_width(0)
+          , m_height(0)
+          , m_originalWidth(0)
+          , m_originalHeight(0)
           , m_scale(1.0f)
           , m_alpha(1.0f)
           , m_tintRed(1.0f)
@@ -22,10 +25,10 @@ namespace Engine {
 
     bool Sprite::Initialise(Texture &texture) {
         m_pTexture = &texture;
-        m_width = m_pTexture->GetWidth();
-        m_height = m_pTexture->GetHeight();
-        m_originalWidth = m_pTexture->GetWidth();
-        m_originalHeight = m_pTexture->GetHeight();
+        m_width = static_cast<float>(m_pTexture->GetWidth());
+        m_height = static_cast<float>(m_pTexture->GetHeight());
+        m_originalWidth = static_cast<float>(m_pTexture->GetWidth());
+        m_originalHeight = static_cast<float>(m_pTexture->GetHeight());
         return true;
     }
 
@@ -138,7 +141,7 @@ namespace Engine {
         return m_tintBlue;
     }
 
-    void Sprite::SetActive() {
+    void Sprite::SetActive() const {
         m_pTexture->SetActive();
     }
 }

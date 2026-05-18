@@ -12,7 +12,6 @@ public:
     void Init() override;
     void SetupParameter(IniParser *parser, const std::string &sectionId) override;
 
-
 private:
     ColliderNode* m_collisionArea;
 

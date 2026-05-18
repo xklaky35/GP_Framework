@@ -11,14 +11,14 @@ Enemy::Enemy()
       m_fSpeed(50),
       m_fEnragedSpeed(0),
       m_fNormalSpeed(0),
-      m_detectionArea(nullptr),
-      m_idleAnimation(nullptr),
-      m_chasingAnimation(nullptr),
-      m_currentAnimation(nullptr),
-      m_idleSound(nullptr),
-      m_chasingSound(nullptr),
       m_bIsEnraged(false),
-      m_detectedObject(nullptr) {
+      m_pDetectionArea(nullptr),
+      m_pIdleAnimation(nullptr),
+      m_pChasingAnimation(nullptr),
+      m_pCurrentAnimation(nullptr),
+      m_detectedObject(nullptr),
+      m_idleSound(nullptr),
+      m_chasingSound(nullptr) {
 
     SetupNode("Enemy", NT_Custom);
 
@@ -71,17 +71,17 @@ void Enemy::Init() {
     Node::Init();
     m_originPos = GetGlobalPosition();
     m_globalTransform.SetScale(2);
-    m_detectionArea = dynamic_cast<ColliderNode *>(GetChild("DetectionArea"));
-    if (m_detectionArea != nullptr) {
-        m_detectionArea->OnEntry.Register<Enemy>(&Enemy::OnDetection, *this);
+    m_pDetectionArea = dynamic_cast<ColliderNode *>(GetChild("DetectionArea"));
+    if (m_pDetectionArea != nullptr) {
+        m_pDetectionArea->OnEntry.Register<Enemy>(&Enemy::OnDetection, *this);
     }
-    m_idleAnimation = dynamic_cast<AnimatedSpriteNode *>(GetChild("IdleAnimation"));
-    if (m_idleAnimation != nullptr) {
-        m_idleAnimation->SetRGBA(0,0,0,0);
+    m_pIdleAnimation = dynamic_cast<AnimatedSpriteNode *>(GetChild("IdleAnimation"));
+    if (m_pIdleAnimation != nullptr) {
+        m_pIdleAnimation->SetRGBA(0,0,0,0);
     }
-    m_chasingAnimation = dynamic_cast<AnimatedSpriteNode *>(GetChild("ChasingAnimation"));
-    if (m_chasingAnimation != nullptr) {
-        m_chasingAnimation->SetRGBA(0,0,0,0);
+    m_pChasingAnimation = dynamic_cast<AnimatedSpriteNode *>(GetChild("ChasingAnimation"));
+    if (m_pChasingAnimation != nullptr) {
+        m_pChasingAnimation->SetRGBA(0,0,0,0);
     }
 }
 
@@ -189,45 +189,45 @@ void Enemy::HandleSoundEffects() {
 }
 
 void Enemy::HandleAnimations() {
-    if (m_chasingAnimation == nullptr) return;
-    if (m_idleAnimation == nullptr) return;
+    if (m_pChasingAnimation == nullptr) return;
+    if (m_pIdleAnimation == nullptr) return;
 
-    if (m_velocity.x > 0 && !m_chasingAnimation->IsFlipped()) {
-        m_chasingAnimation->Flip();
+    if (m_velocity.x > 0 && !m_pChasingAnimation->IsFlipped()) {
+        m_pChasingAnimation->Flip();
     }
-    if (m_velocity.x < 0 && m_chasingAnimation->IsFlipped()) {
-        m_chasingAnimation->Flip();
+    if (m_velocity.x < 0 && m_pChasingAnimation->IsFlipped()) {
+        m_pChasingAnimation->Flip();
     }
 
     auto isAtOrigin = m_originPos.Compare(GetGlobalPosition(), 5);
-    if (m_velocity.x > 0 && !m_idleAnimation->IsFlipped() && !isAtOrigin) {
-        m_idleAnimation->Flip();
+    if (m_velocity.x > 0 && !m_pIdleAnimation->IsFlipped() && !isAtOrigin) {
+        m_pIdleAnimation->Flip();
     }
-    if (m_velocity.x < 0 && m_idleAnimation->IsFlipped() && !isAtOrigin) {
-        m_idleAnimation->Flip();
+    if (m_velocity.x < 0 && m_pIdleAnimation->IsFlipped() && !isAtOrigin) {
+        m_pIdleAnimation->Flip();
     }
 
     if (!m_bHasTargetLocated) {
-        ChangeAnimation(m_idleAnimation);
+        ChangeAnimation(m_pIdleAnimation);
         return;
     }
 
-    ChangeAnimation(m_chasingAnimation);
+    ChangeAnimation(m_pChasingAnimation);
 }
 
 void Enemy::ChangeAnimation(AnimatedSpriteNode* animation) {
     if (animation == nullptr) return;
 
-    if (m_currentAnimation == nullptr) {
-        m_currentAnimation = animation;
+    if (m_pCurrentAnimation == nullptr) {
+        m_pCurrentAnimation = animation;
     } else {
-        m_currentAnimation->SetRGBA(0, 0, 0, 0);
-        m_currentAnimation = animation;
+        m_pCurrentAnimation->SetRGBA(0, 0, 0, 0);
+        m_pCurrentAnimation = animation;
     }
 
-    m_currentAnimation->SetRGBA(1, !m_bIsEnraged, !m_bIsEnraged, 1);
-    m_currentAnimation->SetAnimating(true);
-    m_currentAnimation->SetLooping(true);
+    m_pCurrentAnimation->SetRGBA(1, !m_bIsEnraged, !m_bIsEnraged, 1);
+    m_pCurrentAnimation->SetAnimating(true);
+    m_pCurrentAnimation->SetLooping(true);
 }
 
 void Enemy::OnDetection(const b2ShapeId* target) {

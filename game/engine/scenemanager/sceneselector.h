@@ -1,7 +1,3 @@
-//
-// Created by leon on 26.04.26.
-//
-
 #ifndef GP_FRAMEWORK_SCENESELECTOR_H
 #define GP_FRAMEWORK_SCENESELECTOR_H
 

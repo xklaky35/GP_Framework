@@ -8,8 +8,6 @@
 
 namespace Engine {
 
-
-
     class RigidbodyNode : public Node {
 
     public:
@@ -26,14 +24,14 @@ namespace Engine {
 
         // getter
 
-        b2BodyId GetBodyId();
-        float GetDensity() const;
-        float GetFriction() const;
-        b2Rot GetBodyRotation() const;
-        b2MassData GetMassData() const;
-        Vector2d GetBodyPosition() const;
-        Vector2d GetBodyVelocity() const;
-        b2MotionLocks GetMotionLocks() const;
+        [[nodiscard]] b2BodyId GetBodyId() const;
+        [[nodiscard]] float GetDensity() const;
+        [[nodiscard]] float GetFriction() const;
+        [[nodiscard]] b2Rot GetBodyRotation() const;
+        [[nodiscard]] b2MassData GetMassData() const;
+        [[nodiscard]] Vector2d GetBodyPosition() const;
+        [[nodiscard]] Vector2d GetBodyVelocity() const;
+        [[nodiscard]] b2MotionLocks GetMotionLocks() const;
 
         // setter
         void ToggleRotation();
@@ -41,7 +39,7 @@ namespace Engine {
         void SetFriction(float friction);
         void ToggleVerticalMovementLock();
         void ToggleHorizontalMovementLock();
-        void SetPositionInMeters(Vector2d pos);
+        void SetPositionInMeters(Vector2d pos) const;
         void SetVerticalVelocity(Vector2d velocity) const;
         void SetHorizontalVelocity(Vector2d velocity) const;
         void SetMassData(float mass, Vector2d massCenter, float rotationalInertia);
@@ -51,18 +49,18 @@ namespace Engine {
 
     private:
         b2BodyId m_bodyId;
-        ColliderNode* m_collider;
-
-        float m_fMass;
+        ColliderNode* m_pCollider;
         bool m_bIsActive;
         bool m_bIsSleeping;
         bool m_bHasFixedRotation;
         bool m_bIsBullet;
-        float m_fFriction;
-        float m_fDensity;
         bool m_bAngularRotation;
         bool m_bLinearMovementX;
         bool m_bLinearMovementY;
+        float m_fFriction;
+        float m_fDensity;
+        float m_fMass;
+
     };
 }
 

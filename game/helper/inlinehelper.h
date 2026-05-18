@@ -26,7 +26,7 @@ inline float GetRandomPercentage() {
     return static_cast<float>(GetRandomInt(0,100)) / 100.f;
 }
 
-inline std::vector<std::string> SplitString(std::string s, std::string delimiter) {
+inline std::vector<std::string> SplitString(const std::string& s, const std::string &delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::string token;
     std::vector<std::string> res;
@@ -47,7 +47,7 @@ inline std::string GenerateUID() {
     const bool dash[] = {0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0};
 
     std::string res;
-    for (bool i : dash) {
+    for (const bool i : dash) {
         if (i) res+= "-";
         res += v[GetRandomInt(0,15)];
         res += v[GetRandomInt(0,15)];
@@ -57,8 +57,6 @@ inline std::string GenerateUID() {
 
 
 inline float toDegrees(float rad) {
-    return rad * (180.0 / M_PI);
+    return rad * static_cast<float>(180.0 / M_PI);
 }
-
-
 

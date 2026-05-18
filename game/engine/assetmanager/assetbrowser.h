@@ -14,7 +14,6 @@
 
 namespace Engine {
 
-
     enum AssetType {
         AT_Node = 1,
         AT_Component
@@ -24,35 +23,41 @@ namespace Engine {
         ImGuiID ID;
         AssetType assetType;
         NodeType nodeType;
-        bool IsSelected;
-        std::string AssetName;
-        std::string AssetPath;
+        bool isSelected;
+        std::string assetName;
+        std::string assetPath;
 
-        AssetField(const AssetType type, std::string assetPath) : ID(0), assetType(type), IsSelected(false),
-                                                                  AssetPath(std::move(assetPath)) {
-            std::string pathCpy = AssetPath;
+        AssetField(const AssetType type, std::string assetPath)
+            : ID(0),
+              assetType(type),
+              nodeType(NT_Node),
+              isSelected(false),
+              assetPath(std::move(assetPath)) {
+
+            std::string pathCpy = assetPath;
             int pos = 0;
-            std::string token;
-            while ((pos = pathCpy.find('/')) != std::string::npos) {
-                token = pathCpy.substr(0, pos);
+            while ((pos = static_cast<int>(pathCpy.find('/'))) != std::string::npos) {
                 pathCpy.erase(0, pos + 1);
             }
-            AssetName = pathCpy; // everything exept the last part of the path got deleted
+            assetName = pathCpy; // everything exept the last part of the path got deleted
 
-            pos = pathCpy.find('.');
+            pos = static_cast<int>(pathCpy.find('.'));
             if (pos != std::string::npos) {
-                AssetName = pathCpy.substr(0, pos);
+                assetName = pathCpy.substr(0, pos);
             }
         }
 
-        AssetField(const AssetType type, NodeType nodeType) : ID(0), assetType(type), IsSelected(false),
-                                                        nodeType(nodeType) {
-            AssetName = NodeTypeStrings[nodeType];
+        AssetField(const AssetType type, NodeType nodeType)
+            : ID(0),
+              assetType(type),
+              nodeType(nodeType),
+              isSelected(false) {
+              assetName = NodeTypeStrings[nodeType];
         }
 
-        Node *GetNode() {
-            if (!AssetPath.empty())
-                return NodeFactory::GetInstance().CreateCustomNode(AssetName, AssetPath);
+        [[nodiscard]] Node *GetNode() const {
+            if (!assetPath.empty())
+                return NodeFactory::GetInstance().CreateCustomNode(assetName, assetPath);
 
 
             return NodeFactory::GetInstance().CreateBaseNode(nodeType);
@@ -60,10 +65,10 @@ namespace Engine {
 
         static const ImGuiTableSortSpecs *s_current_sort_specs;
 
-        static void SortWithSortSpecs(ImGuiTableSortSpecs *sort_specs, AssetField *items, int items_count) {
+        static void SortWithSortSpecs(const ImGuiTableSortSpecs *sort_specs, AssetField *items, int items_count) {
             s_current_sort_specs = sort_specs; // Store in variable accessible by the sort function.
             if (items_count > 1)
-                qsort(items, (size_t) items_count, sizeof(items[0]), CompareWithSortSpecs);
+                qsort(items, static_cast<size_t>(items_count), sizeof(items[0]), CompareWithSortSpecs);
             s_current_sort_specs = nullptr;
         }
 
@@ -75,7 +80,7 @@ namespace Engine {
                 const ImGuiTableColumnSortSpecs *sort_spec = &s_current_sort_specs->Specs[n];
                 int delta = 0;
                 if (sort_spec->ColumnIndex == 0)
-                    delta = ((int) a->ID - (int) b->ID);
+                    delta = (static_cast<int>(a->ID) - static_cast<int>(b->ID));
                 else if (sort_spec->ColumnIndex == 1)
                     delta = (a->assetType - b->assetType);
                 if (delta > 0)
@@ -83,7 +88,7 @@ namespace Engine {
                 if (delta < 0)
                     return (sort_spec->SortDirection == ImGuiSortDirection_Ascending) ? -1 : +1;
             }
-            return (int) a->ID - (int) b->ID;
+            return static_cast<int>(a->ID) - static_cast<int>(b->ID);
         }
     };
 
@@ -107,30 +112,30 @@ namespace Engine {
     private:
 
         // Options
-        bool            ShowTypeOverlay = true;
-        bool            AllowSorting = true;
-        bool            AllowDragUnselected = false;
-        bool            AllowBoxSelect = true;
-        float           IconSize = 32.0f;
-        int             IconSpacing = 10;
-        int             IconHitSpacing = 4;         // Increase hit-spacing if you want to make it possible to clear or box-select from gaps. Some spacing is required to able to amend with Shift+box-select. Value is small in Explorer.
-        bool            StretchSpacing = true;
+        bool            m_bShowTypeOverlay = true;
+        bool            m_bAllowSorting = true;
+        bool            m_bAllowDragUnselected = false;
+        bool            m_bAllowBoxSelect = true;
+        float           m_fIconSize = 32.0f;
+        int             m_iIconSpacing = 10;
+        int             m_iIconHitSpacing = 4;         // Increase hit-spacing if you want to make it possible to clear or box-select from gaps. Some spacing is required to able to amend with Shift+box-select. Value is small in Explorer.
+        bool            m_bStretchSpacing = true;
 
         // State
-        ImGuiSelectionBasicStorage Selection;       // Our selection
-        ImGuiID         NextItemId = 0;             // Unique identifier when creating new items
-        bool            RequestDelete = false;      // Deferred deletion request
-        bool            RequestSort = false;        // Deferred sort request
-        float           ZoomWheelAccum = 0.0f;      // Mouse wheel accumulator to handle smooth wheels better
+        ImGuiSelectionBasicStorage m_selection;       // Our selection
+        ImGuiID         m_nextItemId = 0;             // Unique identifier when creating new items
+        bool            m_bRequestDelete = false;      // Deferred deletion request
+        bool            m_bRequestSort = false;        // Deferred sort request
+        float           m_fZoomWheelAccum = 0.0f;      // Mouse wheel accumulator to handle smooth wheels better
 
         // Calculated sizes for layout, output of UpdateLayoutSizes(). Could be locals but our code is simpler this way.
-        ImVec2          LayoutItemSize;
-        ImVec2          LayoutItemStep;             // == LayoutItemSize + LayoutItemSpacing
-        float           LayoutItemSpacing = 0.0f;
-        float           LayoutSelectableSpacing = 0.0f;
-        float           LayoutOuterPadding = 0.0f;
-        int             LayoutColumnCount = 0;
-        int             LayoutLineCount = 0;
+        ImVec2          m_layoutItemSize;
+        ImVec2          m_layoutItemStep;             // == LayoutItemSize + LayoutItemSpacing
+        float           m_fLayoutItemSpacing = 0.0f;
+        float           m_fLayoutSelectableSpacing = 0.0f;
+        float           m_fLayoutOuterPadding = 0.0f;
+        int             m_iLayoutColumnCount = 0;
+        int             m_iLayoutLineCount = 0;
     };
 
 

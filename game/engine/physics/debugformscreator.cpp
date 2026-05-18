@@ -1,8 +1,4 @@
-//
-// Created by leon on 06.05.26.
-//
-
-#include "DebugFormsCreator.h"
+#include "debugformscreator.h"
 
 #include "physicsmanager.h"
 #include "box2d/box2d.h"

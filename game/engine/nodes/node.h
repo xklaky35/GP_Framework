@@ -38,19 +38,17 @@ namespace Engine {
         void RemoveChildren();
 
         // getter
-        std::string GetUId() const;
-        std::string GetParentUId() const;
-        bool IsVisible() const;
-        Vector2d GetLocalPos() const;
-        Vector2d GetBaseSize() const;
-        IniParser* GetIniParser() const;
-        Vector2d GetGlobalPosition() const;
-        Node* GetChild(const std::string &name) const;
-        const std::vector<Node *>& GetChildren() const;
-        NodeConfiguration GetChildConfiguration() const;
-        bool IsChildCustomNodeWithId(const std::string& section) const;
-        std::string GetNameOfChildWithId(const std::string& section) const;
-        std::string GetTypeOfChildWithId(const std::string &sectionId) const;
+        [[nodiscard]] std::string GetUId() const;
+        [[nodiscard]] std::string GetParentUId() const;
+        [[nodiscard]] bool IsVisible() const;
+        [[nodiscard]] Vector2d GetLocalPos() const;
+        [[nodiscard]] Vector2d GetBaseSize() const;
+        [[nodiscard]] IniParser* GetIniParser() const;
+        [[nodiscard]] Vector2d GetGlobalPosition() const;
+        [[nodiscard]] Node* GetChild(const std::string &name) const;
+        [[nodiscard]] const std::vector<Node *>& GetChildren() const;
+        [[nodiscard]] NodeConfiguration GetChildConfiguration() const;
+        [[nodiscard]] Node *GetAttachedRigidbodyNode() const;
 
         // setter
         void SetParent(Node *);
@@ -71,7 +69,6 @@ namespace Engine {
         void ApplyLocalTransform();
         void LoadConfigurationFile(const std::string &path);
         void SetupNode(const std::string &typeName, NodeType nodeType);
-        Node *CheckForRigidbodyNode() const;
         void WriteGenericProperties();
 
     public:
@@ -91,7 +88,7 @@ namespace Engine {
         Transform m_globalTransform;
 
         bool m_bIsVisible;;
-        Node* m_parent;
+        Node* m_pParent;
 
         // Flag indicating if this node inherits transformation information from the parent node
         InheritanceFlag m_globalTransformationFlag;
@@ -101,8 +98,6 @@ namespace Engine {
         std::vector<Node*> m_children;
         std::vector<Node*> m_childrenToAdd;
         std::vector<Node*> m_childrenToDelete;
-
-
 
         IniParser* m_iniParser;
     };

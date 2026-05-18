@@ -2,7 +2,6 @@
 
 #include "imgui.h"
 #include "nodefactory.h"
-#include "../../../lib/BOX2D/src/shape.h"
 #include "../../helper/inlinehelper.h"
 #include "../logmanager/logmanager.h"
 #include "../physics/physicsmanager.h"
@@ -10,7 +9,16 @@
 #include "box2d/types.h"
 
 namespace Engine {
-    ColliderNode::ColliderNode() {
+    ColliderNode::ColliderNode()
+        : m_bodyType(),
+          m_currentFormtype(),
+          m_selectedFormtype(),
+          m_colliderBodyId(),
+          m_colliderPolygon(),
+          m_colliderShapeId(),
+          m_layerFilter(),
+          m_bIsSensor(false)
+    {
         OnEntry = Event<b2ShapeId>();
         OnExit = Event<b2ShapeId>();
         m_selectedFormtype = FT_RECTANGLE;
@@ -95,8 +103,6 @@ namespace Engine {
                 "Form configuration", [](Node &n) {
                     if (auto *s = dynamic_cast<ColliderNode *>(&n)) {
                         // only make the field editable if condition is met
-                        Vector2d tmpOffsetPos = Vector2d::Zero();
-
                         if (s->GetCurrentFormType() == FT_RECTANGLE) {
                             Vector2d size = s->GetRectShape();
 
@@ -207,7 +213,7 @@ namespace Engine {
         // creates shape
         UpdateCurrentForm();
 
-        SetPositionInMeters(PhysicsManager::PixelsToMeterVector(m_parent->GetGlobalPosition()));
+        SetPositionInMeters(PhysicsManager::PixelsToMeterVector(m_pParent->GetGlobalPosition()));
 
         // set initial position
         UpdateCurrentBodyPosition();
@@ -219,7 +225,7 @@ namespace Engine {
     void ColliderNode::Process(float deltaTime) {
         Node::Process(deltaTime);
 
-        if (m_parent == nullptr) {
+        if (m_pParent == nullptr) {
             LogManager::GetInstance().Log(WARNING, "Collider node needs a parent node: [ %s ]", m_UId.c_str());
             return;
         }
@@ -237,7 +243,7 @@ namespace Engine {
         b2Vec2 currentOffset = PhysicsManager::PixelsToMeterVector(m_colliderOffset);
         m_colliderOriginalPosition = Vector2d{ b2Body_GetPosition(m_colliderBodyId).x - currentOffset.x,  b2Body_GetPosition(m_colliderBodyId).y - currentOffset.y};
 
-        if ( m_parent->m_typeName == NodeTypeStrings[NT_RigidBodyNode]) {
+        if ( m_pParent->m_typeName == NodeTypeStrings[NT_RigidBodyNode]) {
             b2Vec2 currentPos = GetBodyPositionInMeter();
             b2Body_SetTransform(m_colliderBodyId, currentPos + currentOffset, b2MakeRot(0));
         }
@@ -266,14 +272,14 @@ namespace Engine {
         m_layerFilter.categoryBits = parser->GetValueAsInt(sectionId, "layerNumber");
         m_colliderOffset.x = parser->GetValueAsFloat(sectionId, "formOffsetX");
         m_colliderOffset.y = parser->GetValueAsFloat(sectionId, "formOffsetY");
-        m_rectWidth = parser->GetValueAsFloat(sectionId, "rectWidth");
-        m_rectHeight = parser->GetValueAsFloat(sectionId, "rectHeight");
+        m_fRectWidth = parser->GetValueAsFloat(sectionId, "rectWidth");
+        m_fRectHeight = parser->GetValueAsFloat(sectionId, "rectHeight");
 
-        m_circleRadius = parser->GetValueAsFloat(sectionId, "circleRadius");
+        m_fCircleRadius = parser->GetValueAsFloat(sectionId, "circleRadius");
         m_circleCenter.x = parser->GetValueAsFloat(sectionId, "circlePositionX");
         m_circleCenter.y = parser->GetValueAsFloat(sectionId, "circlePositionY");
 
-        m_capsuleRadius = parser->GetValueAsFloat(sectionId, "circleRadius");
+        m_fCapsuleRadius = parser->GetValueAsFloat(sectionId, "circleRadius");
         m_capsuleCenter1.x = parser->GetValueAsFloat(sectionId, "capsulePosition1X");
         m_capsuleCenter1.y = parser->GetValueAsFloat(sectionId, "capsulePosition1Y");
         m_capsuleCenter2.x = parser->GetValueAsFloat(sectionId, "capsulePosition2X");
@@ -285,15 +291,15 @@ namespace Engine {
         if (m_currentFormtype == m_selectedFormtype) return;
 
         if (m_selectedFormtype == FT_RECTANGLE) {
-            CreateShapeRectangle(m_rectWidth, m_rectHeight);
+            CreateShapeRectangle(m_fRectWidth, m_fRectHeight);
             m_currentFormtype = FT_RECTANGLE;
         }
         if (m_selectedFormtype == FT_CAPSULE) {
-            CreateShapeCapsule(m_capsuleRadius,m_capsuleCenter1,m_capsuleCenter2);
+            CreateShapeCapsule(m_fCapsuleRadius,m_capsuleCenter1,m_capsuleCenter2);
             m_currentFormtype = FT_CAPSULE;
         }
         if (m_selectedFormtype == FT_CIRCLE) {
-            CreateShapeCircle(m_circleRadius, m_circleCenter);
+            CreateShapeCircle(m_fCircleRadius, m_circleCenter);
             m_currentFormtype = FT_CIRCLE;
         }
     }
@@ -304,12 +310,12 @@ namespace Engine {
             b2DestroyShape(m_colliderShapeId, false);
         }
 
-        m_rectHeight = height > 0 ? height : DEFAULT_RECT_HEIGHT;
-        m_rectWidth = width > 0 ? width : DEFAULT_RECT_WIDTH;
+        m_fRectHeight = height > 0 ? height : DEFAULT_RECT_HEIGHT;
+        m_fRectWidth = width > 0 ? width : DEFAULT_RECT_WIDTH;
 
         b2ShapeDef shapeDef = GetShapeDefinition();
 
-        m_colliderPolygon = b2MakeBox(m_rectWidth/2, m_rectHeight/2);
+        m_colliderPolygon = b2MakeBox(m_fRectWidth/2, m_fRectHeight/2);
         m_colliderShapeId = b2CreatePolygonShape(m_colliderBodyId, &shapeDef, &m_colliderPolygon);
     }
 
@@ -319,13 +325,13 @@ namespace Engine {
         }
 
         m_circleCenter = center;
-        m_circleRadius = radius > 0 ? radius : DEFAULT_CIRCLE_RADIUS;
+        m_fCircleRadius = radius > 0 ? radius : DEFAULT_CIRCLE_RADIUS;
 
         b2ShapeDef shapeDef = GetShapeDefinition();
 
         b2Circle colliderCircle = b2Circle();
         colliderCircle.center = center;
-        colliderCircle.radius = m_circleRadius;
+        colliderCircle.radius = m_fCircleRadius;
         m_colliderShapeId = b2CreateCircleShape(m_colliderBodyId, &shapeDef, &colliderCircle);
     }
 
@@ -337,12 +343,12 @@ namespace Engine {
 
         m_capsuleCenter1 = center1;
         m_capsuleCenter2 = center2;
-        m_capsuleRadius = radius > 0 ? radius : DEFAULT_CIRCLE_RADIUS;
+        m_fCapsuleRadius = radius > 0 ? radius : DEFAULT_CIRCLE_RADIUS;
 
         b2ShapeDef shapeDef = GetShapeDefinition();
 
         b2Capsule colliderCapsule = b2Capsule();
-        colliderCapsule.radius = m_capsuleRadius;
+        colliderCapsule.radius = m_fCapsuleRadius;
         colliderCapsule.center1 = center1;
         colliderCapsule.center2 = center2;
         m_colliderShapeId = b2CreateCapsuleShape(m_colliderBodyId, &shapeDef, &colliderCapsule);
@@ -390,7 +396,7 @@ namespace Engine {
     }
 
     Vector2d ColliderNode::GetRectShape() const {
-        return Vector2d{m_rectWidth, m_rectHeight};
+        return Vector2d{m_fRectWidth, m_fRectHeight};
     }
 
     b2Circle ColliderNode::GetCircleShape() const {
@@ -454,7 +460,7 @@ namespace Engine {
         //b2Shape_SetFilter(m_colliderShapeId, m_layerFilter);
     }
 
-    void ColliderNode::SetPositionInMeters(b2Vec2 pos) {
+    void ColliderNode::SetPositionInMeters(b2Vec2 pos) const {
         b2Vec2 currentOffset = PhysicsManager::PixelsToMeterVector(m_colliderOffset);
         b2Body_SetTransform(m_colliderBodyId, pos + currentOffset , b2MakeRot(0.f));
     }
@@ -473,7 +479,7 @@ namespace Engine {
         }
     }
 
-     Node* ColliderNode::GetUserData() {
+     Node* ColliderNode::GetUserData() const {
         if (!b2Body_IsValid(m_colliderBodyId)) return nullptr;
 
         auto userData = b2Body_GetUserData(m_colliderBodyId);
@@ -485,7 +491,7 @@ namespace Engine {
         return nullptr;
     }
 
-    void ColliderNode::SetData(Node * data) {
+    void ColliderNode::SetData(Node * data) const {
         if (b2Body_IsValid(m_colliderBodyId)) {
             b2Body_SetUserData(m_colliderBodyId, data);
         }
@@ -496,7 +502,7 @@ namespace Engine {
             CreateShapeCircle(newCircle.radius, newCircle.center);
         }
     }
-    void ColliderNode::SetCapsuleShape(b2Capsule newCapsule) {
+    void ColliderNode::SetCapsuleShape(const b2Capsule &newCapsule) {
         if (m_currentFormtype == FT_CAPSULE) {
             CreateShapeCapsule(newCapsule.radius, newCapsule.center1, newCapsule.center2);
         }
@@ -510,13 +516,13 @@ namespace Engine {
         m_bIsSensor = !m_bIsSensor;
 
         if (m_currentFormtype == FT_CIRCLE) {
-            CreateShapeCircle(m_circleRadius, m_circleCenter);
+            CreateShapeCircle(m_fCircleRadius, m_circleCenter);
         }
         if (m_currentFormtype == FT_CAPSULE) {
-            CreateShapeCapsule(m_capsuleRadius, m_capsuleCenter1, m_capsuleCenter2);
+            CreateShapeCapsule(m_fCapsuleRadius, m_capsuleCenter1, m_capsuleCenter2);
         }
         if (m_currentFormtype == FT_RECTANGLE) {
-            CreateShapeRectangle(m_rectWidth, m_rectHeight);
+            CreateShapeRectangle(m_fRectWidth, m_fRectHeight);
         }
     }
 

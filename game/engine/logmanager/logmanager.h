@@ -25,7 +25,7 @@ namespace Engine {
 
         // Member data:
     protected:
-        static LogManager *sm_pInstance;
+        static LogManager *s_pInstance;
 
     private:
     };

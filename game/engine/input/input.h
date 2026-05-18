@@ -28,12 +28,11 @@ namespace Engine {
     public:
         static InputManager &GetInstance();
         static void DestroyInstance();
-        void RegisterEvent(SDL_Event&);
+        void RegisterEvent(const SDL_Event&);
         ButtonState GetButtonState(SDL_Keycode);
 
-        Vector2d GetMousePosition() const;
-
-        SDL_MouseButtonEvent GetCurrentMouseEvent() const;
+        [[nodiscard]] Vector2d GetMousePosition() const;
+        [[nodiscard]] SDL_MouseButtonEvent GetCurrentMouseEvent() const;
 
         void Process(float delta_time);
 
@@ -54,8 +53,6 @@ namespace Engine {
         SDL_Keycode m_previousKey;
         std::map<SDL_Keycode, ButtonState> m_pressedKeys;
         std::queue<KeyState> m_isInTransitionState;
-
-
         SDL_MouseButtonEvent m_currentMouseEvent;
 
     };

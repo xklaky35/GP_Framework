@@ -14,11 +14,11 @@ namespace Engine {
         void SetSize(float w, float h);
         void SetRotation(float degrees);
 
-        float GetScale() const;
-        float GetRotationDeg() const;
-        float GetRotationRad() const;
-        float GetWidth() const;
-        float GetHeight() const;
+        [[nodiscard]] float GetScale() const;
+        [[nodiscard]] float GetRotationDeg() const;
+        [[nodiscard]] float GetRotationRad() const;
+        [[nodiscard]] float GetWidth() const;
+        [[nodiscard]] float GetHeight() const;
 
         Transform& operator=(const Transform&);
 

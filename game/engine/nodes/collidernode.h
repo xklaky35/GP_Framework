@@ -10,8 +10,6 @@
 
 namespace Engine {
 
-
-
     // BODY TYPE
     static const char* bodyTypes[] = {"Static", "Kinematic", "Dynamic"};
     static constexpr int BODY_TYPE_COUNT = 3;
@@ -64,37 +62,35 @@ namespace Engine {
 
 
         // getter
-        bool IsSensor() const;
-        b2BodyId GetBodyId() const;
-        b2ShapeId GetShapeId() const;
-        Vector2d GetRectShape() const;
-        b2BodyType GetBodyType() const;
-        b2Circle GetCircleShape() const;
-        b2Filter GetCurrentFilter() const;
-        b2Capsule GetCapsuleShape() const;
-        Vector2d GetColliderOffset() const;
-        Formtype GetCurrentFormType() const;
-        b2ShapeDef GetShapeDefinition() const;
-        Vector2d GetBodyPositionInPixel() const;
-
-        Vector2d GetCurrentVelocity() const;
-
-        Vector2d GetBodyPositionInMeter() const;
+        [[nodiscard]] bool IsSensor() const;
+        [[nodiscard]] b2BodyId GetBodyId() const;
+        [[nodiscard]] b2ShapeId GetShapeId() const;
+        [[nodiscard]] Vector2d GetRectShape() const;
+        [[nodiscard]] b2BodyType GetBodyType() const;
+        [[nodiscard]] b2Circle GetCircleShape() const;
+        [[nodiscard]] b2Filter GetCurrentFilter() const;
+        [[nodiscard]] b2Capsule GetCapsuleShape() const;
+        [[nodiscard]] Vector2d GetColliderOffset() const;
+        [[nodiscard]] Formtype GetCurrentFormType() const;
+        [[nodiscard]] b2ShapeDef GetShapeDefinition() const;
+        [[nodiscard]] Vector2d GetBodyPositionInPixel() const;
+        [[nodiscard]] Vector2d GetCurrentVelocity() const;
+        [[nodiscard]] Vector2d GetBodyPositionInMeter() const;
 
         // setter
         void ToggleSensor();
-        void SetPositionInMeters(b2Vec2);
+        void SetPositionInMeters(b2Vec2) const;
         void SetBodyType(b2BodyType type);
         void SetFilterLayer(int layerNum);
         void SetOffset(Vector2d vector2d);
         void SetFormType(Formtype formtype);
         void SetCircleShape(b2Circle newCircle);
-        void SetCapsuleShape(b2Capsule newCapsule);
+        void SetCapsuleShape(const b2Capsule &newCapsule);
         void SetRectShape(float width, float height);
 
-        Node *GetUserData();
+        Node *GetUserData() const;
 
-        void SetData(Node*);
+        void SetData(Node*) const;
 
 
     private:
@@ -124,18 +120,18 @@ namespace Engine {
         bool m_bIsSensor;
 
         // rectangle vars
-        float m_rectWidth = DEFAULT_RECT_WIDTH;
-        float m_rectHeight = DEFAULT_RECT_HEIGHT;
+        float m_fRectWidth = DEFAULT_RECT_WIDTH;
+        float m_fRectHeight = DEFAULT_RECT_HEIGHT;
 
         // circle vars
-        float m_circleRadius = DEFAULT_CIRCLE_RADIUS;
+        float m_fCircleRadius = DEFAULT_CIRCLE_RADIUS;
         b2Vec2 m_circleCenter = DEFAULT_POSITION;
 
         // capsule vars
-        float m_capsuleRadius = DEFAULT_CIRCLE_RADIUS;
+        float m_fCapsuleRadius = DEFAULT_CIRCLE_RADIUS;
         b2Vec2 m_capsuleCenter1 = DEFAULT_POSITION;
         b2Vec2 m_capsuleCenter2 = DEFAULT_POSITION;
     };
 
 }
-#endif //GP_FRAMEWORK_COLLIDERNODE_H
+#endif

@@ -1,10 +1,8 @@
 #ifndef GP_FRAMEWORK_CONTROL_H
 #define GP_FRAMEWORK_CONTROL_H
 
-#include "../../structs/transform.h"
 #include "../../nodes/node.h"
 #include "../../nodes/spritenode.h"
-
 
 namespace Engine {
 
@@ -60,8 +58,8 @@ namespace Engine {
         Vector2d m_controlBounds;
         Vector2d m_controlSpace;
         bool m_bUseDebugRect;
-        SpriteNode* m_debugRect;
+        SpriteNode* m_pDebugRect;
     };
 
 }
-#endif //GP_FRAMEWORK_CONTROL_H
+#endif

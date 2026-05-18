@@ -20,9 +20,8 @@ public:
     Event<Button> OnClick;
 
 private:
-    SpriteNode* m_templateButton;
+    SpriteNode* m_pTemplateButton;
 
 };
 
-
-#endif //GP_FRAMEWORK_BUTTON_H
+#endif

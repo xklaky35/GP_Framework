@@ -21,7 +21,7 @@ namespace Engine {
         float GetValueAsFloat(const std::string &iniSection, const std::string &key);
         bool GetValueAsBoolean(const std::string &iniSection, const std::string &key);
 
-        void SetValue(const std::string &iniSection, const std::string &key, std::string &value);
+        void SetValue(const std::string &iniSection, const std::string &key, const std::string &value);
         void SetValue(const std::string &iniSection, const std::string &key, const char *value);
         void SetValue(const std::string &iniSection, const std::string &key, int value);
         void SetValue(const std::string &iniSection, const std::string &key, float value);

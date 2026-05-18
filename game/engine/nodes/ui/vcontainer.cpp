@@ -12,8 +12,8 @@ namespace Engine {
 
     void VContainer::PositionChildren() {
         float offset = 0;
-        for (int i = 0; i < m_children.size(); i++) {
-            if (auto* childControl = dynamic_cast<Control*>(m_children[i])) {
+        for (auto & child : m_children) {
+            if (auto* childControl = dynamic_cast<Control*>(child)) {
                 childControl->m_transform.position.y += offset;
                 offset += childControl->m_controlSpace.y;
             }
@@ -42,8 +42,8 @@ namespace Engine {
             }
         }
 
-        if (childSections.size() > 0) {
-            float  sectionSize = (m_controlSpace.y - usedSpace) / childSections.size();
+        if (!childSections.empty()) {
+            float  sectionSize = (m_controlSpace.y - usedSpace) / static_cast<float>(childSections.size());
             for (Control* c : childSections) {
                 c->m_controlSpace.y = sectionSize;
             }
@@ -54,8 +54,8 @@ namespace Engine {
     void VContainer::CalculateInitialSize() {
         float maxChildWidth = 0;
         float height = 0;
-        for (int i = 0; i < m_children.size(); i++) {
-            if (auto *childControl = dynamic_cast<Control *>(m_children[i])) {
+        for (auto & child : m_children) {
+            if (auto *childControl = dynamic_cast<Control *>(child)) {
                 height += childControl->m_initialSize.y;
                 if (childControl->m_initialSize.x > maxChildWidth) maxChildWidth = childControl->m_initialSize.x;
             }

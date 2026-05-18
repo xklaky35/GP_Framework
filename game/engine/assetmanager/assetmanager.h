@@ -12,21 +12,13 @@
 class ImGuiWindowBaseClass;
 
 namespace Engine {
-
-
-
-
     class AssetManager {
     public:
         static AssetManager& GetInstance();
         static void DeleteInstance();
-
         bool Initialise();
-
         bool LoadAssets(AssetBrowser *assetBrowser);
-
         void DrawDebug() const;
-
 
     private:
         AssetManager();
@@ -40,8 +32,6 @@ namespace Engine {
     private:
         std::vector<ImGuiWindowBaseClass*> windows;
     };
-
-
 }
 
 #endif

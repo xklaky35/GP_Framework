@@ -8,16 +8,21 @@
 #include "../../../engine/time/timer.h"
 
 Level1::Level1()
-    : m_backgroundSound(nullptr),
-      m_pickupSound(nullptr) {
+    : m_pTimerDisplay(nullptr),
+      m_pPlayer(nullptr),
+      m_pDropOffLocationSprite(nullptr),
+      m_pPickedObject(nullptr),
+      m_pUnpickdObject(nullptr),
+      m_pBackgroundSound(nullptr),
+      m_pPickupSound(nullptr) {
 
     SetupNode("Level1", NT_Custom);
-    m_timerDisplay = nullptr;
+    m_pTimerDisplay = nullptr;
 }
 
 Level1::~Level1() {
-    if (m_backgroundSound != nullptr) {
-        m_backgroundSound->stop();
+    if (m_pBackgroundSound != nullptr) {
+        m_pBackgroundSound->stop();
     }
 }
 
@@ -25,12 +30,12 @@ Level1::~Level1() {
 void Level1::Init() {
     Node::Init();
 
-    m_backgroundSound = SoundManager::GetInstance().PlaySound("caveBackground.mp3");
-    if (m_backgroundSound != nullptr) {
-        m_backgroundSound->setMode(FMOD_LOOP_NORMAL);
+    m_pBackgroundSound = SoundManager::GetInstance().PlaySound("caveBackground.mp3");
+    if (m_pBackgroundSound != nullptr) {
+        m_pBackgroundSound->setMode(FMOD_LOOP_NORMAL);
     }
 
-    m_timerDisplay = dynamic_cast<TextControl *>(GetChild("LevelTimer"));
+    m_pTimerDisplay = dynamic_cast<TextControl *>(GetChild("LevelTimer"));
     Timer::GetInstance().Reset();
 
     if (auto enemy = dynamic_cast<Enemy*>(GetChild("Enemy1"))) {
@@ -44,26 +49,26 @@ void Level1::Init() {
     }
 
 
-    m_player = dynamic_cast<Player *>(GetChild("Player"));
+    m_pPlayer = dynamic_cast<Player *>(GetChild("Player"));
 
-    m_pickedObject = dynamic_cast<SpriteNode *>(GetChild("PickedObject"));
-    if (m_pickedObject != nullptr) {
-        m_pickedObject->m_globalTransform.SetScale(0);
+    m_pPickedObject = dynamic_cast<SpriteNode *>(GetChild("PickedObject"));
+    if (m_pPickedObject != nullptr) {
+        m_pPickedObject->m_globalTransform.SetScale(0);
     }
-    m_unpickdObject = dynamic_cast<SpriteNode *>(GetChild("UnpickedObject"));
-    if (m_unpickdObject != nullptr) {
-        m_unpickdObject->m_globalTransform.SetScale(0.3);
+    m_pUnpickdObject = dynamic_cast<SpriteNode *>(GetChild("UnpickedObject"));
+    if (m_pUnpickdObject != nullptr) {
+        m_pUnpickdObject->m_globalTransform.SetScale(0.3);
     }
-    m_dropOffLocationSprite = dynamic_cast<AnimatedSpriteNode *>(GetChild("DropOffPoint"));
-    if (m_dropOffLocationSprite != nullptr) {
-        m_dropOffLocationSprite->m_globalTransform.SetScale(0);
+    m_pDropOffLocationSprite = dynamic_cast<AnimatedSpriteNode *>(GetChild("DropOffPoint"));
+    if (m_pDropOffLocationSprite != nullptr) {
+        m_pDropOffLocationSprite->m_globalTransform.SetScale(0);
     }
 }
 
 void Level1::Process(float deltaTime) {
     Node::Process(deltaTime);
 
-    if (m_player == nullptr) return;
+    if (m_pPlayer == nullptr) return;
 
 
     if (InputManager::GetInstance().GetButtonState(SDLK_ESCAPE) == BS_PRESSED) {
@@ -72,39 +77,39 @@ void Level1::Process(float deltaTime) {
     }
 
     // pickup and drop off location sprite control
-    if (m_player->m_bHasTargetObjectReceived) {
-        if (m_pickupSound == nullptr) {
-            m_pickupSound = SoundManager::GetInstance().PlaySound("pickupItem.mp3");
-            m_pickupSound->setVolume(5);
+    if (m_pPlayer->m_bHasTargetObjectReceived) {
+        if (m_pPickupSound == nullptr) {
+            m_pPickupSound = SoundManager::GetInstance().PlaySound("pickupItem.mp3");
+            m_pPickupSound->setVolume(5);
         }
         for (auto enemy : m_enemies) {
             enemy->SetEnraged(true);
             enemy->SetEnragedSpeed();
         }
-        if (m_dropOffLocationSprite != nullptr)
-            m_dropOffLocationSprite->m_globalTransform.SetScale(5);
+        if (m_pDropOffLocationSprite != nullptr)
+            m_pDropOffLocationSprite->m_globalTransform.SetScale(5);
 
-        if (m_unpickdObject != nullptr)
-            m_unpickdObject->m_globalTransform.SetScale(0);
+        if (m_pUnpickdObject != nullptr)
+            m_pUnpickdObject->m_globalTransform.SetScale(0);
 
-        if (m_pickedObject != nullptr)
-            m_pickedObject->m_globalTransform.SetScale(0.3);
+        if (m_pPickedObject != nullptr)
+            m_pPickedObject->m_globalTransform.SetScale(0.3);
     }
-    if (!m_player->m_bHasTargetObjectReceived) {
-        m_pickupSound = nullptr;
+    if (!m_pPlayer->m_bHasTargetObjectReceived) {
+        m_pPickupSound = nullptr;
 
         for (auto enemy : m_enemies) {
             enemy->SetEnraged(false);
             enemy->SetNormalSpeed();
         }
-        if (m_dropOffLocationSprite != nullptr)
-            m_dropOffLocationSprite->m_globalTransform.SetScale(0);
+        if (m_pDropOffLocationSprite != nullptr)
+            m_pDropOffLocationSprite->m_globalTransform.SetScale(0);
         ;
-        if (m_unpickdObject != nullptr)
-            m_unpickdObject->m_globalTransform.SetScale(0.3);
+        if (m_pUnpickdObject != nullptr)
+            m_pUnpickdObject->m_globalTransform.SetScale(0.3);
 
-        if (m_pickedObject != nullptr)
-            m_pickedObject->m_globalTransform.SetScale(0);
+        if (m_pPickedObject != nullptr)
+            m_pPickedObject->m_globalTransform.SetScale(0);
     }
 
 

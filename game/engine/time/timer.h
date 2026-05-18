@@ -13,8 +13,8 @@ public:
     void Reset();
 
     // Seconds since Reset()
-    float GetTotalTime()  const;
-    std::string GetTotalTimeAsString() const;
+    [[nodiscard]] float GetTotalTime()  const;
+    [[nodiscard]] std::string GetTotalTimeAsString() const;
 
 private:
     using Clock = std::chrono::high_resolution_clock;

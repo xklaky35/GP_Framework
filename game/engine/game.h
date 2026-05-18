@@ -1,9 +1,7 @@
-// COMP710 GP Framework
 #ifndef GAME_H
 #define GAME_H
 
 #include <SDL_stdinc.h>
-#include <vector>
 
 #include "nodes/node.h"
 
@@ -22,14 +20,13 @@ namespace Engine {
         void Quit();
         void ToggleViewDebug();
 
-        bool IsDebug() const;
-        bool IsPaused() const;
+        [[nodiscard]] bool IsDebug() const;
+        [[nodiscard]] bool IsPaused() const;
+        [[nodiscard]] Vector2d GetMouseOffset() const;
 
         void TogglePause();
-
         void ResetOrtho() const;
 
-        Vector2d GetMouseOffset() const;
 
     protected:
         void Process(float deltaTime);

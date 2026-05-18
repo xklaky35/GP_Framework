@@ -1,17 +1,12 @@
 #include "assetmanager.h"
-
 #include <filesystem>
-
 #include "../scenemanager/sceneselector.h"
-
 #include "../logmanager/logmanager.h"
-#include "../nodes/animatedspritenode.h"
 #include "../nodes/rigidbodynode.h"
 
 namespace Engine {
 
     AssetManager::AssetManager() : assets(nullptr) {}
-
     AssetManager::~AssetManager() = default;
 
     AssetManager* AssetManager::m_pInstance = nullptr;
@@ -100,6 +95,4 @@ namespace Engine {
             w->DrawDebug();
         }
     }
-
-
 }
