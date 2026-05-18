@@ -1,6 +1,7 @@
 #ifndef GP_FRAMEWORK_ENEMY_H
 #define GP_FRAMEWORK_ENEMY_H
 #include "fmod.hpp"
+#include "../../engine/nodes/animatedspritenode.h"
 #include "../../engine/nodes/collidernode.h"
 #include "../../engine/nodes/node.h"
 #include "../../engine/nodes/nodefactory.h"

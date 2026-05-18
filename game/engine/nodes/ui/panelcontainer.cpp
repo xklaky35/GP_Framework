@@ -38,6 +38,11 @@ namespace Engine {
         AddChild(*m_background);
     }
 
+    void PanelContainer::PositionChildren() {
+        // empty
+        // has to implement it
+    }
+
 
     void PanelContainer::CalculateChildSpace() const {
         for (auto child : m_children) {

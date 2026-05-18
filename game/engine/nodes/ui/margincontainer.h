@@ -9,6 +9,7 @@ namespace Engine {
         MarginContainer();
         void Init() override;
         void PositionChildren() override;
+        void SystemProcess() override;
         void CalculateChildSpace() const override;
 
     public:

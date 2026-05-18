@@ -1,6 +1,7 @@
 #ifndef GP_FRAMEWORK_PLAYER_H
 #define GP_FRAMEWORK_PLAYER_H
 #include "fmod.hpp"
+#include "../../engine/nodes/animatedspritenode.h"
 #include "../../engine/nodes/node.h"
 #include "../../engine/nodes/nodefactory.h"
 #include "../../engine/nodes/rigidbodynode.h"
